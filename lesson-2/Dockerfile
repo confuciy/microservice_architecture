@@ -28,7 +28,8 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-COPY ./public/index.php ./public
+# Копируем папку public в контейнер
+COPY public/ ./public/
 
 # Открываем необходимые порты
 EXPOSE 80 9000
