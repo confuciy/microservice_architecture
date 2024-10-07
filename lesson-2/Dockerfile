@@ -28,6 +28,8 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
+COPY ./public/index.php ./public
+
 # Открываем необходимые порты
 EXPOSE 80 9000
 
