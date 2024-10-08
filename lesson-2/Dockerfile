@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 RUN echo 'server { \
     listen 80; \
     listen [::]:80; \
-    server_name localhost; \
+    server_name localhost arch.homework; \
     root /var/www/html/public; \
     index index.php index.html index.htm; \
     location / { \
