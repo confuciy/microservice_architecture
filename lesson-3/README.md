@@ -19,25 +19,25 @@
 
 ##### Запуск приложения
 Применяем маифесты
-- kubectl apply -f k8s-manifests/
+- `kubectl apply -f k8s-manifests/`
 
 Запускаем перенаправление
-- kubectl port-forward service/health-check-service 8000:80
+- `kubectl port-forward service/health-check-service 8000:80`
 
 
 ##### Смотрим работу в браузере
 
 Адрес: http://localhost:8000/health
-- Ответ: {
+- Ответ: `{
     "status": "ok"
-}
+}`
 
 Адрес: http://arch.homework:8000/health
- - Ответ: {
+- Ответ: `{
     "status": "ok"
-}
+}`
 
 Адрес: http://arch.homework:8000/otusapp/student_name/health
-- Ответ: {
+- Ответ: `{
     "status": "ok"
-}
+}`
