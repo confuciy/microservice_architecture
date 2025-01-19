@@ -18,8 +18,6 @@
 - base_url = http://localhost:8000
 
 ##### Запуск приложения
-На моем примере запускаю из папки - /var/www/lesson-3
-
 Применяем маифесты
 - kubectl apply -f k8s-manifests/
 
