@@ -40,4 +40,4 @@
 Адрес: http://arch.homework:8000/otusapp/student_name/health
 - Ответ: {
     "status": "ok"
-}rud-service
+}
