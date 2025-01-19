@@ -4,7 +4,7 @@
 
 ##### GitHub
 - https://github.com/confuciy/microservice_architecture/tree/main/lesson-3
-
+- `git clone https://github.com/confuciy/microservice_architecture.git <your_folder>`
 ##### Манифесты Deployment, Service, Ingress
 - k8s-manifests/
 
@@ -17,14 +17,18 @@
 
 - base_url = http://localhost:8000
 
+######
 ##### Запуск приложения
 Применяем маифесты
 - `kubectl apply -f k8s-manifests/`
 
+Останавливаем манифесты
+- `kubectl delete -f k8s-manifests/`
+
 Запускаем перенаправление
 - `kubectl port-forward service/health-check-service 8000:80`
 
-
+######
 ##### Смотрим работу в браузере
 
 Адрес: http://localhost:8000/health
