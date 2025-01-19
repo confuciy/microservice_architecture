@@ -1,4 +1,4 @@
-# microservice-architecture-lesson-3
+# ДЗ: Основы работы с Kubernetes (Часть 2)
 ##### DockerHub
 - https://hub.docker.com/repository/docker/confuciy/otus-lesson-3-health/general
 
