@@ -10,9 +10,20 @@ $requestPath = rtrim($requestPath, '/');
 // Проверяем, соответствует ли путь /health/
 if ($requestPath === '/health') {
 
+    # Для проверки обращения к разным подам
+    #$hostname = gethostname();
+
     // Возвращаем успешный JSON-ответ
     echo json_encode([
-        'status' => 'ok'
+        'status'    => 'ok',
+        #"replica"   => $hostname
+    ]);
+
+} elseif (preg_match('/^\/otusapp\/(.*)\/health$/', $requestPath)) {
+
+    // Возвращаем успешный JSON-ответ
+    echo json_encode([
+        'status'    => 'ok',
     ]);
 
 } else {
