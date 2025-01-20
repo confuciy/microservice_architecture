@@ -138,7 +138,7 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "http://localhost:8000",
+			"value": "http://arch.homework:8000",
 			"type": "string"
 		}
 	]
