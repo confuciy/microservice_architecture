@@ -15,7 +15,7 @@
 ##### Коллекция Postman
 - postman-collection-lesson-3.json
 
-- base_url = http://localhost:8000
+- base_url = http://arch.homework:8000
 
 --
 
