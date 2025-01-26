@@ -16,7 +16,7 @@ spec:
       - name: health-check
         image: confuciy/otus-lesson-3-health:latest
         ports:
-          - containerPort: 80
+        - containerPort: 80
         livenessProbe:
           httpGet:
             path: /
