@@ -55,7 +55,7 @@ minikube ip
 
 #### Коллекция Postman
 - postman-collection-lesson-4.json
-- base_url = http://arch.homework
+- base_url = http://arch.homework (для newman изменен на 192.168.49.2)
 - id = 1
 
 
