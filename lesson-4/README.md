@@ -82,7 +82,7 @@ helm uninstall user-service-helm -n user-service
 
 ## Смотрим работу
 
-health-check: 
+#### health-check: 
 
 http://arch.homework/health
 
@@ -93,9 +93,8 @@ http://arch.homework/health
 }
 ```
 
---
 
-[POST] Создание пользователя: 
+#### [POST] Создание пользователя: 
 
 http://arch.homework/user
 Запрос: 
@@ -122,7 +121,7 @@ http://arch.homework/user
 {{new_user_id}} - id добавленного пользователя в таблице users, устанавливается в качестве переменной.
 
 
-[GET] Получение пользователя: 
+#### [GET] Получение пользователя: 
 
 http://arch.homework/user/{{new_user_id}}
 Ответ: 
@@ -137,7 +136,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-[PUT] Изменение пользователя: 
+#### [PUT] Изменение пользователя: 
 
 http://arch.homework/user/{{new_user_id}}
 Запрос: 
@@ -161,7 +160,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-[GET] Получение пользователя - повтор: 
+#### [GET] Получение пользователя - повтор: 
 
 http://arch.homework/user/{{new_user_id}}
 Ответ: 
@@ -175,7 +174,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-[DELETE] Удаление пользователя: 
+#### [DELETE] Удаление пользователя: 
 
 http://arch.homework/user/{{new_user_id}}
 Ответ: 
@@ -185,7 +184,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-##Пример работы:
+## Пример работы:
 
 PostgreSQL перед запуском приложения
 ![no_table.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/no_table.png)
@@ -199,7 +198,7 @@ PostgreSQL перед запуском приложения
 Миграция отработала
 ![empty_table.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/empty_table.png)
 
-##Методы
+## Методы
 [GET] /health
 ![postman_health.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_health.png)
 
@@ -226,5 +225,5 @@ PostgreSQL перед запуском приложения
 
 ![postman_user_delete_2.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_delete_2.png)
 
-##Автоматическое тестирование - newman
+## Автоматическое тестирование - newman
 ![newman_test.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/newman_test.png)
