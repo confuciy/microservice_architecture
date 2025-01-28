@@ -187,7 +187,7 @@ http://arch.homework/user/{{new_user_id}}
 ## Пример работы:
 
 PostgreSQL перед запуском приложения
-![no_table.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/no_table.png)
+![no_table.png](./img/no_table.png)
 
 Запуск приложения
 ![helm_chart_install.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/helm_chart_install.png)
