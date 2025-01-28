@@ -190,40 +190,40 @@ PostgreSQL перед запуском приложения
 ![no_table.png](./img/no_table.png)
 
 Запуск приложения
-![helm_chart_install.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/helm_chart_install.png)
+![helm_chart_install.png](./img/helm_chart_install.png)
 
 Приложение запущено
-![pods_list.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/pods_list.png)
+![pods_list.png](./img/pods_list.png)
 
 Миграция отработала
-![empty_table.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/empty_table.png)
+![empty_table.png](./img/empty_table.png)
 
 ## Методы
 [GET] /health
-![postman_health.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_health.png)
+![postman_health.png](./img/postman_health.png)
 
 [POST] Создание пользователя /user
-![postman_user_add_1.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_add_1.png)
+![postman_user_add_1.png](./img/postman_user_add_1.png)
 
-![postman_user_add_2.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_add_1.png)
+![postman_user_add_2.png](./img/postman_user_add_1.png)
 
-![postman_user_add_3.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_add_3.png)
+![postman_user_add_3.png](./img/postman_user_add_3.png)
 
 [GET] Получение пользователя /user/{{id}}
-![postman_user_get_1.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_get_1.png)
+![postman_user_get_1.png](./img/postman_user_get_1.png)
 
 [PUT] Обновление пользователя /user/{{id}}
-![postman_user_update_1.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_update_1.png)
+![postman_user_update_1.png](./img/postman_user_update_1.png)
 
-![postman_user_update_2.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_update_2.png)
+![postman_user_update_2.png](./img/postman_user_update_2.png)
 
 [GET] Получение пользователя после обновления /user/{{id}}
-![postman_user_get_after_update_1.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_get_after_update_1.png)
+![postman_user_get_after_update_1.png](./img/postman_user_get_after_update_1.png)
 
 [DELETE] Удаление пользователя /user/{{id}}
-![postman_user_delete_1.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_delete_1.png)
+![postman_user_delete_1.png](./img/postman_user_delete_1.png)
 
-![postman_user_delete_2.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/postman_user_delete_2.png)
+![postman_user_delete_2.png](./img/postman_user_delete_2.png)
 
 ## Автоматическое тестирование - newman
-![newman_test.png](https://github.com/confuciy/microservice_architecture/tree/main/lesson-4/img/newman_test.png)
+![newman_test.png](./img/newman_test.png)
