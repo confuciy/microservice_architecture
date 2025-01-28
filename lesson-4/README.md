@@ -82,7 +82,7 @@ helm uninstall user-service-helm -n user-service
 
 ## Смотрим работу
 
-###health-check: 
+#####health-check: 
 
 http://arch.homework/health
 
