@@ -82,7 +82,7 @@ helm uninstall user-service-helm -n user-service
 
 ## Смотрим работу
 
-####health-check: 
+###health-check: 
 
 http://arch.homework/health
 
@@ -95,7 +95,7 @@ http://arch.homework/health
 
 --
 
-####Создание пользователя [POST]: 
+###Создание пользователя [POST]: 
 
 http://arch.homework/user
 Запрос: 
@@ -122,7 +122,7 @@ http://arch.homework/user
 {{new_user_id}} - id добавленного пользователя в таблице users, устанавливается в качестве переменной.
 
 
-####Получение пользователя [GET]: 
+###Получение пользователя [GET]: 
 
 http://arch.homework/user/{{new_user_id}}
 Ответ: 
@@ -137,7 +137,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-####Изменение пользователя [PUT]: 
+###Изменение пользователя [PUT]: 
 
 http://arch.homework/user/{{new_user_id}}
 Запрос: 
@@ -161,7 +161,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-####Получение пользователя - повтор [GET]: 
+###Получение пользователя - повтор [GET]: 
 
 http://arch.homework/user/{{new_user_id}}
 Ответ: 
@@ -175,7 +175,7 @@ http://arch.homework/user/{{new_user_id}}
 }
 ```
 
-####Удаление пользователя [DELETE]: 
+###Удаление пользователя [DELETE]: 
 
 http://arch.homework/user/{{new_user_id}}
 Ответ: 
