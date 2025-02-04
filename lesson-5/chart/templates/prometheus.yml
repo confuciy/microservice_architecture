@@ -1,0 +1,7 @@
+scrape_configs:
+  - job_name: {{ .Release.Name }}-metrics
+    static_configs:
+      - targets: ["arch.homework:80"]
+    metrics_path: /metrics
+    headers:
+      Host: ["arch.homework"]

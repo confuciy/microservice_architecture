@@ -1,0 +1,69 @@
+deployment:
+  replicaCount: 2
+  ports:
+    containerPort: 80
+  livenessProbe:
+    path: /health
+    port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    path: /
+    port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+image:
+  repository: confuciy/otus-lesson-5-user-service-metrics
+  tag: latest
+  pullPolicy: Always
+
+service:
+  name: user-service-metrics-helm
+  type: ClusterIP
+  port: 80
+  targetPort: 9000
+
+ingress:
+  enabled: true
+  host: arch.homework
+  path: /user
+  pathType: Prefix
+
+configmap:
+  app_config:
+    TEST: test_value
+
+secrets:
+  db_config:
+    db_host: 172.26.222.236 # Имя сервиса PostgreSQL в кластере
+    db_port: 5432
+    db_name: service # Используйте имя базы данных, которую вы создали
+    db_user: postgres # Используйте имя созданного пользователя
+    db_schema: service_user # Используйте имя схемы, которую вы создали
+
+db_password: Z2hqZnl6
+
+job:
+  ttlSecondsAfterFinished: 30
+  migration:
+    enabled: true
+
+grafana:
+  service:
+    port: 3000  # Порт, который будет доступен снаружи
+    targetPort: 3000  # Порт, на котором работает Grafana внутри контейнера
+    adminUser: admin  # Логин
+    adminPassword: 424qwea@$#@FW* # Пароль
+
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: {{ .Release.Name }}-metrics
+        static_configs:
+          - targets: ["arch.homework"]  # Укажите правильный IP или DNS-имя
+        metrics_path: /metrics
