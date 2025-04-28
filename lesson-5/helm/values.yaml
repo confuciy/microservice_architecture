@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: confuciy/otus-lesson-5-user-service-metrics
+  tag: latest
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  host: arch.homework
+  annotations:
+    kubernetes.io/ingress.class: nginx
+#nginx.ingress.kubernetes.io/enable-metrics: "true"
+#nginx.ingress.kubernetes.io/rewrite-target: /
+
+job:
+  ttlSecondsAfterFinished: 30
+  migration:
+    enabled: false
+
+secrets:
+  db_config:
+#    POSTGRE_HOST: postgres-service
+    POSTGRE_HOST: 192.168.0.129
+    POSTGRE_PORT: 5432
+    POSTGRES_DB: service
+    POSTGRES_SCHEMA: service_user
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: Z2hqZnl6

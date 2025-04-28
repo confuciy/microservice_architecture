@@ -1,9 +1,0 @@
-prometheus:
-  prometheusSpec:
-    additionalScrapeConfigs:
-      - job_name: "api_request"
-        static_configs:
-          - targets: ["localhost"]
-        metrics_path: /metrics
-        headers:
-          Host: ["arch.homework"]  # Заголовок Host
