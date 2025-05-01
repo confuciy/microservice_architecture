@@ -65,7 +65,22 @@ switch ($routeInfo[0]) {
         [$class, $method] = $handler;
 
         $controller = new $class();
+
         try {
+
+            # Эмулируем 500-е
+            if (
+                $httpMethod == 'GET'
+                and preg_match('/\/user\/(\d+)/', $uri)
+                and in_array(rand(1, 100), [15, 25, 35, 45, 55, 65, 75, 85, 95])
+            ) {
+
+                http_response_code(500);
+                $metrics->incError($httpMethod);
+                $metrics->observeRequest($startTime, $httpMethod, 500);
+                echo json_encode(['error' => 'Internal Server Error']);
+                return;
+            }
 
             $response = call_user_func_array([$controller, $method], $vars);
 

@@ -1,0 +1,1148 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "API and Nginx Ingress Metrics Dashboard",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 21,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Latency (seconds)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#f7f7f72e",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(1, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\"}[2m])))",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "/health  - max",
+          "range": true,
+          "refId": "/health  - max"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.99, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\"}[2m])))",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "/health - 0.99",
+          "range": true,
+          "refId": "/health - 0.99"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.95, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\"}[2m])))",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "/health - 0.95",
+          "range": true,
+          "refId": "/health - 0.95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.5, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\"}[2m])))",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "/health - 0.5",
+          "range": true,
+          "refId": "/health - 0.5"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(1, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m])))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "/user - max",
+          "range": true,
+          "refId": "/user - max"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.99, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m])))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "/user - 0.99",
+          "range": true,
+          "refId": "/user - 0.99"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.95, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m])))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "/user - 0.95",
+          "range": true,
+          "refId": "/user - 0.95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.5, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m])))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "/user - 0.5",
+          "range": true,
+          "refId": "/user - 0.5"
+        }
+      ],
+      "title": "API Latency (seconds)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(1, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", job=\"ingress-nginx-metrics\"}[2m])))",
+          "hide": false,
+          "legendFormat": "max",
+          "range": true,
+          "refId": "max"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.99, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", job=\"ingress-nginx-metrics\"}[2m])))",
+          "hide": false,
+          "legendFormat": "0.99",
+          "range": true,
+          "refId": "0.99"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", job=\"ingress-nginx-metrics\"}[2m])))",
+          "hide": false,
+          "legendFormat": "0.95",
+          "range": true,
+          "refId": "0.95"
+        },
+        {
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.5, sum by(le) (rate(nginx_ingress_controller_request_duration_seconds_bucket{ingress=\"ingress-nginx\", job=\"ingress-nginx-metrics\"}[2m])))",
+          "legendFormat": "0.5",
+          "range": true,
+          "refId": "0.5"
+        }
+      ],
+      "title": "Nginx Ingress Latency (seconds)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "/user - GET - 5xx"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\", status=~\"5..\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\"}[2m]))) * 100",
+          "hide": true,
+          "legendFormat": "/health - 5xx",
+          "range": true,
+          "refId": "/health - 5xx"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", status=~\"5..\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m]))) * 100",
+          "hide": true,
+          "interval": "",
+          "legendFormat": "/user - 5xx",
+          "range": true,
+          "refId": "/user - 5xx"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", status=~\"5..\", method=\"GET\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m]))) * 100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "/user - GET - 5xx",
+          "range": true,
+          "refId": "/user - GET - 5xx"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", status=~\"5..\", method=\"PUT\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m]))) * 100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "/user - PUT - 5xx",
+          "range": true,
+          "refId": "/user - PUT - 5xx"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", status=~\"5..\", method=\"DELETE\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\"}[2m]))) * 100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "/user - DELETE - 5xx",
+          "range": true,
+          "refId": "/user - DELETE - 5xx"
+        }
+      ],
+      "title": "API Error Rate (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {},
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": -1,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", status=~\"5..\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\"}[2m]))) * 100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "5xx",
+          "range": true,
+          "refId": "5xx"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "(sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", status=~\"2..\"}[2m])) / sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\"}[2m]))) * 100",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "2xx",
+          "range": true,
+          "refId": "2xx"
+        }
+      ],
+      "title": "Nginx Ingress Error Rate (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/health\", method=\"GET\"}[2m]))",
+          "hide": true,
+          "legendFormat": "/health - GET",
+          "range": true,
+          "refId": "/health - GET"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", method=\"POST\"}[2m]))",
+          "hide": false,
+          "legendFormat": "/user - POST",
+          "range": true,
+          "refId": "/user - POST"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", method=\"GET\"}[2m]))",
+          "hide": false,
+          "legendFormat": "/user - GET",
+          "range": true,
+          "refId": "/user - GET"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", method=\"PUT\"}[2m]))",
+          "hide": false,
+          "legendFormat": "/user - PUT",
+          "range": true,
+          "refId": "/user - PUT"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\", path=\"/user\", method=\"DELETE\"}[2m]))",
+          "hide": false,
+          "legendFormat": "/user - DELETE",
+          "range": true,
+          "refId": "/user - DELETE"
+        }
+      ],
+      "title": "API RPS (requests per seconds)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(nginx_ingress_controller_request_duration_seconds_count{ingress=\"ingress-nginx\", service=\"php-app\", namespace=\"default\", job=\"ingress-nginx-metrics\"}[2m]))",
+          "hide": false,
+          "legendFormat": "RPS",
+          "range": true,
+          "refId": "RPS"
+        }
+      ],
+      "title": "Nginx Ingress RPS (requests per seconds)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 9,
+      "panels": [],
+      "title": "CPU & Memory",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"default\", pod=~\"php-app.*\"}[2m]))",
+          "legendFormat": "{{label_name}}",
+          "range": true,
+          "refId": "Pods"
+        }
+      ],
+      "title": "Pods CPS",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 3,
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "sum by (pod) (rate(container_memory_working_set_bytes{namespace=\"default\", pod=~\"php-app.*\"}[2m])) / 1024 / 1024",
+          "legendFormat": "{{label_name}}",
+          "range": true,
+          "refId": "Pods"
+        }
+      ],
+      "title": "Pods Memory (Mb)",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "5s",
+  "schemaVersion": 41,
+  "tags": [
+    "api",
+    "nginx",
+    "monitoring"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "arch.homework | Metrics",
+  "uid": "eek73w2y77aiob",
+  "version": 131
+}
