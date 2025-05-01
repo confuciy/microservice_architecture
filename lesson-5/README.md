@@ -20,7 +20,7 @@ newman run postman_collection.json -n 1000 (~20 минут по времени)
 
 ## Prometheus:
 ```
-Настроен сбор метрик настроен через сервисы с указанием таргетов Prometheus
+Сбор метрик настроен через сервисы с указанием таргетов Prometheus
 helm upgrade prometheus prometheus-community/prometheus -f ./monitoring/prometheus-values.yaml --set-file extraScrapeConfigs=./monitoring/prometheus-metrics.yaml
 ```
 
@@ -41,6 +41,8 @@ helm upgrade prometheus prometheus-community/prometheus -f ./monitoring/promethe
 Postgresql и Redis добавлены для настройки их мониторинга в будущем.
 
 #### Дашборды:
+
+- https://github.com/confuciy/microservice_architecture/tree/main/lesson-5/arch.homework_Metrics-1746116875580.json
 
 По методам API (/health добавлять не стал):
 1. Latency (response time) [seconds] с квантилями по 0.5, 0.95, 0.99, max;
