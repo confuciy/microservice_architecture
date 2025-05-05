@@ -135,7 +135,10 @@
 ## Контракты взаимодействия
 
 ### User Service
+- GET /users/register - Форма регистрация пользователя
 - POST /users/register - Регистрация пользователя
+- GET /users/login - Форма логина пользователя
+- POST /users/login - Логин пользователя
 - POST /users/auth - Аутентификация пользователя
 - GET /users/auth - Проверка аутентификации пользователя
 - GET /users/{userId} - Получение пользователя
