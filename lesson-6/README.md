@@ -73,28 +73,53 @@ newman run postman_collection.json
 
 Сценарий:
 - регистрация пользователя 1;
+
 ![postman_1.png](./img/postman_1.png)
+
 - получение профиля пользователя 1 недоступно без логина;
+
 ![postman_2.png](./img/postman_2.png)
+
 - изменение профиля пользователя 1 недоступно без логина;
+
 ![postman_3.png](./img/postman_3.png)
+
 - вход пользователя 1;
+
 ![postman_4.png](./img/postman_4.png)
+
 - получение профиля пользователя 1
+
 ![postman_5.png](./img/postman_5.png)
+
 - изменение профиля пользователя 1;
+
 ![postman_6.png](./img/postman_6.png)
+
 - проверка, что профиль пользователя 1 поменялся;
+
 ![postman_7.png](./img/postman_7.png)
+
 - выход пользователя 1;
+
 ![postman_8.png](./img/postman_8.png)
+
 - регистрация пользователя 2;
+
 ![postman_9.png](./img/postman_9.png)
+
 - вход пользователя 2;
+
 ![postman_10.png](./img/postman_10.png)
+
 - проверка, что пользователь 2 не имеет доступа на чтение профиля пользователя 1;
+
 ![postman_11.png](./img/postman_11.png)
+
 - проверка, что пользователь 2 не имеет доступа на редактирование профиля пользователя 1.
+
 ![postman_12.png](./img/postman_12.png)
+
 - выход пользователя 2;
+
 ![postman_13.png](./img/postman_13.png)
