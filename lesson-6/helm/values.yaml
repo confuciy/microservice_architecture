@@ -1,0 +1,48 @@
+replicaCount: 2
+
+image:
+  repository: confuciy/otus-lesson-6-apigateway
+  tags:
+    php_app: php-app
+    service_user: service-user
+    service_auth: service-auth
+    service_notification: service-notification
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  host: arch.homework
+  annotations:
+    kubernetes.io/ingress.class: nginx
+
+#    nginx.ingress.kubernetes.io/rewrite-target: /$2
+#    nginx.ingress.kubernetes.io/use-regex: "true"
+
+#    kubernetes.io/ingress.class: nginx
+#    nginx.ingress.kubernetes.io/auth-url: "http://service-auth.default.svc.cluster.local:80/auth/validate"
+#    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
+
+#nginx.ingress.kubernetes.io/rewrite-target: /$2
+#nginx.ingress.kubernetes.io/enable-metrics: "true"
+#nginx.ingress.kubernetes.io/rewrite-target: /
+
+job:
+  ttlSecondsAfterFinished: 30
+  migration:
+    enabled: false
+secrets:
+  main:
+    domain: arch.homework
+    host: http://192.168.0.129
+    jwt_secret: 123qds#$#$%HvnvbnYY&&&5F!#@$esfR
+  db_config:
+    POSTGRE_HOST: 192.168.0.129
+    POSTGRE_PORT: 5432
+    POSTGRES_DB: service
+    #POSTGRES_SCHEMA: service_user
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: Z2hqZnl6
+
+#service_user_url: http://service-user.default.svc.cluster.local:80
+#service_auth_url: http://service-auth.default.svc.cluster.local:80
+#service_notification_url: http://service-notification.default.svc.cluster.local:80

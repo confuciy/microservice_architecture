@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: php-app
+  template:
+    metadata:
+      labels:
+        app: php-app
+    spec:
+      containers:
+      - name: php-app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.php_app }}"
+        imagePullPolicy: Always
+        env:
+        - name: SERVICE_NAME      # Определяем, какой сервис запустить
+          value: "php-app"
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5  # Задержка перед первым запуском проверки
+          periodSeconds: 10       # Как часто выполнять проверку
+          timeoutSeconds: 5       # Максимальное время ожидания ответа на запрос
+          failureThreshold: 3     # Количество неудачных попыток, прежде чем контейнер будет перезапущен
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10 # Задержка перед первым запуском проверки
+          periodSeconds: 10       # Как часто выполнять проверку
+          timeoutSeconds: 5       # Максимальное время ожидания ответа на запрос
+          failureThreshold: 3     # Количество неудачных попыток, прежде чем контейнер будет исключен из списка доступных
+        envFrom:
+        - secretRef:
+           name: {{ .Release.Name }}-secrets

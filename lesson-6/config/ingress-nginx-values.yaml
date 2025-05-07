@@ -1,0 +1,24 @@
+controller:
+  service:
+    type: NodePort
+    nodePorts:
+      http: 32673  # Фиксированный порт для удобства
+
+  config:
+    use-forwarded-headers: "true"       # Передача реальных IP
+    enable-real-ip: "true"
+    use-proxy-protocol: "false"
+    allow-snippet-annotations: "true"   # Разрешить аннотации со сниппетами
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+    service:
+      port: 10254
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+
+  extraArgs:
+    metrics-per-host: "true"
