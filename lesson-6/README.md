@@ -51,7 +51,10 @@ helm uninstall php-app
 
 Apigateway на основе ingress-nginx с аутентификацией пользователей по JWT-токенам.
 
+![interaction_of_services_2.png](./img/interaction_of_services_2.png)
+
 ##### Схема взаимодействия сервисов на примере авторизации и просмотра профиля пользователя
+
 ![interaction_of_services.png](./img/interaction_of_services.png)
 
 #### Тесты Postman
