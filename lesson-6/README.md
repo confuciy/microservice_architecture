@@ -58,7 +58,7 @@ Apigateway на основе ingress-nginx с аутентификацией п�
 #### Коллекция Postman
 - postman-collection.json
 - base_url = http://arch.homework
-- id = 1
+- id = 0
 - first_user_id = 0
 - email_iterator = 0
 - second_user_id = 0
