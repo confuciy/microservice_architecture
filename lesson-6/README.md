@@ -18,6 +18,8 @@ docker pull confuciy/otus-lesson-6-apigateway:service-notification
 docker build -t confuciy/otus-lesson-6-apigateway:service-user --target=service-user .
 ```
 
+![pods_1.png](./img/pods_1.png)
+
 #### GitHub
 - https://github.com/confuciy/microservice_architecture/tree/main/lesson-6
 - `git clone https://github.com/confuciy/microservice_architecture.git <your_folder>`
