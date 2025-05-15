@@ -1,0 +1,992 @@
+##### DockerHub
+- https://hub.docker.com/repository/docker/confuciy/otus-lesson-3-health/general
+
+##### GitHub
+- https://github.com/confuciy/microservice_architecture/tree/main/lesson-3
+- `git clone https://github.com/confuciy/microservice_architecture.git <your_folder>`
+
+# Запуск docker контейнера c nginx
+sudo docker run -d --restart always --name nginx-cnr -p 80:80 -p 8000:8000 -v /var/www/html:/usr/share/nginx/html nginx:stable
+
+------------------------------------------------------------------------------------------------------------------
+
+# Создание Docker образа lesson-3
+docker build -t confuciy/otus-lesson-3-health .
+#docker tag confuciy/otus-lesson-3-health:latest confuciy/otus-lesson-3-health:version1.0.0
+docker push confuciy/otus-lesson-3-health:latest
+docker run -p 8000:80 -v /var/www/lesson-3:/var/www/html confuciy/otus-lesson-3-health:latest
+
+Флаг -d позволяет запускать в фоне 
+
+docker stop 4cc
+
+------------------------------------------------------------------------------------------------------------------
+
+# deployment.yaml (Deployment)
+Отвечает за создание и управление репликами вашего приложения.
+apiVersion: apps/v1: Указывает версию API Kubernetes для Deployment.
+kind: Deployment: Определяет тип ресурса как Deployment.
+metadata.name: health-check: Имя Deployment, которое используется для идентификации этого ресурса в Kubernetes.
+spec.replicas: 2: Определяет желаемое количество реплик (запущенных копий) вашего приложения. В данном случае, Kubernetes будет стремиться поддерживать две работающие копии вашего приложения.
+spec.selector.matchLabels: app: health-check: Выбирает поды, которые должны управляться этим Deployment. Kubernetes использует метки (labels) для связывания подов с Deployment.
+spec.template: Описывает шаблон для создания новых подов.
+metadata.labels: app: health-check: Метки, которые будут присвоены каждому поду, созданному из этого шаблона. Эти метки используются для сопоставления подов с Deployment.
+spec.containers: Определяет контейнеры, которые будут запущены в каждом поду.
+name: health-check: Имя контейнера.
+image: <ваш_логин_dockerhub>/<имя_вашего_образа>:latest: Образ Docker, который будет использоваться для запуска контейнера. Этот образ содержит ваше приложение.
+ports: - containerPort: 80: Определяет порты контейнера. В данном случае, приложение слушает на порту 80 внутри контейнера.
+livenessProbe и readinessProbe: Определяют зонды работоспособности и готовности контейнера.
+httpGet: Указывает, что зонд будет отправлять HTTP GET-запрос на указанный путь и порт.
+path: /health: Путь, на который будет отправляться запрос (в вашем приложении должен быть endpoint, отвечающий на этом пути).
+port: 80: Порт, на который будет отправляться запрос.
+
+
+# service.yaml (Service)
+Обеспечивает доступ к вашим подам.
+apiVersion: v1: Указывает версию API Kubernetes для Service.
+kind: Service: Определяет тип ресурса как Service.
+metadata.name: health-check-service: Имя Service.
+spec.selector: app: health-check: Выбирает подов, к которым должен предоставлять доступ этот Service. Он использует те же метки, что и Deployment.
+spec.ports: Определяет порты сервиса.
+protocol: TCP: Указывает протокол TCP.
+port: 80: Порт сервиса, который будет доступен извне.
+targetPort: 80: Порт, на котором слушают контейнеры в подах.
+spec.type: LoadBalancer: Определяет тип Service. LoadBalancer автоматически создает LoadBalancer у вашего провайдера облака (например, в AWS, GCP или Azure). Если нет LoadBalancer, замените на ClusterIP (как мы делали ранее).
+
+# ingress.yaml (Ingress)
+Обеспечивает внешний доступ к вашему сервису.
+apiVersion: networking.k8s.io/v1: Указывает версию API Kubernetes для Ingress.
+kind: Ingress: Определяет тип ресурса как Ingress.
+metadata.name: health-check-ingress: Имя Ingress.
+spec.rules: Определяет правила маршрутизации.
+host: arch.homework: Хост, на который будет направляться трафик.
+http.paths: Определяет пути и бэкенды для обработки трафика.
+path: /health: Путь, на который будет направляться трафик.
+pathType: Prefix: Указывает, что этот путь является префиксом.
+backend.service.name: health-check-service: Имя Service, к которому будет направляться трафик.
+backend.service.port.number: 80: Порт сервиса.
+
+Вкратце: Deployment управляет подами приложения, Service обеспечивает доступ к подам внутри кластера, а Ingress обеспечивает внешний доступ к сервису, если он настроен. Они работают вместе, обеспечивая масштабируемость, доступность и внешнюю доступность вашего приложения.
+
+livenessProbe используется для определения того, работает ли контейнер и может ли он продолжать работать. Если liveness probe не проходит, то kubelet перезапустит контейнер.
+
+readinessProbe используется для определения готовности контейнера принимать трафик. Если readiness probe не проходит, то Kubernetes не будет перенаправлять трафик на контейнер до тех пор, пока readiness probe не начнет проходить.
+
+------------------------------------------------------------------------------------------------------------------
+
+minikube start
+
+------------------------------------------------------------------------------------------------------------------
+
+# Для всех из текущей папки 
+kubectl apply -f k8s-manifests
+
+------------------------------------------------------------------------------------------------------------------
+
+# Для каждого отдельно из текущей папки
+kubectl apply -f k8s-manifests/deployment.yaml
+kubectl apply -f k8s-manifests/service.yaml
+kubectl apply -f k8s-manifests/ingress.yaml
+
+------------------------------------------------------------------------------------------------------------------
+
+# Список аддонов Minikube
+minikube addons list
+
+# Установка аддона ingress
+minikube addons enable ingress
+
+------------------------------------------------------------------------------------------------------------------
+
+# Узнать IP minikube
+minikube ip
+
+------------------------------------------------------------------------------------------------------------------
+
+# Проверка сервисов отдельно
+kubectl get deployments
+kubectl get services
+kubectl get ingress
+
+------------------------------------------------------------------------------------------------------------------
+
+# Отключение сервисов (в обратном порядке)
+kubectl delete -f k8s-manifests/ingress.yaml
+kubectl delete -f k8s-manifests/service.yaml
+kubectl delete -f k8s-manifests/deployment.yaml
+
+или
+
+kubectl delete -f k8s-manifests/
+
+------------------------------------------------------------------------------------------------------------------
+
+# Резолвинг имени arch.homework на ваш локальный IP
+В Windows:
+1. Отредактируйте файл C:\Windows\System32\drivers\etc\hosts (от имени администратора).
+2. Добавьте строку:
+   127.0.0.1   arch.homework
+3. Если вы используете minikube, то добавьте ip, который вы получите после выполнения minikube ip
+
+------------------------------------------------------------------------------------------------------------------
+
+# port-forwarding
+kubectl port-forward service/health-check-service 8000:80
+
+------------------------------------------------------------------------------------------------------------------
+
+# Просмотр списка подов
+kubectl get pods
+
+------------------------------------------------------------------------------------------------------------------
+
+# URL доступа к сервису с наружи
+minikube service health-check-service --url
+
+------------------------------------------------------------------------------------------------------------------
+
+# newman
+npm install -g newman
+newman run /var/www/lesson-3/health-check-collection.json
+
+------------------------------------------------------------------------------------------------------------------
+
+# Очистка кеша DNS
+sudo systemd-resolve --flush-caches или sudo /etc/init.d/networking restart
+
+------------------------------------------------------------------------------------------------------------------
+
+nano ~/.bashrc
+export PATH=$PATH:/usr/local/bin
+alias minikube='/usr/local/bin/minikube'
+source ~/.bashrc
+
+------------------------------------------------------------------------------------------------------------------
+
+sudo nano /etc/resolv.conf
+
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+
+source /etc/resolv.conf
+
+или
+
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+options edns0 trust-ad
+
+------------------------------------------------------------------------------------------------------------------
+
+helm repo add stable https://charts.helm.sh/stable
+и
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+helm repo update
+
+------------------------------------------------------------------------------------------------------------------
+
+helm install postgres-service stable/PostgreSQL
+
+
+WARNING: This chart is deprecated
+NAME: postgres-service
+LAST DEPLOYED: Mon Jan 20 21:20:21 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+This Helm chart is deprecated
+
+Given the `stable` deprecation timeline (https://github.com/helm/charts#deprecation-timeline), the Bitnami maintained Helm chart is now located at bitnami/charts (https://github.com/bitnami/charts/).
+
+The Bitnami repository is already included in the Hubs and we will continue providing the same cadence of updates, support, etc that we've been keeping here these years. Installation instructions are very similar, just adding the _bitnami_ repo and using it during the installation (`bitnami/<chart>` instead of `stable/<chart>`)
+
+```bash
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+$ helm install my-release bitnami/<chart>           # Helm 3
+$ helm install --name my-release bitnami/<chart>    # Helm 2
+```
+
+To update an exisiting _stable_ deployment with a chart hosted in the bitnami repository you can execute
+
+```bash
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+$ helm upgrade my-release bitnami/<chart>
+```
+
+Issues and PRs related to the chart itself will be redirected to `bitnami/charts` GitHub repository. In the same way, we'll be happy to answer questions related to this migration process in this issue (https://github.com/helm/charts/issues/20969) created as a common place for discussion.
+
+** Please be patient while the chart is being deployed **
+
+PostgreSQL can be accessed via port 5432 on the following DNS name from within your cluster:
+
+    postgres-service-postgresql.default.svc.cluster.local - Read/Write connection
+
+To get the password for "postgres" run:
+
+    export POSTGRES_PASSWORD=$(kubectl get secret --namespace default postgres-service-postgresql -o jsonpath="{.data.postgresql-password}" | base64 --decode)
+
+To connect to your database run the following command:
+
+    kubectl run postgres-service-postgresql-client --rm --tty -i --restart='Never' --namespace default --image docker.io/bitnami/postgresql:11.7.0-debian-10-r9 --env="PGPASSWORD=$POSTGRES_PASSWORD" --command -- psql --host postgres-service-postgresql -U postgres -d postgres -p 5432
+
+
+
+To connect to your database from outside the cluster execute the following commands:
+
+    kubectl port-forward --namespace default svc/postgres-service-postgresql 5432:5432 &
+    PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка namespace в values.yaml
+namespace: user-service-helm в values.yaml и namespace: {{ .Values.namespace }}
+
+# Создание namespace user-service
+kubectl create namespace user-service
+
+# Запуск
+helm install user-service-helm ./chart
+
+# Запуск с namespace
+helm install user-service-helm ./chart --namespace=default
+
+# Проверяем запуск приложения
+kubectl get pods -o wide
+
+или для namespace user-service
+
+kubectl get pods -o wide -n user-service
+
+# Обновление
+helm upgrade user-service-helm ./chart
+
+# Переустановка
+helm upgrade user-service-helm ./chart --force
+
+# Удаление
+helm uninstall user-service-helm
+
+# Проверка наличия релизов
+helm list
+
+# Проверка лога ошибок миграции
+kubectl logs job/user-service-helm-migration
+
+------------------------------------------------------------------------------------------------------------------
+
+# Создание Docker образа lesson-4
+docker build -t confuciy/otus-lesson-4-user-service .
+docker push confuciy/otus-lesson-4-user-service:latest
+docker pull confuciy/otus-lesson-4-user-service:latest
+
+------------------------------------------------------------------------------------------------------------------
+
+# Получаем список подов
+kubectl get pod
+
+# Получение инфрмации об ошиках конкретного пода
+kubectl describe pod/user-service-helm-migration-bxs2t
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка PostgreSQL
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo su - postgres 
+psql
+ALTER USER postgres WITH PASSWORD 'ghjfyz';
+\q
+exit
+
+sudo nano /etc/postgresql/$(pg_lsclusters | awk '${print $1}')/main/pg_hba.conf 
+вместо $(pg_lsclusters | awk '${print $1}') можно просто посмотреть папку
+
+sudo systemctl restart postgresql
+
+
+# Создание БД
+sudo su - postgres 
+psql
+CREATE DATABASE user_service;
+\q
+exit
+
+
+sudo nano /etc/postgresql/14/main/postgresql.conf
+listen_addresses = '*'  # или указать конкретный IP
+sudo systemctl restart postgresql
+
+
+sudo nano /etc/postgresql/14/main/pg_hba.conf
+host    all       all       192.168.0.148/32  md5
+sudo systemctl restart postgresql
+
+
+sudo ufw allow 5432/tcp
+sudo ufw reload
+
+
+sudo iptables -A INPUT -p tcp --dport 5432 -j ACCEPT
+sudo service iptables save
+
+------------------------------------------------------------------------------------------------------------------
+
+# Запуск PostgreSQL после перезагрузи WSL
+sudo systemctl start postgresql
+
+------------------------------------------------------------------------------------------------------------------
+
+# Посмотреть адрес WSL
+ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d'/' -f1
+
+------------------------------------------------------------------------------------------------------------------
+
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migration
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-succeeded-policy": delete
+
+------------------------------------------------------------------------------------------------------------------
+
+Проверьте развертывание:
+
+kubectl get pods - должны быть 2 работающих пода
+kubectl get services - должен быть service
+kubectl get deployment - deployment должен быть ready
+kubectl get job - job для миграции должен завершиться
+kubectl get ingress - должен быть ingress
+
+------------------------------------------------------------------------------------------------------------------
+
+# Проверка чарта
+helm lint ./chart
+
+# Проверка чарта с применением шаблонов
+helm template user-service-helm chart --values chart/values.yaml
+
+# Использование Dry-Run
+helm install --dry-run --debug user-service-helm ./chart
+
+------------------------------------------------------------------------------------------------------------------
+
+# Войти внутрь контейнера в поде
+
+# Смотрим имя контейнера в поде в секции Containers
+kubectl describe pod user-service-helm-deployment-7485446c99-8qzbf
+
+# Заходим в контейнер
+kubectl exec -it user-service-helm-deployment-7485446c99-8qzbf -c user-service-container -- /bin/bash
+
+# осматриваемся
+ls -la
+
+# Выходим
+ctrl + D
+
+------------------------------------------------------------------------------------------------------------------
+
+# Удаление докер образов по шаблону имени
+docker rmi -f $(docker images -q --filter "reference=confuciy/otus-lesson-4-user-service")
+
+------------------------------------------------------------------------------------------------------------------
+
+# Удалить все не используемые образы
+docker image prune -a
+
+------------------------------------------------------------------------------------------------------------------
+
+# Перезапуск подов PostgreSQL
+kubectl rollout restart statefulset postgres-service-postgresql
+
+------------------------------------------------------------------------------------------------------------------
+
+# Удаление кеша подов приложения
+kubectl delete pods -l app=user-service-helm
+
+------------------------------------------------------------------------------------------------------------------
+
+# Обновлние настроек HELM-чарта
+helm upgrade user-service-helm ./chart/ -f ./chart/values.yaml
+
+------------------------------------------------------------------------------------------------------------------
+
+# Узнать лейблы подов
+kubectl get pods --show-labels
+
+------------------------------------------------------------------------------------------------------------------
+
+# Узнать адрес WSL Ubuntu
+ip addr show eth0 | grep "inet " | awk '{print $2}' | cut -d'/' -f1
+
+или
+
+hostname -I
+
+------------------------------------------------------------------------------------------------------------------
+
+-- Подключаемся к PostgreSQL как суперпользователь
+            -- создаем схему если её нет
+            CREATE SCHEMA IF NOT EXISTS service;
+            
+            -- Создаем пользователя, если его нет
+            -- В реальной системе лучше использовать другого пользователя, а не postgres
+            -- CREATE USER newuser WITH PASSWORD 'password';
+            
+            -- Назначаем пользователю права в схеме
+            -- GRANT ALL PRIVILEGES ON SCHEMA service TO newuser;
+            
+            -- Подключаемся к базе под созданным пользователем
+            -- и создаём таблицу users
+
+------------------------------------------------------------------------------------------------------------------
+
+# Заменить файл в поде
+kubectl cp ./src/index.php default/user-service-helm-deployment-7ddff868bd-95vxq:./src/index.php
+
+------------------------------------------------------------------------------------------------------------------
+
+Схема работы
+[Браузер] -> (http://arch.homework:8000/health) -> [Компьютер] -> [Kubernetes Minikube] -> [Ingress-Nginx] -> [user-service-helm-service] -> [user-service-helm Pod]
+
+------------------------------------------------------------------------------------------------------------------
+
+# DNS сервера в роутере
+185.124.14.253
+10.12.12.251
+
+------------------------------------------------------------------------------------------------------------------
+
+# Перенаправление трафика
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.49.2:80
+sudo iptables -A FORWARD -p tcp -d 192.168.49.2 --dport 80 -j ACCEPT
+
+# Включение перенаправления
+sudo sysctl net.ipv4.ip_forward=1
+
+# Делаем настройку автоматически после каждого перезапуска WSL
+Открываем 
+nano ~/.bashrc
+
+# Вставляем в самый низ
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.49.2:80
+sudo iptables -A FORWARD -p tcp -d 192.168.49.2 --dport 80 -j ACCEPT
+sudo iptables -t nat -A PREROUTING -p tcp --dport 3000 -j DNAT --to-destination 192.168.49.2:3000
+sudo iptables -A FORWARD -p tcp -d 192.168.49.2 --dport 3000 -j ACCEPT
+sudo sysctl net.ipv4.ip_forward=1
+
+# Выполняем
+source ~/.bashrc
+
+------------------------------------------------------------------------------------------------------------------
+
+# Создание докер образа lesson-4
+docker build -t confuciy/otus-lesson-4-user-service:latest . --no-cache --network host
+docker push confuciy/otus-lesson-4-user-service:latest
+
+------------------------------------------------------------------------------------------------------------------
+
+# Настройка маршрутизации
+sudo iptables -t nat -A PREROUTING -p tcp -d 172.26.222.236 --dport 80 -j DNAT --to-destination 192.168.49.2:80
+
+------------------------------------------------------------------------------------------------------------------
+
+FROM php:8.2-fpm
+
+# Install system dependencies
+RUN apt-get update -o Acquire::ForceIPv4=true && apt-get install -y \
+    libzip-dev \
+    zip \
+    unzip \
+    nginx \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql zip
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Создаем директорию для логов Nginx
+RUN mkdir -p /var/log/nginx
+
+# Копируем Nginx конфигурацию из файла
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy application code
+COPY . ./
+
+# Copy php-fpm config
+#COPY ./www.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Install PHP dependencies
+RUN composer install --no-scripts --no-autoloader --no-interaction
+RUN composer dump-autoload
+
+# Set permissions
+RUN chown -R www-data:www-data ./
+RUN chown -R www-data:www-data /var/log
+RUN chown -R www-data:www-data /var/log/nginx
+
+# Expose port
+EXPOSE 80 9000
+
+# Start PHP-FPM
+#CMD ["php-fpm", "-F"]
+
+# Запуск Nginx и PHP-FPM
+CMD service nginx start && php-fpm
+
+------------------------------------------------------------------------------------------------------------------
+
+192.168.49.2
+
+------------------------------------------------------------------------------------------------------------------
+
+sudo apt install redis-server
+sudo systemctl status redis-server
+sudo systemctl start redis-server
+redis-cli (например, с командой ping, redis-cli ping, в ответ ожидаем PONG)
+sudo systemctl enable redis-server
+
+sudo ufw allow 6379
+
+------------------------------------------------------------------------------------------------------------------
+
+# Включение Metrics Server в Minikube
+minikube addons enable metrics-server
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка Prometheus и Grafana
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/kube-prometheus-stack
+
+# Получение первичного пароля от логина admin
+kubectl get secret prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+# Проброс портов, если нужно
+kubectl port-forward service/prometheus-kube-prometheus-prometheus 9090:9090
+
+kubectl port-forward service/prometheus-grafana 3000:80
+
+# Адрес
+http://arch.homework:3000
+
+# Запуск
+helm install prometheus prometheus-community/kube-prometheus-stack -f ./prometheus/values.yaml
+
+# Обновление
+helm upgrade prometheus prometheus-community/kube-prometheus-stack -f ./prometheus/values.yaml
+
+# Завершение
+helm uninstall prometheus prometheus-community/kube-prometheus-stack
+
+------------------------------------------------------------------------------------------------------------------
+
+# Создание докер образа lesson-5
+docker build -t confuciy/otus-lesson-5-user-service-metrics:latest . --no-cache --network host
+docker push confuciy/otus-lesson-5-user-service-metrics:latest
+
+# Удаление докер образов lesson-5
+docker rmi -f $(docker images -q --filter "reference=confuciy/otus-lesson-5-user-service-metrics")
+
+------------------------------------------------------------------------------------------------------------------
+
+# Запуск чарта lesson-5
+helm install user-service-helm-metrics ./chart -n user-service-metrics
+
+# Остановка чарта lesson-5
+helm uninstall user-service-helm-metrics -n user-service-metrics
+
+------------------------------------------------------------------------------------------------------------------
+
+sudo nano /etc/sysctl.conf
+
+net.ipv4.ip_forward=1
+
+------------------------------------------------------------------------------------------------------------------
+
+kubectl run -it --rm debug --image=curlimages/curl -- sh
+curl http://192.168.49.2/metrics  --header 'Host: arch.homework'
+
+------------------------------------------------------------------------------------------------------------------
+
+# Перезапуск Prometheus
+kubectl rollout restart deployment prometheus-prometheus-kube-prometheus-kube-prometheus-prometheus -n <namespace>
+
+или
+
+kubectl delete pod prometheus-prometheus-kube-prometheus-prometheus-0 -n <namespace>
+
+------------------------------------------------------------------------------------------------------------------
+
+helm install user-service-helm-metrics ./chart -n user-service-metrics
+
+kubectl get pods -o wide -n user-service-metrics
+
+helm uninstall user-service-helm-metrics -n user-service-metrics
+
+kubectl exec -it user-service-helm-metrics-deployment-6d965f66c-m6dbr -c user-service-metrics-container -n user-service-metrics -- /bin/bash
+
+или
+
+kubectl exec -it user-service-helm-metrics-deployment-6d965f66c-m6dbr -n user-service-metrics -- /bin/bash
+
+------------------------------------------------------------------------------------------------------------------
+
+kubeapps token:
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6Im5IMW4xanBuWVhBQUdURWdKWmM0eE5xY19ZcjhLNldHTVByRDR0bjhYZDQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Imt1YmVhcHBzLW9wZXJhdG9yLXRva2VuIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6Imt1YmVhcHBzLW9wZXJhdG9yIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZjgwMjE0MjQtYWRkOS00N2ZiLTllZDQtMzY2ODRhZTExNzUyIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6a3ViZWFwcHMtb3BlcmF0b3IifQ.MasWEAW1BmpBFjrfoTzCxpysYiakdHAoXGWg4fLl9FPAAgc9_YnB8QHIqBXah57NxCdjZT9y3CrNtji693wCBgxFeEskf9xhirHloU8MiGnb1YbPDkXz4HTe6oBeGJmINgrKauK38VG0wNReYutl8kFsI9LpkBJwE7UEjJZM2dBbEBralw536Px9NRuoxggEhLQnCBmE0j8UNPnrbwclFr9gNlvMj_wHm7UjrGf1DYgD6wSkfZQBe-W4PxZnpjaZdZcCjjNioBbARAapz6QozbRF4Y2ntpzxjXQVkAGDqGvGmVPAXG6s4vICRv94eRoXILJIYfJzGXsSNSB8IY8WVQ
+
+------------------------------------------------------------------------------------------------------------------
+
+kubectl exec <pod-name> -n user-service-metrics -- tail -f /var/log/nginx/access.log
+kubectl exec <pod-name> -n user-service-metrics -- tail -f /var/log/nginx/error.log
+
+------------------------------------------------------------------------------------------------------------------
+
+# Определите поды Ingress-контроллера
+kubectl get pods -n ingress-nginx 
+
+# Просмотрите логи Ingress-контроллера
+kubectl logs -n ingress-nginx <ingress-pod-name>
+
+# Последние 100 строк
+kubectl logs --tail=100 -n ingress-nginx <ingress-pod-name>
+
+# Логи в реальном времени
+kubectl logs -f -n ingress-nginx <ingress-pod-name>
+
+# Поиск по пути (например, /api_metrics)
+kubectl logs -n ingress-nginx <ingress-pod-name> | grep "/api_metrics"
+
+------------------------------------------------------------------------------------------------------------------
+
+# Обновление настроек Prometheus
+helm upgrade prometheus prometheus-community/prometheus -f values-prometheus.yaml
+
+------------------------------------------------------------------------------------------------------------------
+
+LAST DEPLOYED: Wed Apr  9 01:12:31 2025
+NAMESPACE: monitoring
+STATUS: deployed
+REVISION: 1
+NOTES:
+kube-prometheus-stack has been installed. Check its status by running:
+  kubectl --namespace monitoring get pods -l "release=prometheus-operator"
+
+Get Grafana 'admin' user password by running:
+
+  kubectl --namespace monitoring get secrets prometheus-operator-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+
+Access Grafana local instance:
+
+  export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=prometheus-operator" -oname)
+  kubectl --namespace monitoring port-forward $POD_NAME 3000
+
+Visit https://github.com/prometheus-operator/kube-prometheus for instructions on how to create & configure Alertmanager and Prometheus instances using the Operator.
+
+------------------------------------------------------------------------------------------------------------------
+
+diskpart /s C:\Users\Aleksey\Desktop\compact-disk.txt
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка k9s
+wget https://github.com/derailed/k9s/releases/download/v0.50.2/k9s_Linux_amd64.tar.gz
+tar -xvzf k9s_Linux_amd64.tar.gz
+sudo mv k9s /usr/local/bin/
+
+k9s version
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка Prometheus в кластер
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+
+kubectl --namespace monitoring port-forward --address 0.0.0.0 $POD_NAME 3000:3000
+
+# Удаление prometheus-operator
+helm uninstall prometheus-operator -n monitoring 
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка prometheus-community/prometheus
+helm install prometheus prometheus-community/prometheus -f ./config/prometheus-values.yaml
+
+# Указание Prometheus какие метрики собирать
+helm upgrade prometheus prometheus-community/prometheus -f ./config/prometheus-values.yaml --set-file extraScrapeConfigs=./config/prometheus-metrics.yaml
+
+# Просмотр портов NodePort
+kubectl get svc -n default | grep prometheus
+
+------------------------------------------------------------------------------------------------------------------
+
+# Grafana для их визуализации
+helm repo add grafana https://grafana.github.io/helm-charts`
+helm repo update
+
+# Установка
+helm install grafana grafana/grafana -f ./config/grafana-values.yaml
+
+# Просмотр сервиса
+minikube service grafana
+
+# Grafana
+Логин: admin
+Пароль: grafana-admin
+
+------------------------------------------------------------------------------------------------------------------
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus-operator prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+
+Установите/обновите контроллер с включенными метриками
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --set controller.metrics.enabled=true \
+  --set controller.metrics.serviceMonitor.enabled=true  # Для автоматического создания ServiceMonitor
+
+helm upgrade ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --set controller.service.type=NodePort
+
+helm uninstall ingress-nginx -n ingress-nginx
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
+  --set controller.service.type=NodePort
+
+------------------------------------------------------------------------------------------------------------------
+
+# Настройка NGINX
+
+sudo nano /etc/nginx/sites-available/minikube-proxy
+
+sudo ln -s /etc/nginx/sites-available/minikube-proxy /etc/nginx/sites-enabled/
+
+sudo systemctl reload nginx
+или
+sudo nginx -t && sudo systemctl restart nginx
+
+sudo ufw allow 3000/tcp
+sudo ufw reload
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+  --version 4.8.3 \
+  --namespace ingress-nginx \
+  --set controller.service.type=NodePort \ 
+  1--set controller.metrics.enabled=true \ 
+  --set controller.metrics.enableMetrics=true
+
+# Обновление
+helm upgrade ingress-nginx ingress-nginx/ingress-nginx --version 4.8.3 --namespace ingress-nginx --set controller.service.type=NodePort --set controller.metrics.enabled=true --set controller.metrics.enableMetrics=true
+
+helm upgrade ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --set controller.service.type=NodePort --set controller.metrics.enabled=true --set controller.metrics.enableMetrics=true --set controller.metrics.serviceMonitor.enabled=true --set controller.metrics.serviceMonitor.additionalLabels.release="prometheus"
+
+------------------------------------------------------------------------------------------------------------------
+
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx   --namespace ingress-nginx   -f ./monitoring/ingress-nginx-values.yaml
+
+INGRESS_CLUSTER_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.spec.clusterIP}')
+
+kubectl get cm -n kube-system coredns -o yaml
+
+helm uninstall ingress-nginx -n ingress-nginx
+
+------------------------------------------------------------------------------------------------------------------
+
+# Замена файла в приложении
+kubectl cp ./src/Service/Main/Controller/MainController.php default/php-app-6bd9785775-l92jl:./src/Service/Main/Controller/MainController.php
+kubectl cp ./src/Service/Health/Controller/HealthController.php default/service-auth-69c5db6dcc-8krx9:./src/Service/Health/Controller/HealthController.php
+
+kubectl cp ./src/Service/Auth/Controller/AuthController.php default/service-auth-849556fb99-vd6dm:./src/Service/Auth/Controller/AuthController.php
+kubectl cp ./src/Service/Auth/Model/Auth.php default/service-auth-849556fb99-tr8lq:./src/Service/Auth/Model/Auth.php
+
+kubectl cp ./src/Service/User/Controller/UserController.php default/service-user-5475d84f45-dj9fl:./src/Service/User/Controller/UserController.php
+kubectl cp ./src/Service/User/Model/User.php default/service-user-5475d84f45-dj9fl:./src/Service/User/Model/User.php
+
+kubectl cp ./src/routes.php default/service-user-5475d84f45-q47nl:./src/routes.php
+
+kubectl cp ./src/index.php default/service-auth-849556fb99-98x24:./src/index.php
+
+
+kubectl cp ./src/Service/Notification/Controller/NotificationController.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Controller/NotificationController.php
+kubectl cp ./src/Service/Notification/Model/Notification.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Model/Notification.php
+
+---------------------------------------------------------------------------------------------------------------1---
+
+# Запук автотестирование через Newman
+newman run postman_collection.json -n 1000
+
+------------------------------------------------------------------------------------------------------------------
+
+APIGATEWAY
+
+docker rmi -f $(docker images -q --filter "reference=confuciy/otus-lesson-6-apigateway")
+
+docker build -t confuciy/otus-lesson-6-api-gateway:latest .
+docker push confuciy/otus-lesson-6-apigateway:latest
+
+ --no-cache
+
+# ОБНОВЛЕНИЕ ВСЕХ ОБРАЗОВ
+docker build -t confuciy/otus-lesson-6-apigateway:php-app --target=php-app .
+docker build -t confuciy/otus-lesson-6-apigateway:service-user --target=service-user .
+docker build -t confuciy/otus-lesson-6-apigateway:service-auth --target=service-auth .
+docker build -t confuciy/otus-lesson-6-apigateway:service-notification --target=service-notification .
+
+docker push confuciy/otus-lesson-6-apigateway:php-app
+docker push confuciy/otus-lesson-6-apigateway:service-user
+docker push confuciy/otus-lesson-6-apigateway:service-auth
+docker push confuciy/otus-lesson-6-apigateway:service-notification
+
+# PHP-APP
+docker build -t confuciy/otus-lesson-6-apigateway:php-app --target=php-app .
+docker push confuciy/otus-lesson-6-apigateway:php-app
+
+# SERVICE-USER
+docker build -t confuciy/otus-lesson-6-apigateway:service-user --target=service-user .
+docker push confuciy/otus-lesson-6-apigateway:service-user
+
+# SERVICE-AUTH
+docker build -t confuciy/otus-lesson-6-apigateway:service-auth --target=service-auth .
+docker push confuciy/otus-lesson-6-apigateway:service-auth
+
+# SERVICE-NOTIFICATION
+docker build -t confuciy/otus-lesson-6-apigateway:service-notification --target=service-notification .
+docker push confuciy/otus-lesson-6-apigateway:service-notification
+
+------------------------------------------------------------------------------------------------------------------
+
+GOD.MSK.RU
+
+cd /var/www/html
+docker build -t confuciy/php-8.2-fpm .
+docker push confuciy/php-8.2-fpm:latest
+docker run -d --name php-8.2-fpm -p 9000:9000 -v /var/www/html:/var/www/html confuciy/php-8.2-fpm
+
+docker rmi -f $(docker images -q --filter "reference=confuciy/php-8.2-fpm")
+docker ps -a
+docker ps -a --filter "name=php-8.2-fpm"
+docker stop php-8.2-fpm
+docker rm -f php-8.2-fpm
+
+docker exec -it php-8.2-fpm bash
+
+# Для установки Piwigo
+chmod -R 777 /var/www/html
+
+# После установки Piwigo
+chmod -R 755 /var/www/html
+chown -R www-data:www-data /var/www/html
+
+------------------------------------------------------------------------------------------------------------------
+
+# Обновление параметров nginx-ingress
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx   --namespace ingress-nginx   -f ./config/ingress-nginx-values.yaml
+
+------------------------------------------------------------------------------------------------------------------
+
+# Обновление параметров Prometheus
+helm upgrade prometheus prometheus-community/prometheus -f ./config/prometheus-values.yaml --set-file extraScrapeConfigs=./config/prometheus-metrics.yaml
+
+------------------------------------------------------------------------------------------------------------------
+
+# Генерация пароя пользователя
+docker exec -it php-8.2-fpm php -r 'echo "*".strtoupper(sha1(sha1($password, true)));'
+
+------------------------------------------------------------------------------------------------------------------
+
+# Второй язык в реестре
+\HKEY_CURRENT_USER\Keyboard Layout\Preload
+2 = 00000419
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка Docker Compose
+sudo apt install -y docker-compose-plugin
+
+------------------------------------------------------------------------------------------------------------------
+
+# Установка MySQL и PhpMyAdmin
+
+mkdir ~/mysql-docker && cd ~/mysql-docker
+
+nano docker-compose.yml
+
+#docker-compose.yml
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ghjfyz
+      MYSQL_DATABASE: gallery
+      MYSQL_USER: nauths
+      MYSQL_PASSWORD: ghjfyz
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - mysql-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    networks:
+      - mysql-network
+
+networks:
+  mysql-network:
+    driver: bridge
+
+# Запуск - скорее всего остановит все, лучше выборочно
+docker-compose up -d
+
+# Остановка - скорее всего остановит все, лучше выборочно
+docker-compose down
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------
+
