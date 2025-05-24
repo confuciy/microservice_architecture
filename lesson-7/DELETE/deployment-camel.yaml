@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camel-integration
+  labels:
+    app: camel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camel
+  template:
+    metadata:
+      labels:
+        app: camel
+    spec:
+      containers:
+      - name: camel
+        image: apache/camel:latest
+        ports:
+        - containerPort: 8080
+#        volumeMounts:
+#        - name: config
+#          mountPath: "/config"
+      volumes:
+      - name: config
+        configMap:
+          name: config-camel

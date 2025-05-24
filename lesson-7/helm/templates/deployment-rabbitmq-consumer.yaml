@@ -1,0 +1,28 @@
+{{- if .Values.rabbitmqConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-consumer
+spec:
+  replicas: {{ .Values.rabbitmqConsumer.replicas }}
+  selector:
+    matchLabels:
+      app: rabbitmq-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-consumer
+    spec:
+      containers:
+      - name: consumer
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_user_consumer }}"
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-secrets
+        command: ["php", "-r"] # используем sh для выполнения нескольких команд
+        args:
+          - "require './src/RabbitMQ/ServiceUserReceive.php';"
+        resources:
+          {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}
+{{- end }}

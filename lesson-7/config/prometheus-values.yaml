@@ -1,0 +1,39 @@
+alertmanager:
+  enabled: true  # Отключим Alertmanager для упрощения
+
+server:
+  persistentVolume:
+    enabled: true
+    storageClass: "standard"
+    size: 8Gi
+  service:
+    type: NodePort  # Для доступа извне
+
+#prometheus:
+#  prometheusSpec:
+#    serviceMonitorSelector:
+#      matchLabels:
+#        release: prometheus-stack
+#    serviceMonitorNamespaceSelector:
+#      matchNames:
+#      - monitoring  # Неймспейс, где находится ServiceMonitor
+#      - default     # Дополнительные неймспейсы
+
+
+#controller:
+#  metrics:
+#    enabled: true
+#    enableMetrics: true  # Специфично для метрик запросов
+#  extraArgs:
+#    enable-metrics: "true"  # Явное включение
+#
+#alertmanager:
+#  enabled: false  # Отключим Alertmanager для упрощения
+#
+#server:
+#  persistentVolume:
+#    enabled: true
+#    storageClass: "standard"
+#    size: 8Gi
+#  service:
+#    type: NodePort  # Для доступа извне

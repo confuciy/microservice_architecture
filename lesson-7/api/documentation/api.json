@@ -1,0 +1,114 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "arch.homework API",
+        "description": "",
+        "contact": {
+            "name": "gorbachev@raexpert.ru"
+        },
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "",
+            "description": ""
+        }
+    ],
+    "paths": {
+        "/notification/create": {
+            "post": {
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "Добавление оповещения",
+                "description": "",
+                "operationId": "create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID пользователя",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "action": {
+                                        "description": "Действие",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "message": {
+                                        "description": "Сообщение",
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "Success": {
+                                        "summary": "",
+                                        "value": {
+                                            "notification_id": 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "Error": {
+                                        "summary": "",
+                                        "value": {
+                                            "error": "Invalid JSON data"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "description": "Авторизуйтесь с помощью логина и пароля для получения JWT-токена",
+                "name": "user_jwt",
+                "scheme": "cookie"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Notification",
+            "description": "Notification"
+        }
+    ]
+}
