@@ -1,17 +1,17 @@
 <?php
-namespace App\Service\Order\Model;
+namespace App\Service\Billing\Model;
 
 use PDO;
 use App\Database\Database;
 
-class Order
+class Billing
 {
     private $pdo;
 
     public function __construct()
     {
         $database = new Database();
-        $this->pdo = $database->getConnection('service_order');
+        $this->pdo = $database->getConnection('service_billing');
     }
 
     public function create(array $data): array
@@ -20,22 +20,20 @@ class Order
 
             if (!isset($data['message']) or $data['message'] == '') {
 
-                throw new \Exception('Create Order Error');
+                throw new \Exception('Create Billing Error');
             }
 
-            $query = 'INSERT INTO orders (user_id, amount, idempotency) 
-              VALUES (:user_id, :action, :message)';
+            $query = 'INSERT INTO billing (user_id, amount) 
+              VALUES (:user_id)';
             $statement = $this->pdo->prepare($query);
 
             $statement->execute([
-                ':user_id' => (!empty($data['user_id'])?$data['user_id']:NULL),
-                ':amount' => (!empty($data['amount'])?$data['amount']:NULL),
-                ':idempotency' => ($data['idempotency'] != ''?$data['idempotency']:NULL)
+                ':user_id' => (!empty($data['user_id'])?$data['user_id']:NULL)
             ]);
 
             $id = $this->pdo->lastInsertId();
 
-            $data['order_id'] = $id;
+            $data['billing_id'] = $id;
 
             return $data;
 
@@ -45,23 +43,21 @@ class Order
         }
     }
 
-    public function get(int $orderId, int $userId): array
+    public function get(int $userId): array
     {
         $query = 'SELECT * 
-          FROM orders 
-          WHERE order_id = :order_id 
-          AND user_id = :user_id 
+          FROM billing 
+          WHERE user_id = :user_id 
           ORDER BY date_insert DESC';
         $statement = $this->pdo->prepare($query);
-        $statement->execute([':order_id' => $orderId]);
         $statement->execute([':user_id' => $userId]);
-        $order = $statement->fetch(PDO::FETCH_ASSOC);
+        $billing = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if (!$order) {
-            throw new \Exception("Order not found");
+        if (!$billing) {
+            throw new \Exception("Billing not found");
         }
 
-        return $order;
+        return $billing;
     }
 
 //    public function delete(int $id): array

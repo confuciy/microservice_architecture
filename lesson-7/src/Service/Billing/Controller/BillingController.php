@@ -1,33 +1,33 @@
 <?php
-namespace App\Service\Notification\Controller;
+namespace App\Service\Billing\Controller;
 
-use App\Service\Notification\Model\Notification;
+use App\Service\Billing\Model\Billing;
 use App\Helper\Helper;
 
 /**
  * @OA\Tags(
- *     name="Notification | Сервис оповещений"
+ *     name="Billing | Сервис биллинга"
  * )
  */
-class NotificationController
+class BillingController
 {
-    private $notification;
+    private $billing;
     private $helper;
 
     public function __construct()
     {
-        $this->notification = new Notification();
+        $this->billing = new Billing();
         $this->helper = new Helper();
     }
 
     /**
      * @OA\Post(
-     *     path="/notification",
-     *     summary="Добавление оповещения",
+     *     path="/billing",
+     *     summary="Создание биллинг-аккаунта",
      *     description="",
-     *     tags={"Notification | Сервис оповещений"},
+     *     tags={"Billing | Сервис биллинга"},
      *     security={{"cookieAuth": {}}},
-     *     operationId="notification_create",
+     *     operationId="billing_create",
      *     deprecated=false,
      *     @OA\RequestBody(
      *         @OA\MediaType(
@@ -38,18 +38,6 @@ class NotificationController
      *                     property="user_id",
      *                     type="integer",
      *                     format="integer"
-     *                 ),
-     *                 @OA\Property(
-     *                     description="Действие",
-     *                     property="action",
-     *                     type="string",
-     *                     format="string"
-     *                 ),
-     *                 @OA\Property(
-     *                     description="Сообщение",
-     *                     property="message",
-     *                     type="string",
-     *                     format="string"
      *                 )
      *             )
      *         )
@@ -61,7 +49,7 @@ class NotificationController
      *              @OA\Examples(
      *                  example="Success",
      *                  value={
-     *                      "notification_id": 0
+     *                      "billing_id": 0
      *                  },
      *                  summary=""
      *              ),
@@ -89,23 +77,41 @@ class NotificationController
      * @return void
      * @throws Exception
      */
-    public function create(): void
+    public function create(int $userId = 0): void
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+        # Если не передан ID пользователя
+        if (empty($userId)) {
+            $data = json_decode(file_get_contents('php://input'), true);
 
-        if ($data === null) {
+            if ($data === null) {
 
-            http_response_code(400);
-            echo json_encode(['error' => 'Invalid JSON data']);
-            return;
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid JSON data']);
+                return;
+            }
         }
 
         try {
 
-            $notification = $this->notification->create($data);
+            # Если не передан ID пользователя
+            if (empty($userId)) {
+
+                $jwt_token_data = $this->helper->getJWTtokenData();
+
+                if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
+
+                    http_response_code(401);
+                    echo json_encode(['error' => 'You a not login']);
+                    return;
+                }
+
+                $userId = $jwt_token_data['user_id'];
+            }
+
+            $billing = $this->billing->create($userId);
 
             http_response_code(201);
-            echo json_encode($notification);
+            echo json_encode($billing);
 
         } catch (\Throwable $e) {
 
@@ -123,17 +129,25 @@ class NotificationController
 
     /**
      * @OA\Get(
-     *     path="/notification",
-     *     summary="Получение списка оповещений",
+     *     path="/billing",
+     *     summary="Получение биллинг-аккаунта",
      *     description="",
-     *     tags={"Notification | Сервис оповещений"},
+     *     tags={"Billing | Сервис биллинга"},
      *     security={{"cookieAuth": {}}},
-     *     operationId="notification_get",
+     *     operationId="billing_get",
      *     deprecated=false,
      *     @OA\Response(
      *          response="200",
      *          description="Success",
-     *          @OA\JsonContent(ref="#/components/schemas/ExampleSchema")
+     *          @OA\JsonContent(
+     *              @OA\Examples(
+     *                  example="Success",
+     *                  value={
+     *                      "billing_id": 0
+     *                  },
+     *                  summary=""
+     *              ),
+     *          )
      *     ),
      *     @OA\Response(
      *          response="401",
@@ -157,48 +171,41 @@ class NotificationController
      * @return void
      * @throws Exception
      */
-    /**
-     * @OA\Schema(
-     *     schema="ExampleSchema",
-     *     title="Пример структуры данных",
-     *     description="Объект с названием и списком элементов",
-     *     @OA\Property(
-     *         property="name",
-     *         type="string",
-     *         example="название"
-     *     ),
-     *     @OA\Property(
-     *         property="list",
-     *         type="array",
-     *         @OA\Items(
-     *             type="object",
-     *             @OA\Property(property="name", type="string", example="xx"),
-     *             @OA\Property(property="count", type="integer", example=50)
-     *         ),
-     *         example={
-     *             {"name": "xx", "count": 50},
-     *             {"name": "xx", "count": 500}
-     *         }
-     *     )
-     * )
-     */
-    public function get(): void
+    public function get(int $userId = 0): void
     {
-        try {
+        # Если не передан ID пользователя
+        if (empty($userId)) {
+            $data = json_decode(file_get_contents('php://input'), true);
 
-            $jwt_token_data = $this->helper->getJWTtokenData();
+            if ($data === null) {
 
-            if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
-
-                http_response_code(401);
-                echo json_encode(['error' => 'You a not login']);
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid JSON data']);
                 return;
             }
+        }
 
-            $notification_list = $this->notification->get($jwt_token_data['user_id']);
+        try {
+
+            # Если не передан ID пользователя
+            if (empty($userId)) {
+
+                $jwt_token_data = $this->helper->getJWTtokenData();
+
+                if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
+
+                    http_response_code(401);
+                    echo json_encode(['error' => 'You a not login']);
+                    return;
+                }
+
+                $userId = $jwt_token_data['user_id'];
+            }
+
+            $order_list = $this->billing->get($userId);
 
             http_response_code(200);
-            echo json_encode($notification_list);
+            echo json_encode($order_list);
 
         } catch (\Exception $e) {
 

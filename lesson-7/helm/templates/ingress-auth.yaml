@@ -74,4 +74,18 @@ spec:
             name: service-auth
             port:
               number: 80
+      - path: /order
+        pathType: Exact
+        backend:
+          service:
+            name: service-order
+            port:
+              number: 80
+      - path: /billing
+        pathType: Exact
+        backend:
+          service:
+            name: service-order
+            port:
+              number: 80
 {{- end }}

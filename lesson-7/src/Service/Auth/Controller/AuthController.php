@@ -105,6 +105,11 @@ class AuthController
                     exit;
                 }
 
+                if ($jwt_token) {
+
+                    //
+                }
+
                 # Секретный код
                 $jwt_secret = getenv('jwt_secret');
 

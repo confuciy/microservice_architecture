@@ -16,9 +16,13 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/notification', [\App\Service\Notification\Controller\NotificationController::class, 'create']);
     $r->addRoute('GET', '/notification', [\App\Service\Notification\Controller\NotificationController::class, 'get']);
 
+    # Billing
+    $r->addRoute('POST', '/billing', [\App\Service\Order\Controller\OrderController::class, 'create']);
+    $r->addRoute('GET', '/billing', [\App\Service\Order\Controller\OrderController::class, 'get']);
+
     # Order
-    $r->addRoute('POST', '/notification', [\App\Service\Order\Controller\OrderController::class, 'create']);
-    $r->addRoute('GET', '/notification', [\App\Service\Order\Controller\OrderController::class, 'get']);
+    $r->addRoute('POST', '/order', [\App\Service\Order\Controller\OrderController::class, 'create']);
+    $r->addRoute('GET', '/order', [\App\Service\Order\Controller\OrderController::class, 'get']);
 
     # Auth
     $r->addRoute('POST', '/auth/token', [\App\Service\Auth\Controller\AuthController::class, 'token']);

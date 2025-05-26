@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: consumer
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_user_consumer }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_consumer }}"
         imagePullPolicy: Always
         envFrom:
         - secretRef:
@@ -23,6 +23,8 @@ spec:
         command: ["php", "-r"] # используем sh для выполнения нескольких команд
         args:
           - "require './src/RabbitMQ/ServiceUserReceive.php';"
+          - "require './src/RabbitMQ/ServiceOrderReceive.php';"
+          - "require './src/RabbitMQ/ServiceBillingReceive.php';"
         resources:
           {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}
 {{- end }}

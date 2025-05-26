@@ -4,22 +4,18 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-#use GuzzleHttp\Client;
 use App\Helper\Helper;
+//use App\Service\Billing\Controller\BillingController;
 
-# Настройки подключения к RabbitMQ
+// Настройки подключения к RabbitMQ
 $host = getenv('rabbitmq_host');
 $port = getenv('rabbitmq_port');
 $user = getenv('rabbitmq_user');
 $password = getenv('rabbitmq_password');
-$queueName = 'service-user';
-
-# URL, на который отправляем POST
-#$webhookUrl = getenv('host').'/user/rabbitmq-test';
+$queueName = 'service-billing';
 
 # Оповещения
 $helper = new Helper();
-#$client = new Client();
 
 try {
 
@@ -32,52 +28,44 @@ try {
     # Callback-функция при получении сообщения
     $callback = function ($msg) use ($helper) {
 
-        $helper->setNotification(0, 'rabbitmq-user-receive', 'Callback-функция при получении сообщения');
+        $helper->setNotification(0, 'rabbitmq-billing-receive', 'Callback-функция при получении сообщения');
 
         try {
 
             $msg_data = json_decode($msg->body, true);
 
-            # Запрос
             if (
                 isset($msg_data['url']) and $msg_data['url'] != '' and
                 isset($msg_data['method']) and $msg_data['method'] != ''
             ) {
 
                 # Отправляем запрос в сервис
-                $response = $helper->sendPost($msg_data);
-
-//                $response = $client->post($webhookUrl, [
-//                    'json' => ['message' => $msg->body],
-//                    'timeout' => 1 # Таймаут на случай недоступности сервера
-//                ]);
-
-                #echo " [✓] Отправлено на {$webhookUrl}\n Статус: ", $response->getStatusCode(), "\n";
-                echo " [✓] Отправлено на {$msg_data['url']}\n Статус: ", json_decode($response, true)['httpcode'], "\n";
-            }
-
-            # Действие
-            if (
-                isset($msg_data['action']) and $msg_data['action'] != ''
-            ) {
-
-                # Отправляем запрос в сервис
-                $order_controller = new OrderController();
-                $order_controller->create($msg_data['data']);
+                $response = $helper->sendData($msg_data);
 
                 echo " [✓] Отправлено на {$msg_data['url']}\n Статус: ", json_decode($response, true)['httpcode'], "\n";
             }
+
+//            if (
+//                isset($msg_data['action']) and $msg_data['action'] != ''
+//            ) {
+//
+//                # Отправляем запрос в сервис
+//                $billing_controller = new BillingController();
+//                $billing_controller->create($msg_data['data']['user_id']);
+//
+//                echo " [✓] Отправлено на {$msg_data['url']}\n Статус: ", json_decode($response, true)['httpcode'], "\n";
+//            }
 
             # Подтверждаем только после успешной обработки
             $msg->ack();
 
-            $helper->setNotification(0, 'rabbitmq-user-receive', '[✓] Получено: '.$msg->body);
+            $helper->setNotification(0, 'rabbitmq-billing-receive', '[✓] Получено: '.$msg->body);
 
         } catch (Exception $e) {
 
             echo " [✗] Ошибка при отправке: ", $e->getMessage(), "\n";
 
-            $helper->setNotification(0, 'rabbitmq-user-receive', '[✗] Ошибка при отправке: '.$e->getMessage());
+            $helper->setNotification(0, 'rabbitmq-billing-receive', '[✗] Ошибка при отправке: '.$e->getMessage());
 
             # Отказываемся от сообщения с requeue=true
             $msg->nack(false, true);
@@ -88,16 +76,16 @@ try {
     $channel->basic_consume(
         $queueName,
         '',
-        false, # no_local
-        false, # no_ack - ДОЛЖНО БЫТЬ false для ручного ack/nack
-        false, # exclusive
-        false, # nowait
+        false, // no_local
+        false, // no_ack - ДОЛЖНО БЫТЬ false для ручного ack/nack
+        false, // exclusive
+        false, // nowait
         $callback
     );
 
     echo " [*] Ожидание сообщений. Для выхода нажмите Ctrl+C\n";
 
-    # Основной цикл обработки
+    // Основной цикл обработки
     while ($channel->is_open()) {
 
         try {
@@ -107,7 +95,7 @@ try {
         } catch (Exception $e) {
 
             echo " [✗] Ошибка в основном цикле: ", $e->getMessage(), "\n";
-            # Можно добавить задержку перед повторной попыткой
+            // Можно добавить задержку перед повторной попыткой
             sleep(5);
         }
     }
@@ -116,9 +104,9 @@ try {
 
     echo " [✗] Критическая ошибка: ", $e->getMessage(), "\n";
 
-    $helper->setNotification(1, 'rabbitmq-user-receive', 'Критическая ошибка: '.$e->getMessage());
+    $helper->setNotification(1, 'rabbitmq-receive', 'Критическая ошибка: '.$e->getMessage());
 
-    # Попытка корректно закрыть соединение при ошибке
+    // Попытка корректно закрыть соединение при ошибке
     if (isset($channel)) {
         $channel->close();
     }
@@ -126,6 +114,6 @@ try {
         $connection->close();
     }
 
-    # Выход с кодом ошибки для перезапуска через supervisord
+    // Выход с кодом ошибки для перезапуска через supervisord
     exit(1);
 }

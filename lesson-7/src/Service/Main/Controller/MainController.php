@@ -1,8 +1,8 @@
 <?php
 namespace App\Service\Main\Controller;
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
+#use PhpAmqpLib\Connection\AMQPStreamConnection;
+#use PhpAmqpLib\Message\AMQPMessage;
 #use GuzzleHttp\Client;
 use App\Helper\Helper;
 
@@ -20,39 +20,41 @@ class MainController
         # Добавляем оповещение
         $this->helper->setNotification(0, 'rabbitmq-send', 'Пытаемся отправить сообщение');
 
-        // Настройки подключения к RabbitMQ
-        $host = getenv('rabbitmq_host');
-        $port = getenv('rabbitmq_port');
-        $user = getenv('rabbitmq_user');
-        $password = getenv('rabbitmq_password');
-        $queueName = 'service-user';
+//        // Настройки подключения к RabbitMQ
+//        $host = getenv('rabbitmq_host');
+//        $port = getenv('rabbitmq_port');
+//        $user = getenv('rabbitmq_user');
+//        $password = getenv('rabbitmq_password');
+//        $queueName = 'service-user';
 
         try {
 
-            // Создаем соединение
-            $connection = new AMQPStreamConnection($host, $port, $user, $password);
-            $channel = $connection->channel();
+            $this->helper->rabbitmqSend('service-user', 'Привет, RabbitMQ!');
 
-            // Объявляем очередь (если её нет, она будет создана)
-            $channel->queue_declare($queueName, false, true, false, false);
-
-            // Текст сообщения
-            $messageText = 'Привет, RabbitMQ!';
-
-            // Создаем сообщение
-            $message = new AMQPMessage($messageText);
-
-            // Отправляем сообщение в очередь
-            $channel->basic_publish($message, '', $queueName);
-
-            echo "Сообщение отправлено: '$messageText'\n";
-
-            # Добавляем оповещение
-            $this->helper->setNotification(0, 'rabbitmq-send', 'Сообщение отправлено: '.$messageText);
-
-            // Закрываем соединение
-            $channel->close();
-            $connection->close();
+//            // Создаем соединение
+//            $connection = new AMQPStreamConnection($host, $port, $user, $password);
+//            $channel = $connection->channel();
+//
+//            // Объявляем очередь (если её нет, она будет создана)
+//            $channel->queue_declare($queueName, false, true, false, false);
+//
+//            // Текст сообщения
+//            $messageText = 'Привет, RabbitMQ!';
+//
+//            // Создаем сообщение
+//            $message = new AMQPMessage($messageText);
+//
+//            // Отправляем сообщение в очередь
+//            $channel->basic_publish($message, '', $queueName);
+//
+//            echo "Сообщение отправлено: '$messageText'\n";
+//
+//            # Добавляем оповещение
+//            $this->helper->setNotification(0, 'rabbitmq-send', 'Сообщение отправлено: '.$messageText);
+//
+//            // Закрываем соединение
+//            $channel->close();
+//            $connection->close();
 
         } catch (Exception $e) {
 

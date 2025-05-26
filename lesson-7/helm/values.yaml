@@ -5,10 +5,10 @@ image:
   tags:
     php_app: php-app
     service_user: service-user
-    service_user_consumer: service-user-consumer
+    service_consumer: service-consumer
     service_auth: service-auth
     service_order: service-order
-    service_billing: service_billing
+    service_billing: service-billing
     service_notification: service-notification
   pullPolicy: Always
 
@@ -39,6 +39,7 @@ serviceHost:
   service_notification: http://service_notification.default.svc.cluster.local:80
 
 secrets:
+  hash_default_salt: Q$DDFWE%$#WEFSFDGE^#sdBcGER^$%
   main:
     domain: arch.homework
     host: http://192.168.0.129

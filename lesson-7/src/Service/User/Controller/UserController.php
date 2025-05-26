@@ -153,12 +153,12 @@ class UserController
     # Страница с регистрацией
     public function register(): void
     {
-        if (isset($_COOKIE['user_jwt']) and !empty($_COOKIE['user_jwt'])) {
-
-            http_response_code(401);
-            echo json_encode(['error' => 'You a not login']);
-            return;
-        }
+//        if (isset($_COOKIE['user_jwt']) and !empty($_COOKIE['user_jwt'])) {
+//
+//            http_response_code(401);
+//            echo json_encode(['error' => 'You a not login']);
+//            return;
+//        }
 
         echo '<h1>arch.homework / Регистрация пользователя</h1>';
 
@@ -182,12 +182,12 @@ class UserController
     # Страница с логином
     public function login(): void
     {
-        if (isset($_COOKIE['user_jwt']) and !empty($_COOKIE['user_jwt'])) {
-
-            http_response_code(401);
-            echo json_encode(['error' => 'You a not login']);
-            return;
-        }
+//        if (isset($_COOKIE['user_jwt']) and !empty($_COOKIE['user_jwt'])) {
+//
+//            http_response_code(401);
+//            echo json_encode(['error' => 'You a not login']);
+//            return;
+//        }
 
         echo '<h1>arch.homework / Авторизация пользователя</h1>';
 
@@ -364,6 +364,24 @@ class UserController
 
             # Добавляем оповещение
             $this->helper->setNotification($user['user_id'], 'create_user_ок', 'Пользователь с почтой '.$data['email'].' создан с id '.$user['user_id']);
+
+
+            ########## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            # Данные для отправки
+            $hash_default_salt = password_hash($user['user_id'].getenv('hash_default_salt'), PASSWORD_DEFAULT);
+            $data = [
+                'url' => '/billing/create',
+                'method' => 'post',
+                'user_jwt' => 'salt_'.$hash_default_salt,
+                'data' => [
+                    'user_id' => $user['user_id']
+                ]
+            ];
+
+            # Создаем аккаунт в сервисе биллинга
+            # Отправляем сообщение в RabbitMQ
+            $this->helper->rabbitmqSend('service-billing', json_encode($data));
 
             if (isset($headers['Postman-Token'])) {
 
