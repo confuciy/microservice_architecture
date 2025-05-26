@@ -16,7 +16,7 @@ docker build -t confuciy/otus-lesson-3-health .
 docker push confuciy/otus-lesson-3-health:latest
 docker run -p 8000:80 -v /var/www/lesson-3:/var/www/html confuciy/otus-lesson-3-health:latest
 
-Флаг -d позволяет запускать в фоне 
+Флаг -d позволяет запускать в фоне
 
 docker stop 4cc
 
@@ -78,7 +78,7 @@ minikube start
 
 ------------------------------------------------------------------------------------------------------------------
 
-# Для всех из текущей папки 
+# Для всех из текущей папки
 kubectl apply -f k8s-manifests
 
 ------------------------------------------------------------------------------------------------------------------
@@ -295,20 +295,20 @@ kubectl describe pod/user-service-helm-migration-bxs2t
 # Установка PostgreSQL
 sudo apt update
 sudo apt install postgresql postgresql-contrib
-sudo su - postgres 
+sudo su - postgres
 psql
 ALTER USER postgres WITH PASSWORD 'ghjfyz';
 \q
 exit
 
-sudo nano /etc/postgresql/$(pg_lsclusters | awk '${print $1}')/main/pg_hba.conf 
+sudo nano /etc/postgresql/$(pg_lsclusters | awk '${print $1}')/main/pg_hba.conf
 вместо $(pg_lsclusters | awk '${print $1}') можно просто посмотреть папку
 
 sudo systemctl restart postgresql
 
 
 # Создание БД
-sudo su - postgres 
+sudo su - postgres
 psql
 CREATE DATABASE user_service;
 \q
@@ -433,14 +433,14 @@ hostname -I
 -- Подключаемся к PostgreSQL как суперпользователь
             -- создаем схему если её нет
             CREATE SCHEMA IF NOT EXISTS service;
-            
+
             -- Создаем пользователя, если его нет
             -- В реальной системе лучше использовать другого пользователя, а не postgres
             -- CREATE USER newuser WITH PASSWORD 'password';
-            
+
             -- Назначаем пользователю права в схеме
             -- GRANT ALL PRIVILEGES ON SCHEMA service TO newuser;
-            
+
             -- Подключаемся к базе под созданным пользователем
             -- и создаём таблицу users
 
@@ -470,7 +470,7 @@ sudo iptables -A FORWARD -p tcp -d 192.168.49.2 --dport 80 -j ACCEPT
 sudo sysctl net.ipv4.ip_forward=1
 
 # Делаем настройку автоматически после каждого перезапуска WSL
-Открываем 
+Открываем
 nano ~/.bashrc
 
 # Вставляем в самый низ
@@ -485,6 +485,7 @@ source ~/.bashrc
 
 ------------------------------------------------------------------------------------------------------------------
 
+[УРОК 4]
 # Создание докер образа lesson-4
 docker build -t confuciy/otus-lesson-4-user-service:latest . --no-cache --network host
 docker push confuciy/otus-lesson-4-user-service:latest
@@ -552,6 +553,9 @@ CMD service nginx start && php-fpm
 
 ------------------------------------------------------------------------------------------------------------------
 
+[УРОК 7]
+
+# Установка Redis
 sudo apt install redis-server
 sudo systemctl status redis-server
 sudo systemctl start redis-server
@@ -657,7 +661,7 @@ kubectl exec <pod-name> -n user-service-metrics -- tail -f /var/log/nginx/error.
 ------------------------------------------------------------------------------------------------------------------
 
 # Определите поды Ingress-контроллера
-kubectl get pods -n ingress-nginx 
+kubectl get pods -n ingress-nginx
 
 # Просмотрите логи Ingress-контроллера
 kubectl logs -n ingress-nginx <ingress-pod-name>
@@ -720,7 +724,7 @@ helm install prometheus prometheus-community/kube-prometheus-stack --namespace m
 kubectl --namespace monitoring port-forward --address 0.0.0.0 $POD_NAME 3000:3000
 
 # Удаление prometheus-operator
-helm uninstall prometheus-operator -n monitoring 
+helm uninstall prometheus-operator -n monitoring
 
 ------------------------------------------------------------------------------------------------------------------
 
@@ -785,7 +789,7 @@ sudo systemctl reload nginx
 или
 sudo nginx -t && sudo systemctl restart nginx
 
-sudo ufw allow 3000/tcp
+sudo ufw allow 31672/tcp
 sudo ufw reload
 
 ------------------------------------------------------------------------------------------------------------------
@@ -794,8 +798,8 @@ sudo ufw reload
 helm install ingress-nginx ingress-nginx/ingress-nginx \
   --version 4.8.3 \
   --namespace ingress-nginx \
-  --set controller.service.type=NodePort \ 
-  1--set controller.metrics.enabled=true \ 
+  --set controller.service.type=NodePort \
+  1--set controller.metrics.enabled=true \
   --set controller.metrics.enableMetrics=true
 
 # Обновление
@@ -840,7 +844,7 @@ newman run postman_collection.json -n 1000
 
 ------------------------------------------------------------------------------------------------------------------
 
-APIGATEWAY
+[УРОК 6] APIGATEWAY
 
 docker rmi -f $(docker images -q --filter "reference=confuciy/otus-lesson-6-apigateway")
 
@@ -980,11 +984,119 @@ docker-compose down
 
 ------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------------------
+# RabbitMQ
+kubectl apply -f ./rabbitmq/deployment-rabbitmq.yaml
+kubectl apply -f ./rabbitmq/service-rabbitmq.yaml
+
+kubectl delete deployment rabbitmq
+
+# Apache Camel
+kubectl apply -f ./helm/templates/config-camel.yaml
+kubectl apply -f ./helm/templates/service-camel.yaml
+kubectl apply -f ./helm/templates/deployment-camel.yaml
+
+# Удаление
+kubectl delete deployment camel-integration
+kubectl delete pod camel-integration-d45cc8bfb-br98b
 
 ------------------------------------------------------------------------------------------------------------------
 
+[УРОК 7] STREAM PROCESSING
+
+docker rmi -f $(docker images -q --filter "reference=confuciy/otus-lesson-7-stream-processing")
+
+docker build -t confuciy/otus-lesson-7-stream-processing:latest .
+docker push confuciy/otus-lesson-7-stream-processing:latest
+
+ --no-cache
+
+# ОБНОВЛЕНИЕ ВСЕХ ОБРАЗОВ
+docker build -t confuciy/otus-lesson-7-stream-processing:php-app --target=php-app .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-user --target=service-user .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-consumer --target=service-consumer .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-auth --target=service-auth .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-notification --target=service-notification .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-order --target=service-order .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-billing --target=service-billing .
+
+docker push confuciy/otus-lesson-7-stream-processing:php-app
+docker push confuciy/otus-lesson-7-stream-processing:service-user
+docker push confuciy/otus-lesson-7-stream-processing:service-consumer
+docker push confuciy/otus-lesson-7-stream-processing:service-auth
+docker push confuciy/otus-lesson-7-stream-processing:service-notification
+docker push confuciy/otus-lesson-7-stream-processing:service-order
+docker push confuciy/otus-lesson-7-stream-processing:service-billing
+
+# PHP-APP
+docker build -t confuciy/otus-lesson-7-stream-processing:php-app --target=php-app .
+docker push confuciy/otus-lesson-7-stream-processing:php-app
+
+# SERVICE-USER
+docker build -t confuciy/otus-lesson-7-stream-processing:service-user --target=service-user .
+docker push confuciy/otus-lesson-7-stream-processing:service-user
+
+# SERVICE-USER-CONSUMER
+docker build -t confuciy/otus-lesson-7-stream-processing:service-consumer --target=service-consumer .
+docker push confuciy/otus-lesson-7-stream-processing:service-consumer
+
+# SERVICE-AUTH
+docker build -t confuciy/otus-lesson-7-stream-processing:service-auth --target=service-auth .
+docker push confuciy/otus-lesson-7-stream-processing:service-auth
+
+# SERVICE-NOTIFICATION
+docker build -t confuciy/otus-lesson-7-stream-processing:service-notification --target=service-notification .
+docker push confuciy/otus-lesson-7-stream-processing:service-notification
+
+# SERVICE-ORDER
+docker build -t confuciy/otus-lesson-7-stream-processing:service-order --target=service-order .
+docker push confuciy/otus-lesson-7-stream-processing:service-order
+
+# SERVICE-BILLING
+docker build -t confuciy/otus-lesson-7-stream-processing:service-billing --target=service-billing .
+docker push confuciy/otus-lesson-7-stream-processing:service-billing
+
+
+# Сервис оповещений
+http://service-user.default.svc.cluster.local:80/user/rabbitmq-test
+
 ------------------------------------------------------------------------------------------------------------------
+
+# Замена файла в приложении (ПОВТОР)
+kubectl cp ./src/Service/Main/Controller/MainController.php default/php-app-676f9db5b6-flpls:./src/Service/Main/Controller/MainController.php
+kubectl cp ./src/Service/Health/Controller/HealthController.php default/service-auth-69c5db6dcc-8krx9:./src/Service/Health/Controller/HealthController.php
+
+kubectl cp ./src/Service/Auth/Controller/AuthController.php default/service-auth-849556fb99-vd6dm:./src/Service/Auth/Controller/AuthController.php
+kubectl cp ./src/Service/Auth/Model/Auth.php default/service-auth-849556fb99-tr8lq:./src/Service/Auth/Model/Auth.php
+
+kubectl cp ./src/Service/User/Controller/UserController.php default/service-user-6f4b4df8fc-vxcw9:./src/Service/User/Controller/UserController.php
+kubectl cp ./src/Service/User/Model/User.php default/service-user-5475d84f45-dj9fl:./src/Service/User/Model/User.php
+
+kubectl cp ./src/routes.php default/service-user-5475d84f45-q47nl:./src/routes.php
+
+kubectl cp ./src/index.php default/service-auth-849556fb99-98x24:./src/index.php
+
+
+kubectl cp ./src/RabbitMQ/ServiceUserReceive.php default/service-user-rabbitmq-consumer-6cf644866-d66v7:./src/RabbitMQ/ServiceUserReceive.php
+
+
+kubectl cp ./src/Service/Notification/Controller/NotificationController.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Controller/NotificationController.php
+kubectl cp ./src/Service/Notification/Model/Notification.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Model/Notification.php
+
+------------------------------------------------------------------------------------------------------------------
+
+# OPEN API - LESSON-7
+
+# Запуск confuciy/php-8.2-fpm для возможности генерации api.json для OpenAPI
+docker run -d --name php-8.2-fpm -p 9000:9000 -v /var/www/html:/var/www/html -v /var/www/lesson-7:/var/www/lesson-7 confuciy/php-8.2-fpm
+
+# Запуск генерации api.json для OpenAPI
+docker exec -it php-8.2-fpm ./vendor/bin/openapi /var/www/lesson-7/src -l -o /var/www/lesson-7/api/documentation/api.json -f json --version 3.1.0
+
+
+kubectl cp ./api/documentation/index.php default/php-app-676f9db5b6-rscvz:./api/documentation/index.php
+kubectl cp ./api/documentation/api.json default/php-app-676f9db5b6-jx65n:./api/documentation/api.json
+kubectl cp ./api/documentation/swagger-initializer.js default/php-app-676f9db5b6-8tfpw:./api/documentation/swagger-initializer.js
+kubectl cp ./api/swagger-ui/dist/swagger-initializer.js default/php-app-676f9db5b6-wfdw6:./api/swagger-ui/dist/swagger-initializer.js
 
 ------------------------------------------------------------------------------------------------------------------
 
