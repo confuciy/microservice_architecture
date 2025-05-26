@@ -1068,12 +1068,12 @@ kubectl cp ./src/Service/Health/Controller/HealthController.php default/service-
 kubectl cp ./src/Service/Auth/Controller/AuthController.php default/service-auth-849556fb99-vd6dm:./src/Service/Auth/Controller/AuthController.php
 kubectl cp ./src/Service/Auth/Model/Auth.php default/service-auth-849556fb99-tr8lq:./src/Service/Auth/Model/Auth.php
 
-kubectl cp ./src/Service/User/Controller/UserController.php default/service-user-6f4b4df8fc-vxcw9:./src/Service/User/Controller/UserController.php
+kubectl cp ./src/Service/User/Controller/UserController.php default/service-user-8467c874fb-p8bcz:./src/Service/User/Controller/UserController.php
 kubectl cp ./src/Service/User/Model/User.php default/service-user-5475d84f45-dj9fl:./src/Service/User/Model/User.php
 
 kubectl cp ./src/routes.php default/service-user-5475d84f45-q47nl:./src/routes.php
 
-kubectl cp ./src/index.php default/service-auth-849556fb99-98x24:./src/index.php
+kubectl cp ./src/index.php default/service-user-8467c874fb-jml7f:./src/index.php
 
 
 kubectl cp ./src/RabbitMQ/ServiceUserReceive.php default/service-user-rabbitmq-consumer-6cf644866-d66v7:./src/RabbitMQ/ServiceUserReceive.php
