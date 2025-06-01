@@ -17,8 +17,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
-            - secretRef:
-               name: {{ .Release.Name }}-secrets
+          - secretRef:
+              name: {{ .Release.Name }}-secrets
           command: ["php", "-r"] # используем sh для выполнения нескольких команд
           args:
             - "require './src/Migration/migrate.php';"

@@ -39,14 +39,35 @@ spec:
             name: service-user
             port:
               number: 80
-      - path: /user/edit
+      - path: /user/profile
         pathType: Exact
         backend:
           service:
             name: service-user
             port:
               number: 80
-      - path: /user/profile
+      - path: /user/profile/edit
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /user/notification
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /user/order
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /user/billing
         pathType: Exact
         backend:
           service:
@@ -86,6 +107,20 @@ spec:
         backend:
           service:
             name: service-billing
+            port:
+              number: 80
+      - path: /billing/amount
+        pathType: Exact
+        backend:
+          service:
+            name: service-billing
+            port:
+              number: 80
+      - path: /notification
+        pathType: Exact
+        backend:
+          service:
+            name: service-notification
             port:
               number: 80
 {{- end }}

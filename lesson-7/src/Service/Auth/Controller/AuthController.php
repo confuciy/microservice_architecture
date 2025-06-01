@@ -23,7 +23,7 @@ class AuthController
         $this->helper = new Helper();
     }
 
-    public function token(): void
+    public function token()
     {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -37,7 +37,7 @@ class AuthController
         try {
 
             # Добавляем оповещение
-            $this->helper->setNotification($data['user_id'], 'set_jwt_token', 'Установка JWT-токена для пользователя '.$data['user_id']);
+            ###$this->helper->setNotification($data['user_id'], 'set_jwt_token', 'Установка JWT-токена для пользователя '.$data['user_id']);
 
             # Секретный код
             $jwt_secret = getenv('jwt_secret');
@@ -64,7 +64,7 @@ class AuthController
             ];
 
             # Добавляем оповещение
-            $this->helper->setNotification($data['user_id'], 'set_jwt_token_ok', 'Установка JWT-токена для пользователя '.$data['user_id'].' прошла успешно');
+            ###$this->helper->setNotification($data['user_id'], 'set_jwt_token_ok', 'Установка JWT-токена для пользователя '.$data['user_id'].' прошла успешно');
 
             http_response_code(201);
             echo json_encode($jwt_token);
@@ -79,7 +79,7 @@ class AuthController
         } catch (\Exception $e) {
 
             # Добавляем оповещение
-            $this->helper->setNotification($data['user_id'], 'set_jwt_token_error', 'Установка JWT-токена для пользователя '.$data['user_id'].' не прошла');
+            ###$this->helper->setNotification($data['user_id'], 'set_jwt_token_error', 'Установка JWT-токена для пользователя '.$data['user_id'].' не прошла');
 
             http_response_code(400);
             echo json_encode(['error' => $e->getMessage()]);
@@ -87,7 +87,7 @@ class AuthController
         }
     }
 
-    public function validate(): void
+    public function validate()
     {
         try {
 
@@ -98,17 +98,17 @@ class AuthController
                 if ($jwt_token == '') {
 
                     # Добавляем оповещение
-                    $this->helper->setNotification(0, 'validate_jwt_token_error', 'Не передан JWT-токен');
+                    ###$this->helper->setNotification(0, 'validate_jwt_token_error', 'Не передан JWT-токен');
 
                     http_response_code(401);
                     echo json_encode(['error' => 'Invalid Token']);
                     exit;
                 }
 
-                if ($jwt_token) {
+                #if ($jwt_token) {
 
                     //
-                }
+                #}
 
                 # Секретный код
                 $jwt_secret = getenv('jwt_secret');
@@ -124,7 +124,7 @@ class AuthController
                 #print_r($claims); // ['id' => 13, 'is-admin' => true]
 
                 # Добавляем оповещение
-                $this->helper->setNotification($claims['user_id'], 'validate_jwt_token', 'Началась валидация JWT-токена '.$jwt_token.' для пользователя '.$claims['user_id']);
+                ###$this->helper->setNotification($claims['user_id'], 'validate_jwt_token', 'Началась валидация JWT-токена '.$jwt_token.' для пользователя '.$claims['user_id']);
 
                 # Получаем данные токена
                 $jwt_token_data = $this->auth->validate($claims['user_id'], $jwt_token);
@@ -132,7 +132,7 @@ class AuthController
                 if (isset($jwt_token_data['jwt_token_id']) and !empty($jwt_token_data['jwt_token_id'])) {
 
                     # Добавляем оповещение
-                    $this->helper->setNotification($claims['user_id'], 'validate_jwt_token_ok', 'Валидация JWT-токена '.$jwt_token.' для пользователя '.$claims['user_id'].' прошла успешно');
+                    ###$this->helper->setNotification($claims['user_id'], 'validate_jwt_token_ok', 'Валидация JWT-токена '.$jwt_token.' для пользователя '.$claims['user_id'].' прошла успешно');
 
                     http_response_code(200);
                     return;
@@ -140,7 +140,7 @@ class AuthController
                 } else {
 
                     # Добавляем оповещение
-                    $this->helper->setNotification(0, 'validate_jwt_token_error', 'Валидация JWT-токена '.$jwt_token.' не прошла');
+                    ###$this->helper->setNotification(0, 'validate_jwt_token_error', 'Валидация JWT-токена '.$jwt_token.' не прошла');
 
                     http_response_code(401);
                     echo json_encode(['error' => 'Invalid Token']);
@@ -150,7 +150,7 @@ class AuthController
             } catch (ValidationException $e) {
 
                 # Добавляем оповещение
-                $this->helper->setNotification(0, 'validate_jwt_token_exp_error', 'Валидация JWT-токена '.$jwt_token.' не прошла, JWT-токен просрочен');
+                ###$this->helper->setNotification(0, 'validate_jwt_token_exp_error', 'Валидация JWT-токена '.$jwt_token.' не прошла, JWT-токен просрочен');
 
                 http_response_code(401);
                 echo json_encode(['error' => 'Invalid Token']);
@@ -172,7 +172,7 @@ class AuthController
     }
 
     # Получение данных JWT-токена
-    public function data(): void
+    public function data()
     {
         try {
 
@@ -207,15 +207,15 @@ class AuthController
                     if ($jwt_token_data['user_id'] != $claims['user_id']) {
 
                         # Добавляем оповещение
-                        $this->helper->setNotification($claims['user_id'], 'data_jwt_token_error', 'Запрос чужого JWT-токена. Данные JWT-токена '.$jwt_token.' не получены.');
+                        ###$this->helper->setNotification($claims['user_id'], 'data_jwt_token_error', 'Запрос чужого JWT-токена. Данные JWT-токена '.$jwt_token.' не получены.');
 
-                        ttp_response_code(401);
+                        http_response_code(401);
                         echo json_encode(['error' => 'Invalid Token']);
                         return;
                     }
 
                     # Добавляем оповещение
-                    $this->helper->setNotification($claims['user_id'], 'data_jwt_token_ok', 'Данные JWT-токена '.$jwt_token.' получены успешно');
+                    ###$this->helper->setNotification($claims['user_id'], 'data_jwt_token_ok', 'Данные JWT-токена '.$jwt_token.' получены успешно');
 
                     http_response_code(200);
                     echo json_encode($jwt_token_data);
@@ -224,9 +224,9 @@ class AuthController
                 } else {
 
                     # Добавляем оповещение
-                    $this->helper->setNotification($claims['user_id'], 'data_jwt_token_error', 'Данные JWT-токена '.$jwt_token.' не получены');
+                    ###$this->helper->setNotification($claims['user_id'], 'data_jwt_token_error', 'Данные JWT-токена '.$jwt_token.' не получены');
 
-                    ttp_response_code(401);
+                    http_response_code(401);
                     echo json_encode(['error' => 'Invalid Token']);
                     return;
                 }
@@ -247,7 +247,7 @@ class AuthController
     }
 
     # Выход
-    public function exit(): void
+    public function exit()
     {
         try {
 
@@ -269,7 +269,7 @@ class AuthController
                 $this->auth->deactivate($jwt_token_data['user_id']);
 
                 # Добавляем оповещение
-                $this->helper->setNotification($jwt_token_data['user_id'], 'exit_auth_ok', 'Выход для пользователя '.$jwt_token_data['user_id'].' по JWT-токену '.$jwt_token_data['jwt_token'].' успешен');
+                ###$this->helper->setNotification($jwt_token_data['user_id'], 'exit_auth_ok', 'Выход для пользователя '.$jwt_token_data['user_id'].' по JWT-токену '.$jwt_token_data['jwt_token'].' успешен');
 
                 http_response_code(200);
                 return;
@@ -277,7 +277,7 @@ class AuthController
             } else {
 
                 # Добавляем оповещение
-                $this->helper->setNotification(0, 'exit_auth_token_error', 'Выход по JWT-токену '.$jwt_token.' не прошел');
+                ###$this->helper->setNotification(0, 'exit_auth_token_error', 'Выход по JWT-токену '.$jwt_token.' не прошел');
 
                 return;
             }

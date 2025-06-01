@@ -33,27 +33,16 @@ class BillingController
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(
-     *                     description="ID пользователя",
-     *                     property="user_id",
-     *                     type="integer",
-     *                     format="integer"
-     *                 )
+     *                 required={"user_id", "amount"},
+     *                 @OA\Property(description="ID пользователя", property="user_id", type="integer", format="integer"),
+     *                 @OA\Property(description="Сумма", property="amount", type="number", format="number")
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *          response="200",
      *          description="Success",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Success",
-     *                  value={
-     *                      "billing_id": 0
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/BillingCreateResponse")
      *     ),
      *     @OA\Response(
      *          response="401",
@@ -62,42 +51,54 @@ class BillingController
      *     @OA\Response(
      *          response="400",
      *          description="Bad Request",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Error",
-     *                  value={
-     *                      "error": "Invalid JSON data"
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      *
-     * @return void
-     * @throws Exception
+     * @OA\Schema(
+     *     schema="BillingCreateResponse",
+     *     title="Биллинг-аккаунта пользователя",
+     *     description="",
+     *     @OA\Property(property="billing_id", type="integer", example="1")
+     * )
+     *
+     * @throws \Exception
      */
-    public function create(array $data = []): void
+    public function create(array $data = [])
     {
-        # Если не переданы данные
-        if (!sizeof($data)) {
-
-            $data = json_decode(file_get_contents('php://input'), true);
-
-            if ($data === null) {
-
-                http_response_code(400);
-                echo json_encode(['error' => 'Invalid JSON data']);
-                return;
-            }
-        }
-
         try {
+
+            # Если не переданы данные из BillingReceive
+            if (!sizeof($data)) {
+
+                if (isset($headers['Postman-Token'])) {
+
+                    $data = json_decode(file_get_contents('php://input'), true);
+
+                    if ($data === null) {
+                        throw new \Exception('JSON поврежден');
+                    }
+
+                } else {
+
+                    if (!sizeof($_POST)) {
+                        throw new \Exception('JSON поврежден');
+                    }
+
+                    # Данные пользователя
+                    $data = $_POST;
+                }
+            }
+
+            if ($this->billing->checkBillingExists($data['user_id']) == true) {
+                throw new \Exception('Биллниг-аккаунт пользователя '.$data['user_id'].' уже существует');
+            }
 
             $billing = $this->billing->create($data);
 
             http_response_code(201);
             echo json_encode($billing);
+            return;
 
         } catch (\Throwable $e) {
 
@@ -125,15 +126,7 @@ class BillingController
      *     @OA\Response(
      *          response="200",
      *          description="Success",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Success",
-     *                  value={
-     *                      "billing_id": 0
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/BillingGetResponse")
      *     ),
      *     @OA\Response(
      *          response="401",
@@ -142,56 +135,154 @@ class BillingController
      *     @OA\Response(
      *          response="400",
      *          description="Bad Request",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Error",
-     *                  value={
-     *                      "error": "Invalid JSON data"
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      *
-     * @return void
-     * @throws Exception
+     * @OA\Schema(
+     *     schema="BillingGetResponse",
+     *     title="Биллинг-аккаунт пользователя",
+     *     description="",
+     *     @OA\Property(property="billing", ref="#/components/schemas/BillingItem")
+     * )
+     *
+     * @OA\Schema(
+     *     schema="BillingItem",
+     *     title="Биллинг-аккаунт пользователя",
+     *     description="",
+     *     @OA\Property(property="billing_id", type="integer", example="1"),
+     *     @OA\Property(property="user_id", type="integer", example="1"),
+     *     @OA\Property(property="amount", type="number", example="100.25"),
+     *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807")
+     * )
+     *
+     * @throws \Exception
      */
-    public function get(int $userId = 0): void
+    public function get()
     {
-        # Если не передан ID пользователя
-        if (empty($userId)) {
-            $data = json_decode(file_get_contents('php://input'), true);
-
-            if ($data === null) {
-
-                http_response_code(400);
-                echo json_encode(['error' => 'Invalid JSON data']);
-                return;
-            }
-        }
-
         try {
 
-            # Если не передан ID пользователя
+            $jwt_token_data = $this->helper->getJWTtokenData();
+
+            if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
+                throw new \Exception('Пользователь не авторизован');
+            }
+
+            $userId = $jwt_token_data['user_id'];
+
             if (empty($userId)) {
-
-                $jwt_token_data = $this->helper->getJWTtokenData();
-
-                if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
-
-                    http_response_code(401);
-                    echo json_encode(['error' => 'You a not login']);
-                    return;
-                }
-
-                $userId = $jwt_token_data['user_id'];
+                throw new \Exception('Не удалось определить пользователя');
             }
 
             $order_list = $this->billing->get($userId);
 
             http_response_code(200);
             echo json_encode($order_list);
+            return;
+
+        } catch (\Exception $e) {
+
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
+            return;
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/billing/amount",
+     *     summary="Изменение суммы биллинг-аккаунта",
+     *     description="",
+     *     tags={"Billing | Сервис биллинга"},
+     *     security={{"cookieAuth": {}}},
+     *     operationId="billing_amount",
+     *     deprecated=false,
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"amount"},
+     *                 @OA\Property(description="Сумма", property="amount", type="number", format="number")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(ref="#/components/schemas/BillingItem")
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          description="401 Authorization Required"
+     *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          description="Bad Request",
+     *          @OA\JsonContent(ref="#/components/schemas/Error")
+     *     )
+     * )
+     *
+     * @throws \Exception
+     */
+    public function amount(array $data = [])
+    {
+        try {
+
+            # Если не переданы данные из BillingReceive
+            if (!sizeof($data)) {
+
+                if (!sizeof($_POST)) {
+                    throw new \Exception('JSON поврежден');
+                }
+
+                # Данные пользователя
+                $data = $_POST;
+            }
+
+            if (!isset($data['user_id'])) {
+
+                $jwt_token_data = $this->helper->getJWTtokenData();
+
+                if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
+                    throw new \Exception('Пользователь не авторизован');
+                }
+
+                $userId = $jwt_token_data['user_id'];
+
+                if (empty($userId)) {
+                    throw new \Exception('Не удалось определить пользователя');
+                }
+
+                $data['user_id'] = $userId;
+            }
+
+            if (!isset($data['amount'])) {
+                throw new \Exception('Не передана сумма');
+            }
+
+            if ($data['amount'] <= 0) {
+                throw new \Exception('Сумма должна быть больше нуля');
+            }
+
+            # Изменение суммы биллниг-аккаунта
+            $billing = $this->billing->amount($data);
+
+            if (isset($_POST['reload'])) {
+
+                header('Location: /user/billing');
+
+            } else {
+
+                http_response_code(200);
+                echo json_encode($billing);
+                return;
+            }
+
+        } catch (\Throwable $e) {
+
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+            return;
 
         } catch (\Exception $e) {
 

@@ -53,13 +53,9 @@ class Notification
           ORDER BY date_insert DESC';
         $statement = $this->pdo->prepare($query);
         $statement->execute([':user_id' => $userId]);
-        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        $notification_list = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if (!$user) {
-            throw new \Exception("User not found");
-        }
-
-        return $user;
+        return $notification_list;
     }
 
 //    public function delete(int $id): array

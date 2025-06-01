@@ -39,4 +39,4 @@ spec:
           failureThreshold: 3     # Количество неудачных попыток, прежде чем контейнер будет исключен из списка доступных
         envFrom:
         - secretRef:
-           name: {{ .Release.Name }}-secrets
+            name: {{ .Release.Name }}-secrets

@@ -4,18 +4,14 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use App\Helper\Helper;
-use App\Service\Order\Controller\OrderController;
+use App\Service\Notification\Controller\NotificationController;
 
 # Настройки подключения к RabbitMQ
 $host = getenv('rabbitmq_host');
 $port = getenv('rabbitmq_port');
 $user = getenv('rabbitmq_user');
 $password = getenv('rabbitmq_password');
-$queueName = 'service-order';
-
-# Оповещения
-$helper = new Helper();
+$queueName = 'service-notification';
 
 try {
 
@@ -26,9 +22,7 @@ try {
     $channel->queue_declare($queueName, false, true, false, false);
 
     # Callback-функция при получении сообщения
-    $callback = function ($msg) use ($helper) {
-
-        ###$helper->setNotification(0, 'rabbitmq-order-receive', 'Callback-функция при получении сообщения');
+    $callback = function ($msg) {
 
         try {
 
@@ -41,27 +35,21 @@ try {
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
                     # Отправляем запрос в сервис
-                    $order_controller = new OrderController();
-                    $order = $order_controller->create($msg_data['data']);
+                    $notification_controller = new NotificationController();
+                    $notification = $notification_controller->create($msg_data['data']);
 
-                    $order_data = json_decode($order, true);
+                    $notification_data = json_decode($notification, true);
 
-                    echo " [✓] Заказ c ID = ".$order_data['order_id']."  успешно создан\n";
-
-                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✓] Заказ c ID = '.$order_data['order_id'].'  успешно создан');
+                    echo " [✓] Оповещение c ID = ".$notification_data['notification_id']."  успешно создано\n";
                 }
             }
 
             # Подтверждаем только после успешной обработки
             $msg->ack();
 
-            ###$helper->setNotification(0, 'rabbitmq-order-receive', '[✓] Получено: '.$msg->body);
-
         } catch (Exception $e) {
 
             echo " [✗] Ошибка при отправке: ", $e->getMessage(), "\n";
-
-            ###$helper->setNotification(0, 'rabbitmq-order-receive', '[✗] Ошибка при отправке: '.$e->getMessage());
 
             # Отказываемся от сообщения с requeue=true
             $msg->nack(false, true);
@@ -100,8 +88,6 @@ try {
 } catch (Exception $e) {
 
     echo " [✗] Критическая ошибка: ", $e->getMessage(), "\n";
-
-    ###$helper->setNotification(1, 'rabbitmq-receive', 'Критическая ошибка: '.$e->getMessage());
 
     # Попытка корректно закрыть соединение при ошибке
     if (isset($channel)) {

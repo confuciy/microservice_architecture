@@ -14,7 +14,8 @@ class Billing
         $this->pdo = $database->getConnection('service_billing');
     }
 
-    public function create(array $data = []): array
+    # Создание биллнг-аккаунта
+    public function create(array $data): array
     {
         try {
 
@@ -28,7 +29,7 @@ class Billing
 
             $statement->execute([
                 ':user_id' => $data['user_id'],
-                ':amount' => 0
+                ':amount' => $data['amount']
             ]);
 
             $id = $this->pdo->lastInsertId();
@@ -64,6 +65,97 @@ class Billing
             }
 
             return $billing;
+
+        } catch (\Exception $e) {
+
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    # Изменение суммы биллинг-аккаунта
+    public function amount(array $data): array
+    {
+        try {
+
+            if (!isset($data['user_id']) or empty($data['user_id'])) {
+                throw new \Exception('ID пользователя пустой');
+            }
+
+            $billing = $this->get($data['user_id']);
+
+            # Рассчитываем новую сумму биллниг-аккаунта
+            $new_amount = ($data['action'] == 'plus'?($billing['amount'] + $data['amount']):($billing['amount'] - $data['amount']));
+
+            $query = 'UPDATE billing SET amount = :amount WHERE user_id = :user_id';
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([
+                ':user_id' => $data['user_id'],
+                ':amount' => $new_amount
+            ]);
+
+            # Данные для сохранения действия по сумме биллниг-аккаунта
+            $billing_action_data = [
+                'billing_id' => $billing['billing_id'],
+                'action' => $data['action'],
+                'amount' => $data['amount']
+            ];
+
+            $billing['billing_action'] = $this->createAction($billing_action_data);
+
+            return $billing;
+
+        } catch (\Exception $e) {
+
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    # Проверка существования пользователя по почте
+    public function checkBillingExists(int $userId): bool
+    {
+        $query = 'SELECT billing_id 
+          FROM billing 
+          WHERE user_id = :user_id';
+        $statement = $this->pdo->prepare($query);
+        $statement->execute([
+            ':user_id' => $userId
+        ]);
+        $billing = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (isset($billing['billing_id']) and !empty($billing['billing_id'])) {
+
+            return true;
+
+        } else {
+
+            return false;
+        }
+    }
+
+    # Создание биллнг-аккаунта
+    public function createAction(array $data): array
+    {
+        try {
+
+            if (!isset($data['billing_id']) or empty($data['billing_id'])) {
+                throw new \Exception('ID заказа пустой');
+            }
+
+            $query = 'INSERT INTO billing_actions (billing_id, action, amount) 
+              VALUES (:billing_id, :action, :amount)';
+            $statement = $this->pdo->prepare($query);
+
+            $statement->execute([
+                ':billing_id' => $data['billing_id'],
+                ':action' => $data['action'],
+                ':amount' => $data['amount']
+            ]);
+
+            $id = $this->pdo->lastInsertId();
+
+            $data['billing_action_id'] = $id;
+
+            return $data;
 
         } catch (\Exception $e) {
 

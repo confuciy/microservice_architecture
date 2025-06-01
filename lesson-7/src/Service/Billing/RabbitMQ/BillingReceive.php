@@ -28,7 +28,7 @@ try {
     # Callback-функция при получении сообщения
     $callback = function ($msg) use ($helper) {
 
-        $helper->setNotification(0, 'rabbitmq-billing-receive', 'Callback-функция при получении сообщения');
+        ###$helper->setNotification(0, 'rabbitmq-billing-receive', 'Callback-функция при получении сообщения');
 
         try {
 
@@ -46,22 +46,62 @@ try {
 
                     $billing_data = json_decode($billing, true);
 
-                    echo " [✓] Аккаунт c ID = ".$billing_data['billing_id']."  успешно создан\n";
+                    echo " [✓] Биллинговый аккаунт c ID = ".$billing_data['billing_id']."  успешно создан\n";
 
-                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓] Аккаунт c ID = '.$billing_data['billing_id'].'  успешно создан');
+                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓] Биллинговый аккаунт c ID = '.$billing_data['billing_id'].' успешно создан');
+                }
+            }
+
+            if (
+                isset($msg_data['action']) and $msg_data['action'] == 'plus'
+            ) {
+
+                if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
+
+                    $msg_data['data']['action'] = $msg_data['action'];
+
+                    # Отправляем запрос в сервис
+                    $billing_controller = new BillingController();
+                    $billing = $billing_controller->amount($msg_data['data']);
+
+                    ###$billing_data = json_decode($billing, true);
+
+                    echo " [✓] Сумма биллингового аккаунта успешно пополнена на ".$msg_data['data']['amount']."\n";
+
+                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', 'Сумма биллингового аккаунта успешно пополнена на '.$msg_data['data']['amount']);
+                }
+            }
+
+            if (
+                isset($msg_data['action']) and $msg_data['action'] == 'minus'
+            ) {
+
+                if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
+
+                    $msg_data['data']['action'] = $msg_data['action'];
+
+                    # Отправляем запрос в сервис
+                    $billing_controller = new BillingController();
+                    $billing = $billing_controller->amount($msg_data['data']);
+
+                    ###$billing_data = json_decode($billing, true);
+
+                    echo " [✓] Сумма биллингового аккаунта успешно уменьшена на ".$msg_data['data']['amount']."\n";
+
+                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓] Сумма биллингового аккаунта успешно уменьшена на '.$msg_data['data']['amount']);
                 }
             }
 
             # Подтверждаем только после успешной обработки
             $msg->ack();
 
-            $helper->setNotification(0, 'rabbitmq-billing-receive', '[✓] Получено: '.$msg->body);
+            ###$helper->setNotification(0, 'rabbitmq-billing-receive', '[✓] Получено: '.$msg->body);
 
         } catch (Exception $e) {
 
             echo " [✗] Ошибка при отправке: ", $e->getMessage(), "\n";
 
-            $helper->setNotification(0, 'rabbitmq-billing-receive', '[✗] Ошибка при отправке: '.$e->getMessage());
+            ###$helper->setNotification(0, 'rabbitmq-billing-receive', '[✗] Ошибка при отправке: '.$e->getMessage());
 
             # Отказываемся от сообщения с requeue=true
             $msg->nack(false, true);
@@ -101,7 +141,7 @@ try {
 
     echo " [✗] Критическая ошибка: ", $e->getMessage(), "\n";
 
-    $helper->setNotification(1, 'rabbitmq-receive', 'Критическая ошибка: '.$e->getMessage());
+    ###$helper->setNotification(1, 'rabbitmq-receive', 'Критическая ошибка: '.$e->getMessage());
 
     # Попытка корректно закрыть соединение при ошибке
     if (isset($channel)) {

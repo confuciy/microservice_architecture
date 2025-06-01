@@ -33,39 +33,17 @@ class NotificationController
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 @OA\Property(
-     *                     description="ID пользователя",
-     *                     property="user_id",
-     *                     type="integer",
-     *                     format="integer"
-     *                 ),
-     *                 @OA\Property(
-     *                     description="Действие",
-     *                     property="action",
-     *                     type="string",
-     *                     format="string"
-     *                 ),
-     *                 @OA\Property(
-     *                     description="Сообщение",
-     *                     property="message",
-     *                     type="string",
-     *                     format="string"
-     *                 )
+     *                 required={"user_id", "action", "message"},
+     *                 @OA\Property(description="ID пользователя", property="user_id", type="integer", format="integer"),
+     *                 @OA\Property(description="Действие", property="action", type="string", format="string"),
+     *                 @OA\Property(description="Сообщение", property="message", type="string", format="string")
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *          response="200",
      *          description="Success",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Success",
-     *                  value={
-     *                      "notification_id": 0
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/NotificationCreateResponse")
      *     ),
      *     @OA\Response(
      *          response="401",
@@ -74,38 +52,41 @@ class NotificationController
      *     @OA\Response(
      *          response="400",
      *          description="Bad Request",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Error",
-     *                  value={
-     *                      "error": "Invalid JSON data"
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      *
-     * @return void
-     * @throws Exception
+     * @OA\Schema(
+     *     schema="NotificationCreateResponse",
+     *     title="Оповещения пользователя",
+     *     description="",
+     *     @OA\Property(property="notification_id", type="integer", example="1"),
+     *     @OA\Property(description="ID пользователя", property="user_id", type="integer"),
+     *     @OA\Property(description="Действие", property="action", type="string"),
+     *     @OA\Property(description="Сообщение", property="message", type="string")
+     * )
+     *
+     * @throws \Exception
      */
-    public function create(): void
+    public function create(array $data = [])
     {
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        if ($data === null) {
-
-            http_response_code(400);
-            echo json_encode(['error' => 'Invalid JSON data']);
-            return;
-        }
-
         try {
+
+            # Если не переданы данные
+            if (!sizeof($data)) {
+
+                $data = json_decode(file_get_contents('php://input'), true);
+
+                if ($data === null) {
+                    throw new \Exception('JSON поврежден');
+                }
+            }
 
             $notification = $this->notification->create($data);
 
             http_response_code(201);
             echo json_encode($notification);
+            return;
 
         } catch (\Throwable $e) {
 
@@ -124,7 +105,7 @@ class NotificationController
     /**
      * @OA\Get(
      *     path="/notification",
-     *     summary="Получение списка оповещений",
+     *     summary="Список оповещений",
      *     description="",
      *     tags={"Notification | Сервис оповещений"},
      *     security={{"cookieAuth": {}}},
@@ -133,7 +114,7 @@ class NotificationController
      *     @OA\Response(
      *          response="200",
      *          description="Success",
-     *          @OA\JsonContent(ref="#/components/schemas/ExampleSchema")
+     *          @OA\JsonContent(ref="#/components/schemas/NotificationResponse")
      *     ),
      *     @OA\Response(
      *          response="401",
@@ -142,63 +123,46 @@ class NotificationController
      *     @OA\Response(
      *          response="400",
      *          description="Bad Request",
-     *          @OA\JsonContent(
-     *              @OA\Examples(
-     *                  example="Error",
-     *                  value={
-     *                      "error": "Invalid JSON data"
-     *                  },
-     *                  summary=""
-     *              ),
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
      *
-     * @return void
-     * @throws Exception
-     */
-    /**
      * @OA\Schema(
-     *     schema="ExampleSchema",
-     *     title="Пример структуры данных",
-     *     description="Объект с названием и списком элементов",
-     *     @OA\Property(
-     *         property="name",
-     *         type="string",
-     *         example="название"
-     *     ),
-     *     @OA\Property(
-     *         property="list",
-     *         type="array",
-     *         @OA\Items(
-     *             type="object",
-     *             @OA\Property(property="name", type="string", example="xx"),
-     *             @OA\Property(property="count", type="integer", example=50)
-     *         ),
-     *         example={
-     *             {"name": "xx", "count": 50},
-     *             {"name": "xx", "count": 500}
-     *         }
-     *     )
+     *     schema="NotificationResponse",
+     *     title="Список оповещений пользователя",
+     *     description="",
+     *     @OA\Property(property="notification_list", type="array", @OA\Items(ref="#/components/schemas/NotificationItem"))
      * )
+     *
+     * @OA\Schema(
+     *     schema="NotificationItem",
+     *     title="Оповещение пользователя",
+     *     description="",
+     *     @OA\Property(property="notification_id", type="integer", example="1"),
+     *     @OA\Property(property="user_id", type="integer", example="1"),
+     *     @OA\Property(property="action", type="string", example="create_user_ok"),
+     *     @OA\Property(property="message", type="string", example="Пользователь с почтой email1@email.com создан с id 1"),
+     *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807")
+     * )
+     *
+     * @throws \Exception
      */
-    public function get(): void
+    public function get()
     {
         try {
 
             $jwt_token_data = $this->helper->getJWTtokenData();
 
             if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
-
                 http_response_code(401);
-                echo json_encode(['error' => 'You a not login']);
-                return;
+                throw new \Exception('Пользователь не авторизован');
             }
 
             $notification_list = $this->notification->get($jwt_token_data['user_id']);
 
             http_response_code(200);
-            echo json_encode($notification_list);
+            echo json_encode(['notification_list' => $notification_list]);
+            return;
 
         } catch (\Exception $e) {
 

@@ -17,8 +17,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/notification', [\App\Service\Notification\Controller\NotificationController::class, 'get']);
 
     # Billing
-    $r->addRoute('POST', '/billing', [\App\Service\Order\Controller\OrderController::class, 'create']);
-    $r->addRoute('GET', '/billing', [\App\Service\Order\Controller\OrderController::class, 'get']);
+    $r->addRoute('POST', '/billing', [\App\Service\Billing\Controller\BillingController::class, 'create']);
+    $r->addRoute('GET', '/billing', [\App\Service\Billing\Controller\BillingController::class, 'get']);
+    $r->addRoute('POST', '/billing/amount', [\App\Service\Billing\Controller\BillingController::class, 'amount']);
 
     # Order
     $r->addRoute('POST', '/order', [\App\Service\Order\Controller\OrderController::class, 'create']);
@@ -32,10 +33,13 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
 
     # User - pages
     $r->addRoute('GET', '/user/register', [\App\Service\User\Controller\UserController::class, 'register']);
+    $r->addRoute('GET', '/user/notification', [\App\Service\User\Controller\UserController::class, 'notification']);
+    $r->addRoute('GET', '/user/order', [\App\Service\User\Controller\UserController::class, 'order']);
+    $r->addRoute('GET', '/user/billing', [\App\Service\User\Controller\UserController::class, 'billing']);
     $r->addRoute('GET', '/user/login', [\App\Service\User\Controller\UserController::class, 'login']);
     $r->addRoute('POST', '/user/auth', [\App\Service\User\Controller\UserController::class, 'auth']);
     $r->addRoute('GET', '/user/profile', [\App\Service\User\Controller\UserController::class, 'profile']);
-    $r->addRoute('GET', '/user/edit', [\App\Service\User\Controller\UserController::class, 'edit']);
+    $r->addRoute('GET', '/user/profile/edit', [\App\Service\User\Controller\UserController::class, 'profileEdit']);
     $r->addRoute('GET', '/user/exit', [\App\Service\User\Controller\UserController::class, 'exit']);
 
     # User - actions
@@ -43,7 +47,6 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/user/{userId:\d+}', [\App\Service\User\Controller\UserController::class, 'get']);
     $r->addRoute('PUT', '/user/update', [\App\Service\User\Controller\UserController::class, 'update']);
     $r->addRoute('DELETE', '/user/delete', [\App\Service\User\Controller\UserController::class, 'delete']);
-    $r->addRoute('POST', '/user/rabbitmq-test', [\App\Service\User\Controller\UserController::class, 'rabbitmqTest']);
 });
 
 return $dispatcher;

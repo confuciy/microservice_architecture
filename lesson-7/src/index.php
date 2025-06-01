@@ -55,6 +55,13 @@ header('Access-Control-Allow-Headers: Content-Type');
  *     name="v1",
  *     description="",
  * )
+ *
+ * @OA\Schema(
+ *     schema="ErrorSchema",
+ *     title="Ошибка",
+ *     description="",
+ *     @OA\Property(property="error", type="string", example="текст ошибки")
+ * )
  */
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];

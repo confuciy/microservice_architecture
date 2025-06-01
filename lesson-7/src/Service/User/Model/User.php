@@ -40,11 +40,6 @@ class User
         curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
         $content = curl_exec($ch);
 
-        if ($content == '') {
-
-            throw new \Exception("Invalid /user/auth JWT-token data");
-        }
-
         return json_decode($content, true);
     }
 
@@ -118,11 +113,6 @@ class User
         curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
         $content = curl_exec($ch);
-
-        if ($content != '') {
-
-            throw new \Exception("Invalid /user/exit");
-        }
 
         return;
     }
@@ -212,5 +202,95 @@ class User
         }
 
         return ['user_id' => $userId];
+    }
+
+    # Получение уведомлений пользователя
+    public function getNotificationList()
+    {
+        // Формируем строку с кукой
+        $cookie_string = 'user_jwt=' . urlencode($_COOKIE['user_jwt']);
+
+        $ch = curl_init();
+        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+        curl_setopt($ch, CURLOPT_URL, getenv('host').'/notification');
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json-patch+json',
+            'Cookie: ' . $cookie_string  // Передаем куку в заголовке
+        ]);
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);  // Альтернативный способ передачи куки
+        curl_setopt($ch, CURLOPT_NOBODY, 0);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json-patch+json']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        $content = curl_exec($ch);
+
+        return json_decode($content, true);
+    }
+
+    # Получение заказов пользователя
+    public function getOrderList()
+    {
+        // Формируем строку с кукой
+        $cookie_string = 'user_jwt=' . urlencode($_COOKIE['user_jwt']);
+
+        $ch = curl_init();
+        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+        curl_setopt($ch, CURLOPT_URL, getenv('host').'/order');
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json-patch+json',
+            'Cookie: ' . $cookie_string  // Передаем куку в заголовке
+        ]);
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);  // Альтернативный способ передачи куки
+        curl_setopt($ch, CURLOPT_NOBODY, 0);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json-patch+json']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        $content = curl_exec($ch);
+
+        return json_decode($content, true);
+    }
+
+    # Получение биллинг-аккаунт пользователя
+    public function getBilling()
+    {
+        // Формируем строку с кукой
+        $cookie_string = 'user_jwt=' . urlencode($_COOKIE['user_jwt']);
+
+        $ch = curl_init();
+        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+        curl_setopt($ch, CURLOPT_URL, getenv('host').'/billing');
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json-patch+json',
+            'Cookie: ' . $cookie_string  // Передаем куку в заголовке
+        ]);
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);  // Альтернативный способ передачи куки
+        curl_setopt($ch, CURLOPT_NOBODY, 0);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json-patch+json']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        $content = curl_exec($ch);
+
+        return json_decode($content, true);
     }
 }
