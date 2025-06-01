@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-user
+  name: service-order
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: service-user
+      app: service-order
   template:
     metadata:
       labels:
-        app: service-user
+        app: service-order
     spec:
       containers:
-      - name: service-user
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_user }}"
+      - name: service-order
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_order }}"
         imagePullPolicy: Always
         env:
         - name: SERVICE_NAME      # Определяем, какой сервис запустить
-          value: "service-user"
+          value: "service-order"
         ports:
         - containerPort: 80
         livenessProbe:
@@ -40,9 +40,8 @@ spec:
         envFrom:
         - secretRef:
            name: {{ .Release.Name }}-secrets
-        #command: ["php", "-r"] # используем sh для выполнения нескольких команд
-        #args:
-        #  - "require './src/Service/User/RabbitMQ/Receive.php';"
-        #command: ["sh", "-c"]
-        #args:
-        #  - "sleep 60 && php -r \"require './src/Service/User/RabbitMQ/Receive.php';\""
+#        command: ["php", "-r"] # используем sh для выполнения нескольких команд
+#        args:
+#          - "require './src/Service/Order/RabbitMQ/OrderReceive.php';"
+#        resources:
+#          {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}

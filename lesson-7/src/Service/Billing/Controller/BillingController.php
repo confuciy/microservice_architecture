@@ -77,10 +77,11 @@ class BillingController
      * @return void
      * @throws Exception
      */
-    public function create(int $userId = 0): void
+    public function create(array $data = []): void
     {
-        # Если не передан ID пользователя
-        if (empty($userId)) {
+        # Если не переданы данные
+        if (!sizeof($data)) {
+
             $data = json_decode(file_get_contents('php://input'), true);
 
             if ($data === null) {
@@ -93,22 +94,7 @@ class BillingController
 
         try {
 
-            # Если не передан ID пользователя
-            if (empty($userId)) {
-
-                $jwt_token_data = $this->helper->getJWTtokenData();
-
-                if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
-
-                    http_response_code(401);
-                    echo json_encode(['error' => 'You a not login']);
-                    return;
-                }
-
-                $userId = $jwt_token_data['user_id'];
-            }
-
-            $billing = $this->billing->create($userId);
+            $billing = $this->billing->create($data);
 
             http_response_code(201);
             echo json_encode($billing);

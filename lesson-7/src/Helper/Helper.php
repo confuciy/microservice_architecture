@@ -43,7 +43,7 @@ class Helper
     }
 
     # Добавление оповещения
-    public function setNotification(int $userId, string $action, string $message): array
+    public function setNotification(int $userId = 0, string $action = '', string $message = ''): array
     {
         if ($action == '') {
             throw new \Exception("Invalid action");

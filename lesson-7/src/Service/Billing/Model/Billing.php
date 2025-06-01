@@ -14,21 +14,21 @@ class Billing
         $this->pdo = $database->getConnection('service_billing');
     }
 
-    public function create(array $data): array
+    public function create(array $data = []): array
     {
         try {
 
-            if (!isset($data['message']) or $data['message'] == '') {
-
-                throw new \Exception('Create Billing Error');
+            if (!isset($data['user_id']) or empty($data['user_id'])) {
+                throw new \Exception('ID пользователя пустой');
             }
 
             $query = 'INSERT INTO billing (user_id, amount) 
-              VALUES (:user_id)';
+              VALUES (:user_id, :amount)';
             $statement = $this->pdo->prepare($query);
 
             $statement->execute([
-                ':user_id' => (!empty($data['user_id'])?$data['user_id']:NULL)
+                ':user_id' => $data['user_id'],
+                ':amount' => 0
             ]);
 
             $id = $this->pdo->lastInsertId();
@@ -45,20 +45,32 @@ class Billing
 
     public function get(int $userId): array
     {
-        $query = 'SELECT * 
-          FROM billing 
-          WHERE user_id = :user_id 
-          ORDER BY date_insert DESC';
-        $statement = $this->pdo->prepare($query);
-        $statement->execute([':user_id' => $userId]);
-        $billing = $statement->fetch(PDO::FETCH_ASSOC);
+        try {
 
-        if (!$billing) {
-            throw new \Exception("Billing not found");
+            if (empty($userId)) {
+                throw new \Exception('ID пользователя пустой');
+            }
+
+            $query = 'SELECT * 
+              FROM billing 
+              WHERE user_id = :user_id 
+              ORDER BY date_insert DESC';
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([':user_id' => $userId]);
+            $billing = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if (!$billing) {
+                throw new \Exception("Аккаунт не найден");
+            }
+
+            return $billing;
+
+        } catch (\Exception $e) {
+
+            throw new \Exception($e->getMessage());
         }
-
-        return $billing;
     }
+
 
 //    public function delete(int $id): array
 //    {

@@ -14,21 +14,26 @@ class Order
         $this->pdo = $database->getConnection('service_order');
     }
 
-    public function create(array $data): array
+    public function create(array $data = []): array
     {
         try {
 
-            if (!isset($data['message']) or $data['message'] == '') {
-
-                throw new \Exception('Create Order Error');
+            if (!isset($data['user_id']) or empty($data['user_id'])) {
+                throw new \Exception('ID пользователя пустой');
+            }
+            if (!isset($data['amount']) or empty($data['amount'])) {
+                throw new \Exception('Пустая сумма');
+            }
+            if (!isset($data['idempotency']) or $data['idempotency'] == '') {
+                throw new \Exception('Хеш идемпотентности пустой');
             }
 
             $query = 'INSERT INTO orders (user_id, amount, idempotency) 
-              VALUES (:user_id, :action, :message)';
+              VALUES (:user_id, :amount, :idempotency)';
             $statement = $this->pdo->prepare($query);
 
             $statement->execute([
-                ':user_id' => (!empty($data['user_id'])?$data['user_id']:NULL),
+                ':user_id' => $data['user_id'],
                 ':amount' => (!empty($data['amount'])?$data['amount']:NULL),
                 ':idempotency' => ($data['idempotency'] != ''?$data['idempotency']:NULL)
             ]);
@@ -47,21 +52,35 @@ class Order
 
     public function get(int $orderId, int $userId): array
     {
-        $query = 'SELECT * 
-          FROM orders 
-          WHERE order_id = :order_id 
-          AND user_id = :user_id 
-          ORDER BY date_insert DESC';
-        $statement = $this->pdo->prepare($query);
-        $statement->execute([':order_id' => $orderId]);
-        $statement->execute([':user_id' => $userId]);
-        $order = $statement->fetch(PDO::FETCH_ASSOC);
+        try {
 
-        if (!$order) {
-            throw new \Exception("Order not found");
+            if (empty($orderId)) {
+                throw new \Exception('ID заказа пустой');
+            }
+            if (empty($userId)) {
+                throw new \Exception('ID пользователя пустой');
+            }
+
+            $query = 'SELECT * 
+              FROM orders 
+              WHERE order_id = :order_id 
+              AND user_id = :user_id 
+              ORDER BY date_insert DESC';
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([':order_id' => $orderId]);
+            $statement->execute([':user_id' => $userId]);
+            $order = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if (!$order) {
+                throw new \Exception("Заказ не найден");
+            }
+
+            return $order;
+
+        } catch (\Exception $e) {
+
+            throw new \Exception($e->getMessage());
         }
-
-        return $order;
     }
 
 //    public function delete(int $id): array

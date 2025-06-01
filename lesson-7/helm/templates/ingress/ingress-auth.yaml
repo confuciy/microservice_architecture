@@ -85,7 +85,7 @@ spec:
         pathType: Exact
         backend:
           service:
-            name: service-order
+            name: service-billing
             port:
               number: 80
 {{- end }}

@@ -2,29 +2,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitmq-consumer
+  name: rabbitmq-order-consumer
 spec:
   replicas: {{ .Values.rabbitmqConsumer.replicas }}
   selector:
     matchLabels:
-      app: rabbitmq-consumer
+      app: rabbitmq-order-consumer
   template:
     metadata:
       labels:
-        app: rabbitmq-consumer
+        app: rabbitmq-order-consumer
     spec:
       containers:
       - name: consumer
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_consumer }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_order }}"
         imagePullPolicy: Always
         envFrom:
         - secretRef:
             name: {{ .Release.Name }}-secrets
         command: ["php", "-r"] # используем sh для выполнения нескольких команд
         args:
-          - "require './src/RabbitMQ/ServiceUserReceive.php';"
-          - "require './src/RabbitMQ/ServiceOrderReceive.php';"
-          - "require './src/RabbitMQ/ServiceBillingReceive.php';"
+          - "require './src/Service/Order/RabbitMQ/OrderReceive.php';"
         resources:
           {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}
 {{- end }}

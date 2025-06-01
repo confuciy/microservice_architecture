@@ -15,52 +15,52 @@ class MainController
         $this->helper = new Helper();
     }
 
-    public function rabbitmqSend(): void
-    {
-        # Добавляем оповещение
-        $this->helper->setNotification(0, 'rabbitmq-send', 'Пытаемся отправить сообщение');
-
-//        // Настройки подключения к RabbitMQ
-//        $host = getenv('rabbitmq_host');
-//        $port = getenv('rabbitmq_port');
-//        $user = getenv('rabbitmq_user');
-//        $password = getenv('rabbitmq_password');
-//        $queueName = 'service-user';
-
-        try {
-
-            $this->helper->rabbitmqSend('service-user', 'Привет, RabbitMQ!');
-
-//            // Создаем соединение
-//            $connection = new AMQPStreamConnection($host, $port, $user, $password);
-//            $channel = $connection->channel();
+//    public function rabbitmqSend(): void
+//    {
+//        # Добавляем оповещение
+//        $this->helper->setNotification(0, 'rabbitmq-send', 'Пытаемся отправить сообщение');
 //
-//            // Объявляем очередь (если её нет, она будет создана)
-//            $channel->queue_declare($queueName, false, true, false, false);
+////        // Настройки подключения к RabbitMQ
+////        $host = getenv('rabbitmq_host');
+////        $port = getenv('rabbitmq_port');
+////        $user = getenv('rabbitmq_user');
+////        $password = getenv('rabbitmq_password');
+////        $queueName = 'service-user';
 //
-//            // Текст сообщения
-//            $messageText = 'Привет, RabbitMQ!';
+//        try {
 //
-//            // Создаем сообщение
-//            $message = new AMQPMessage($messageText);
+//            $this->helper->rabbitmqSend('service-user', 'Привет, RabbitMQ!');
 //
-//            // Отправляем сообщение в очередь
-//            $channel->basic_publish($message, '', $queueName);
+////            // Создаем соединение
+////            $connection = new AMQPStreamConnection($host, $port, $user, $password);
+////            $channel = $connection->channel();
+////
+////            // Объявляем очередь (если её нет, она будет создана)
+////            $channel->queue_declare($queueName, false, true, false, false);
+////
+////            // Текст сообщения
+////            $messageText = 'Привет, RabbitMQ!';
+////
+////            // Создаем сообщение
+////            $message = new AMQPMessage($messageText);
+////
+////            // Отправляем сообщение в очередь
+////            $channel->basic_publish($message, '', $queueName);
+////
+////            echo "Сообщение отправлено: '$messageText'\n";
+////
+////            # Добавляем оповещение
+////            $this->helper->setNotification(0, 'rabbitmq-send', 'Сообщение отправлено: '.$messageText);
+////
+////            // Закрываем соединение
+////            $channel->close();
+////            $connection->close();
 //
-//            echo "Сообщение отправлено: '$messageText'\n";
+//        } catch (Exception $e) {
 //
-//            # Добавляем оповещение
-//            $this->helper->setNotification(0, 'rabbitmq-send', 'Сообщение отправлено: '.$messageText);
-//
-//            // Закрываем соединение
-//            $channel->close();
-//            $connection->close();
-
-        } catch (Exception $e) {
-
-            echo "Ошибка: " . $e->getMessage() . "\n";
-        }
-    }
+//            echo "Ошибка: " . $e->getMessage() . "\n";
+//        }
+//    }
 
     public function get(): void
     {

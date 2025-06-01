@@ -89,15 +89,19 @@ class OrderController
      * @return void
      * @throws Exception
      */
-    public function create(): void
+    public function create(array $data = []): void
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+        # Если не переданы данные
+        if (!sizeof($data)) {
 
-        if ($data === null) {
+            $data = json_decode(file_get_contents('php://input'), true);
 
-            http_response_code(400);
-            echo json_encode(['error' => 'Invalid JSON data']);
-            return;
+            if ($data === null) {
+
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid JSON data']);
+                return;
+            }
         }
 
         try {
@@ -124,7 +128,7 @@ class OrderController
     /**
      * @OA\Get(
      *     path="/order",
-     *     summary="Получение списка оповещений оповещения",
+     *     summary="Получение списка оповещений",
      *     description="",
      *     tags={"Order | Сервис заказов"},
      *     security={{"cookieAuth": {}}},

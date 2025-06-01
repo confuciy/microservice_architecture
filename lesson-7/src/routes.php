@@ -3,9 +3,9 @@ use FastRoute\RouteCollector;
 
 $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
 
-    # RAGGIT-MQ
-    $r->addRoute('GET', '/rabbitmq-send', [\App\Service\Main\Controller\MainController::class, 'rabbitmqSend']);
-    $r->addRoute('GET', '/rabbitmq-receive', [\App\Service\Main\Controller\MainController::class, 'rabbitmqReceive']);
+//    # RAGGIT-MQ
+//    $r->addRoute('GET', '/rabbitmq-send', [\App\Service\Main\Controller\MainController::class, 'rabbitmqSend']);
+//    $r->addRoute('GET', '/rabbitmq-receive', [\App\Service\Main\Controller\MainController::class, 'rabbitmqReceive']);
 
     # MAIN
     $r->addRoute('GET', '/', [\App\Service\Main\Controller\MainController::class, 'get']);

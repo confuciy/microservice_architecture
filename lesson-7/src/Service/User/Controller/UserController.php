@@ -31,7 +31,7 @@ class UserController
         $this->helper->setNotification(0, 'get_rabbitmq_receive', 'Текст ответа: '.$content);
     }
 
-    # Редактирование профиля пользователя
+    # Страница редактирования профиля пользователя
     public function edit(): void
     {
         try {
@@ -93,7 +93,7 @@ class UserController
         }
     }
 
-    # Профиль пользователя
+    # Страница с профилем пользователя
     public function profile(): void
     {
         try {
@@ -366,14 +366,11 @@ class UserController
             $this->helper->setNotification($user['user_id'], 'create_user_ок', 'Пользователь с почтой '.$data['email'].' создан с id '.$user['user_id']);
 
 
-            ########## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            # Создаем аккаунт
 
             # Данные для отправки
-            $hash_default_salt = password_hash($user['user_id'].getenv('hash_default_salt'), PASSWORD_DEFAULT);
             $data = [
-                'url' => '/billing/create',
-                'method' => 'post',
-                'user_jwt' => 'salt_'.$hash_default_salt,
+                'action' => 'create',
                 'data' => [
                     'user_id' => $user['user_id']
                 ]
