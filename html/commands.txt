@@ -1071,8 +1071,14 @@ kubectl cp ./src/routes.php default/service-user-5475d84f45-q47nl:./src/routes.p
 kubectl cp ./src/index.php default/service-user-8467c874fb-fmxkq:./src/index.php
 
 
-kubectl cp ./src/Service/Notification/Controller/NotificationController.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Controller/NotificationController.php
+kubectl cp ./src/Service/Notification/Controller/NotificationController.php default/rabbitmq-notification-consumer-5d6d7c7d76-6c4jg:./src/Service/Notification/Controller/NotificationController.php
 kubectl cp ./src/Service/Notification/Model/Notification.php default/service-notification-567f6464dd-sgkx8:./src/Service/Notification/Model/Notification.php
+
+
+
+kubectl cp ./src/Service/Order/Controller/OrderController.php default/service-order-7c76f96694-lkccd:./src/Service/Order/Controller/OrderController.php
+
+kubectl cp ./src/Service/Billing/Controller/BillingController.php default/service-billing-7dcdbc69d8-vsm6l:./src/Service/Billing/Controller/BillingController.php
 
 ------------------------------------------------------------------------------------------------------------------
 
