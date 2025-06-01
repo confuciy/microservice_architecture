@@ -1013,7 +1013,6 @@ docker push confuciy/otus-lesson-7-stream-processing:latest
 # ОБНОВЛЕНИЕ ВСЕХ ОБРАЗОВ
 docker build -t confuciy/otus-lesson-7-stream-processing:php-app --target=php-app .
 docker build -t confuciy/otus-lesson-7-stream-processing:service-user --target=service-user .
-docker build -t confuciy/otus-lesson-7-stream-processing:service-consumer --target=service-consumer .
 docker build -t confuciy/otus-lesson-7-stream-processing:service-auth --target=service-auth .
 docker build -t confuciy/otus-lesson-7-stream-processing:service-notification --target=service-notification .
 docker build -t confuciy/otus-lesson-7-stream-processing:service-order --target=service-order .
@@ -1021,7 +1020,6 @@ docker build -t confuciy/otus-lesson-7-stream-processing:service-billing --targe
 
 docker push confuciy/otus-lesson-7-stream-processing:php-app
 docker push confuciy/otus-lesson-7-stream-processing:service-user
-docker push confuciy/otus-lesson-7-stream-processing:service-consumer
 docker push confuciy/otus-lesson-7-stream-processing:service-auth
 docker push confuciy/otus-lesson-7-stream-processing:service-notification
 docker push confuciy/otus-lesson-7-stream-processing:service-order
@@ -1034,10 +1032,6 @@ docker push confuciy/otus-lesson-7-stream-processing:php-app
 # SERVICE-USER
 docker build -t confuciy/otus-lesson-7-stream-processing:service-user --target=service-user .
 docker push confuciy/otus-lesson-7-stream-processing:service-user
-
-# SERVICE-USER-CONSUMER
-docker build -t confuciy/otus-lesson-7-stream-processing:service-consumer --target=service-consumer .
-docker push confuciy/otus-lesson-7-stream-processing:service-consumer
 
 # SERVICE-AUTH
 docker build -t confuciy/otus-lesson-7-stream-processing:service-auth --target=service-auth .
@@ -1062,25 +1056,23 @@ http://service-user.default.svc.cluster.local:80/user/rabbitmq-test
 ------------------------------------------------------------------------------------------------------------------
 
 # Замена файла в приложении (ПОВТОР)
-kubectl cp ./src/Service/Main/Controller/MainController.php default/php-app-676f9db5b6-flpls:./src/Service/Main/Controller/MainController.php
+kubectl cp ./src/Service/Main/Controller/MainController.php default/php-app-676f9db5b6-hng5t:./src/Service/Main/Controller/MainController.php
 kubectl cp ./src/Service/Health/Controller/HealthController.php default/service-auth-69c5db6dcc-8krx9:./src/Service/Health/Controller/HealthController.php
 
 kubectl cp ./src/Service/Auth/Controller/AuthController.php default/service-auth-849556fb99-vd6dm:./src/Service/Auth/Controller/AuthController.php
 kubectl cp ./src/Service/Auth/Model/Auth.php default/service-auth-849556fb99-tr8lq:./src/Service/Auth/Model/Auth.php
 
-kubectl cp ./src/Service/User/Controller/UserController.php default/service-user-8467c874fb-p8bcz:./src/Service/User/Controller/UserController.php
-kubectl cp ./src/Service/User/Model/User.php default/service-user-5475d84f45-dj9fl:./src/Service/User/Model/User.php
+kubectl cp ./src/Service/User/Controller/UserController.php default/service-user-8467c874fb-fmxkq:./src/Service/User/Controller/UserController.php
+kubectl cp ./src/Service/User/Model/User.php default/service-user-8467c874fb-fmxkq:./src/Service/User/Model/User.php
+kubectl cp ./src/Helper/Helper.php default/service-user-8467c874fb-h2pjb:./src/Helper/Helper.php
 
 kubectl cp ./src/routes.php default/service-user-5475d84f45-q47nl:./src/routes.php
 
-kubectl cp ./src/index.php default/service-user-8467c874fb-jml7f:./src/index.php
-
-
-kubectl cp ./src/RabbitMQ/ServiceUserReceive.php default/service-user-rabbitmq-consumer-6cf644866-d66v7:./src/RabbitMQ/ServiceUserReceive.php
+kubectl cp ./src/index.php default/service-user-8467c874fb-fmxkq:./src/index.php
 
 
 kubectl cp ./src/Service/Notification/Controller/NotificationController.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Controller/NotificationController.php
-kubectl cp ./src/Service/Notification/Model/Notification.php default/service-notification-56574479b9-qs9pf:./src/Service/Notification/Model/Notification.php
+kubectl cp ./src/Service/Notification/Model/Notification.php default/service-notification-567f6464dd-sgkx8:./src/Service/Notification/Model/Notification.php
 
 ------------------------------------------------------------------------------------------------------------------
 
@@ -1094,11 +1086,26 @@ docker exec -it php-8.2-fpm ./vendor/bin/openapi /var/www/lesson-7/src -l -o /va
 
 
 kubectl cp ./api/documentation/index.php default/php-app-676f9db5b6-rscvz:./api/documentation/index.php
-kubectl cp ./api/documentation/api.json default/php-app-676f9db5b6-jx65n:./api/documentation/api.json
+kubectl cp ./api/documentation/api.json default/php-app-676f9db5b6-hng5t:./api/documentation/api.json
 kubectl cp ./api/documentation/swagger-initializer.js default/php-app-676f9db5b6-8tfpw:./api/documentation/swagger-initializer.js
 kubectl cp ./api/swagger-ui/dist/swagger-initializer.js default/php-app-676f9db5b6-wfdw6:./api/swagger-ui/dist/swagger-initializer.js
 
 ------------------------------------------------------------------------------------------------------------------
+
+truncate table service_notification.notifications;
+truncate table service_order.orders;
+truncate table service_billing.billing;
+truncate table service_billing.billing_actions;
+truncate table service_user.users;
+truncate table service_auth.jwt_tokens;
+
+
+ALTER SEQUENCE service_notification.notification_id_seq RESTART 1;
+ALTER SEQUENCE service_order.orders_id_seq RESTART 1;
+ALTER SEQUENCE service_billing.billing_id_seq RESTART 1;
+ALTER SEQUENCE service_billing.billing_action_id_seq RESTART 1;
+ALTER SEQUENCE service_user.users_id_seq RESTART 1;
+ALTER SEQUENCE service_auth.jwt_token_id_seq RESTART 1;
 
 ------------------------------------------------------------------------------------------------------------------
 
