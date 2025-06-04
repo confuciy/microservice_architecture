@@ -63,7 +63,7 @@ helm uninstall php-app
 
 Методы сервисов описаны в документации - http://arch.homework/api/documentation/
 
-![interaction_of_services_2.png](./img/swagger_openapi_1.png)
+![swagger_openapi_1.png](./img/swagger_openapi_1.png)
 
 #### Тесты Postman
 #### Коллекция Postman
