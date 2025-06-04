@@ -28,8 +28,6 @@ try {
     # Callback-функция при получении сообщения
     $callback = function ($msg) use ($helper) {
 
-        ###$helper->setNotification(0, 'rabbitmq-order-receive', 'Callback-функция при получении сообщения');
-
         try {
 
             $msg_data = json_decode($msg->body, true);
@@ -55,13 +53,9 @@ try {
             # Подтверждаем только после успешной обработки
             $msg->ack();
 
-            ###$helper->setNotification(0, 'rabbitmq-order-receive', '[✓] Получено: '.$msg->body);
-
         } catch (Exception $e) {
 
             echo " [✗] Ошибка при отправке: ", $e->getMessage(), "\n";
-
-            ###$helper->setNotification(0, 'rabbitmq-order-receive', '[✗] Ошибка при отправке: '.$e->getMessage());
 
             # Отказываемся от сообщения с requeue=true
             $msg->nack(false, true);
@@ -100,8 +94,6 @@ try {
 } catch (Exception $e) {
 
     echo " [✗] Критическая ошибка: ", $e->getMessage(), "\n";
-
-    ###$helper->setNotification(1, 'rabbitmq-receive', 'Критическая ошибка: '.$e->getMessage());
 
     # Попытка корректно закрыть соединение при ошибке
     if (isset($channel)) {

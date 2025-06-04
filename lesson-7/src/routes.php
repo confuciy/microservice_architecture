@@ -39,13 +39,14 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/user/login', [\App\Service\User\Controller\UserController::class, 'login']);
     $r->addRoute('POST', '/user/auth', [\App\Service\User\Controller\UserController::class, 'auth']);
     $r->addRoute('GET', '/user/profile', [\App\Service\User\Controller\UserController::class, 'profile']);
-    $r->addRoute('GET', '/user/profile/edit', [\App\Service\User\Controller\UserController::class, 'profileEdit']);
+    $r->addRoute('GET', '/user/edit', [\App\Service\User\Controller\UserController::class, 'edit']);
     $r->addRoute('GET', '/user/exit', [\App\Service\User\Controller\UserController::class, 'exit']);
 
     # User - actions
     $r->addRoute('POST', '/user/create', [\App\Service\User\Controller\UserController::class, 'create']);
     $r->addRoute('GET', '/user/{userId:\d+}', [\App\Service\User\Controller\UserController::class, 'get']);
-    $r->addRoute('PUT', '/user/update', [\App\Service\User\Controller\UserController::class, 'update']);
+    $r->addRoute('PUT', '/user/{userId:\d+}', [\App\Service\User\Controller\UserController::class, 'update']);
+    $r->addRoute('POST', '/user/update', [\App\Service\User\Controller\UserController::class, 'update']);
     $r->addRoute('DELETE', '/user/delete', [\App\Service\User\Controller\UserController::class, 'delete']);
 });
 

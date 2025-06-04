@@ -21,7 +21,7 @@ class UserController
     }
 
     # Страница редактирования профиля пользователя
-    public function profileEdit()
+    public function edit()
     {
         try {
 
@@ -48,7 +48,8 @@ class UserController
                 echo '<p><a href="/">Главная</a> | <a href="/user/exit">Выход</a></p>';
                 echo '<br><br>';
 
-                echo '<form method="post" action="/user/edit">';
+                echo '<form method="post" action="/user/update">';
+                    echo '<input type="hidden" name="reload" value="1">';
                     echo '<table cellpadding="5" cellspacing="1" border="1">';
                     echo '<tr>';
                         echo '<td><b>Id</b></td>';
@@ -286,6 +287,18 @@ class UserController
         echo '<p><a href="/">Главная</a></p>';
         echo '<br><br>';
 
+            echo '<form method="post" action="/user/auth">';
+                echo '<input type="hidden" name="reload" value="1">';
+                echo '<input type="hidden" name="idempotency" value="xxx">';
+                echo 'Сумма заказа:<br><input name="email" type="text"><br>';
+                echo '<br>';
+                echo '<input type="submit" value="Создать заказ">';
+            echo '</form>';
+
+        echo '</div>';
+
+        echo '<br><br>';
+
         # Получаем заказы пользователя
         $order_list = $this->user->getOrderList();
 
@@ -420,16 +433,29 @@ class UserController
     {
         try {
 
+            # Получаем данные
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            if ($data === null and sizeof($_POST) > 0) {
+
+                # Данные пользователя
+                $data = $_POST;
+            }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
+
             if (
-                !isset($_POST['email']) or trim($_POST['email']) == ''
-                or !isset($_POST['password']) or trim($_POST['password']) == ''
+                !isset($data['email']) or trim($data['email']) == ''
+                or !isset($data['password']) or trim($data['password']) == ''
             ) {
                 http_response_code(401);
                 throw new \Exception('Проверьте свой Email или пароль');
             }
 
-            $email = trim($_POST['email']);
-            $password = trim($_POST['password']);
+            $email = trim($data['email']);
+            $password = trim($data['password']);
 
             $user = $this->user->getUserByEmailAndPassword($email, '*'.strtoupper(sha1(sha1($password, true))));
 
@@ -451,8 +477,6 @@ class UserController
                 'httponly' => true,  // Защита от XSS
                 'samesite' => 'Lax'
             ]);
-
-            $headers = apache_request_headers();
 
             if (isset($_POST['reload'])) {
 
@@ -595,44 +619,27 @@ class UserController
     {
         try {
 
-            $headers = apache_request_headers();
+            # Получаем данные
+            $data = json_decode(file_get_contents('php://input'), true);
 
-            # Добавляем оповещение
-            $this->helper->setNotification(0, 'create_user_function', 'Зашли в метод создания пользователя');
-
-            if (isset($headers['Postman-Token'])) {
-
-                $data = json_decode(file_get_contents('php://input'), true);
-
-                if ($data === null) {
-                    throw new \Exception('JSON поврежден');
-                }
-
-            } else {
-
-                if (!sizeof($_POST)) {
-                    throw new \Exception('JSON поврежден');
-                }
+            if ($data === null and sizeof($_POST) > 0) {
 
                 # Данные пользователя
                 $data = $_POST;
             }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
 
             if (
                 !isset($data['email']) or $data['email'] == ''
                 or !isset($data['password']) or $data['password'] == ''
             ) {
-                # Добавляем оповещение
-                $this->helper->setNotification(0, 'create_user_error', 'Нет данных о почте или пароле');
-
                 throw new \Exception('Пустой Email или пароль');
             }
 
             if ($this->user->checkUserExists($data['email']) == true) {
-
-                # Добавляем оповещение
-                $this->helper->setNotification(0, 'create_user_error', 'Пользователь с почтой '.$data['email'].' уже существует');
-
                 throw new \Exception('Пользователь с Email '.$data['email'].' уже существует');
             }
 
@@ -643,7 +650,7 @@ class UserController
             $user = $this->user->create($data);
 
             # Добавляем оповещение
-            $this->helper->setNotification($user['user_id'], 'create_user_ok', 'Пользователь с почтой '.$data['email'].' создан с id '.$user['user_id']);
+            $this->helper->setNotification($user['user_id'], 'create_user_ok', '[✓] Пользователь с почтой '.$data['email'].' создан с ID '.$user['user_id']);
 
 
             # Создаем аккаунт
@@ -765,33 +772,22 @@ class UserController
      * Обновление пользователя
      * @param int $userId
      */
-    public function update(int $userId)
+    public function update(int $userId = 0)
     {
         try {
 
-            $headers = apache_request_headers();
+            # Получаем данные
+            $data = json_decode(file_get_contents('php://input'), true);
 
-            if (isset($headers['Postman-Token'])) {
-
-                $data = json_decode(file_get_contents('php://input'), true);
-
-                if ($data === null) {
-
-                    http_response_code(400);
-                    throw new \Exception('JSON поврежден');
-                }
-
-            } else {
-
-                if (!sizeof($_POST)) {
-
-                    http_response_code(400);
-                    throw new \Exception('JSON поврежден');
-                }
+            if ($data === null and sizeof($_POST) > 0) {
 
                 # Данные пользователя
                 $data = $_POST;
             }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
 
             $jwt_token_data = $this->helper->getJWTtokenData();
 
@@ -800,6 +796,11 @@ class UserController
                 http_response_code(401);
                 throw new \Exception('Вы не авторизованы');
             }
+
+            if (empty($userId)) {
+                $userId = $jwt_token_data['user_id'];
+            }
+
             if ($jwt_token_data['user_id'] != $userId) {
 
                 http_response_code(401);
@@ -807,19 +808,21 @@ class UserController
             }
 
             # Обновляем пользователя
-            $user = $this->user->update($userId, $data);
+            $this->user->update($userId, $data);
 
-            # Добавляем оповещение
-            $this->helper->setNotification($userId, 'update_user_ok', 'Пользователь успешно обновлен');
+            if (isset($_POST['reload'])) {
 
-            if (isset($headers['Postman-Token'])) {
-
-                http_response_code(204);
-                echo json_encode($user);
+                header('Location: /user/profile');
 
             } else {
 
-                header('Location: /user/profile');
+                $headers = apache_request_headers();
+
+                if (isset($headers['Postman-Token'])) {
+
+                    http_response_code(204);
+
+                }
             }
 
             return;
@@ -836,7 +839,7 @@ class UserController
      * Удаление пользователя
      * @param int $userId
      */
-    public function delete(int $userId)
+    public function delete(int $userId = 0)
     {
         try {
 

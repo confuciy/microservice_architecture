@@ -137,6 +137,44 @@ class Order
         return json_decode($content, true);
     }
 
+    # Действие с суммой биллинг аккаунта
+    public function billingAmount(string $action, float $amount): array
+    {
+        if ($action == '') {
+            throw new \Exception('Не указано действие');
+        }
+        if ($amount <= 0) {
+            throw new \Exception('Сумма не может быть отрицательной или равной нулю');
+        }
+
+        // Формируем строку с кукой
+        $cookie_string = 'user_jwt=' . urlencode($_COOKIE['user_jwt']);
+
+        $ch = curl_init();
+        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+        curl_setopt($ch, CURLOPT_URL, getenv('host').'/billing/amount');
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['action' => $action, 'amount' => $amount], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json-patch+json',
+            'Cookie: ' . $cookie_string  // Передаем куку в заголовке
+        ]);
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);  // Альтернативный способ передачи куки
+        curl_setopt($ch, CURLOPT_NOBODY, 0);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+        #curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json-patch+json']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        $content = curl_exec($ch);
+
+        return json_decode($content, true);
+    }
+
 //    public function delete(int $id): array
 //    {
 //        $query = 'DELETE FROM users WHERE id = :id';

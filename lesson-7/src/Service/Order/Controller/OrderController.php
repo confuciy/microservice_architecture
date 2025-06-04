@@ -71,16 +71,21 @@ class OrderController
     {
         try {
 
-            # Если не переданы данные из BillingReceive
+            # Получаем данные
             if (!sizeof($data)) {
 
-                if (!sizeof($_POST)) {
-                    throw new \Exception('JSON поврежден');
-                }
+                $data = json_decode(file_get_contents('php://input'), true);
 
-                # Данные пользователя
-                $data = $_POST;
+                if ($data === null and sizeof($_POST) > 0) {
+
+                    # Данные пользователя
+                    $data = $_POST;
+                }
             }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
 
             if (!isset($data['user_id'])) {
 
@@ -105,35 +110,43 @@ class OrderController
                 throw new \Exception('Данные биллинг-аккаунта пусты');
             }
 
-            # Сумма заказа больше имеющихсы на средств
+            # Сумма заказа больше имеющихся средств
             if ($billing['amount'] < $data['amount']) {
 
                 # Добавляем оповещение
-                $this->helper->setNotification($data['user_id'], 'create_order_error', 'Сумма заказа ['.$data['amount'].'] больше имеющихся на биллинг-аккаунта средств ['.$billing['amount'].']');
+                $this->helper->setNotification($data['user_id'], 'create_order_error', '[✗] Сумма заказа ['.$data['amount'].'] больше имеющихся на биллинг-аккаунте средств ['.$billing['amount'].']');
 
-                throw new \Exception('Сумма заказа ['.$data['amount'].'] больше имеющихся на биллинг-аккаунта средств ['.$billing['amount'].']');
+                throw new \Exception('Сумма заказа ['.$data['amount'].'] больше имеющихся на биллинг-аккаунте средств ['.$billing['amount'].']');
+            }
+
+            # Уменьшаем сумму биллинг-аккаунта
+            $billing_amount = $this->order->billingAmount('minus', $data['amount']);
+
+            if (!isset($billing_amount['billing_id'])) {
+                throw new \Exception('Не удалось снять необходимую сумму');
             }
 
             # Создаем заказ
             $order = $this->order->create($data);
 
-            # Уменьшаем сумму биллинг аккаунта
-
-            # Данные для отправки
-            $data_billing = [
-                'action' => 'minus',
-                'data' => [
-                    'user_id' => $data['user_id'],
-                    'amount' => $data['amount']
-                ]
-            ];
-
-            # Создаем аккаунт в сервисе биллинга
-            # Отправляем сообщение в RabbitMQ
-            $this->helper->rabbitmqSend('service-billing', json_encode($data_billing));
+            /* {{{ */
+//            # Уменьшаем сумму биллинг аккаунта
+//
+//            # Данные для отправки
+//            $data_billing = [
+//                'action' => 'minus',
+//                'data' => [
+//                    'user_id' => $data['user_id'],
+//                    'amount' => $data['amount']
+//                ]
+//            ];
+//
+//            # Отправляем сообщение в RabbitMQ
+//            $this->helper->rabbitmqSend('service-billing', json_encode($data_billing));
+            /* }}} */
 
             # Добавляем оповещение
-            $this->helper->setNotification($data['user_id'], 'create_order_ok', 'Заказ на сумму '.$data['amount'].' успешно создан');
+            $this->helper->setNotification($data['user_id'], 'create_order_ok', '[✓] Заказ на сумму '.$data['amount'].' c ID '.$order['order_id'].' успешно создан');
 
             if (isset($_POST['reload'])) {
 

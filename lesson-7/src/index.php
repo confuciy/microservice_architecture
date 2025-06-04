@@ -91,6 +91,18 @@ switch ($routeInfo[0]) {
         http_response_code(404);
         $metrics->observeRequest($startTime, $httpMethod, 404);
         echo json_encode(['error' => 'Not found']);
+
+//        echo '<style>body, div, p {margin: 0}</style>';
+//        echo '<div style="width: 100%; background: lightblue;">
+//            <div style="padding: 10px;">
+//                <h1>arch.homework | <span style="color: #777;">404</span></h1>
+//            </div>
+//        </div>';
+//
+//        echo '<div style="padding: 10px;">';
+//            echo 'Не найдено';
+//        echo '</div>';
+
         break;
 
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
@@ -98,6 +110,18 @@ switch ($routeInfo[0]) {
         http_response_code(405);
         $metrics->observeRequest($startTime, $httpMethod, 405);
         echo json_encode(['error' => 'Method not allowed']);
+
+//        echo '<style>body, div, p {margin: 0}</style>';
+//        echo '<div style="width: 100%; background: lightpink;">
+//            <div style="padding: 10px;">
+//                <h1>arch.homework | <span style="color: #777;">405</span></h1>
+//            </div>
+//        </div>';
+//
+//        echo '<div style="padding: 10px;">';
+//            echo 'Метод не поддерживается';
+//        echo '</div>';
+
         break;
 
     case FastRoute\Dispatcher::FOUND:
@@ -133,6 +157,18 @@ switch ($routeInfo[0]) {
             $metrics->incError($httpMethod);
             $metrics->observeRequest($startTime, $httpMethod, 500);
             echo json_encode(['error' => 'Internal Server Error']);
+
+//            echo '<style>body, div, p {margin: 0}</style>';
+//            echo '<div style="width: 100%; background: lightpink;">
+//                <div style="padding: 10px;">
+//                    <h1>arch.homework | <span style="color: #777;">500</span></h1>
+//                </div>
+//            </div>';
+//
+//            echo '<div style="padding: 10px;">';
+//                echo $e->getMessage();
+//            echo '</div>';
+
             return;
         }
 

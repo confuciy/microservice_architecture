@@ -123,8 +123,7 @@ class User
         try {
 
             if (!isset($data['email']) or !isset($data['password'])) {
-
-                throw new \Exception('Create User Error');
+                throw new \Exception('Ошибка создания пользователя');
             }
 
             $query = 'INSERT INTO users (username, first_name, last_name, email, phone, password, address)
@@ -174,15 +173,13 @@ class User
     public function update(int $userId, array $data): array
     {
         $query = 'UPDATE users
-          SET username = :username, first_name = :first_name, last_name = :last_name, email = :email, phone = :phone, address = :address
+          SET first_name = :first_name, last_name = :last_name, phone = :phone, address = :address
           WHERE user_id = :user_id';
         $statement = $this->pdo->prepare($query);
         $statement->execute([
             ':user_id' => $userId,
-            ':username' => $data['username'],
             ':first_name' => $data['first_name'],
             ':last_name' => $data['last_name'],
-            ':email' => $data['email'],
             ':phone' => $data['phone'],
             ':address' => $data['address']
         ]);

@@ -72,15 +72,21 @@ class NotificationController
     {
         try {
 
-            # Если не переданы данные
+            # Получаем данные
             if (!sizeof($data)) {
 
                 $data = json_decode(file_get_contents('php://input'), true);
 
-                if ($data === null) {
-                    throw new \Exception('JSON поврежден');
+                if ($data === null and sizeof($_POST) > 0) {
+
+                    # Данные пользователя
+                    $data = $_POST;
                 }
             }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
 
             $notification = $this->notification->create($data);
 

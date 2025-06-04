@@ -1,27 +1,29 @@
-# ДЗ: Backend for frontends. Apigateway
+# ДЗ: Stream processing
 
 ## Окружение
 #### DockerHub
-- https://hub.docker.com/repository/docker/confuciy/otus-lesson-6-apigateway/general
+- https://hub.docker.com/repository/docker/confuciy/otus-lesson-7-stream-processing/general
 
 Приложение собрано из нескольких сервисов, каждый из своего образа.
 ```
 Образы:
-docker pull confuciy/otus-lesson-6-apigateway:php-app
-docker pull confuciy/otus-lesson-6-apigateway:service-user
-docker pull confuciy/otus-lesson-6-apigateway:service-auth
-docker pull confuciy/otus-lesson-6-apigateway:service-notification
+docker pull confuciy/otus-lesson-7-stream-processing:php-app
+docker pull confuciy/otus-lesson-7-stream-processing:service-user
+docker pull confuciy/otus-lesson-7-stream-processing:service-auth
+docker pull confuciy/otus-lesson-7-stream-processing:service-notification
+docker pull confuciy/otus-lesson-7-stream-processing:service-order
+docker pull confuciy/otus-lesson-7-stream-processing:service-billing
 ```
 Для удобства все образы создаются из одного Dockerfile с разбивкой на target.
 ```
 Например:
-docker build -t confuciy/otus-lesson-6-apigateway:service-user --target=service-user .
+docker build -t confuciy/otus-lesson-7-stream-processing:service-user --target=service-user .
 ```
 
 ![pods_1.png](./img/pods_1.png)
 
 #### GitHub
-- https://github.com/confuciy/microservice_architecture/tree/main/lesson-6
+- https://github.com/confuciy/microservice_architecture/tree/main/lesson-7
 - `git clone https://github.com/confuciy/microservice_architecture.git <your_folder>`
 
 #### Настройки
@@ -51,24 +53,24 @@ helm uninstall php-app
 
 #### Описание архитектурного решения и схема взаимодействия сервисов
 
-Apigateway на основе ingress-nginx с аутентификацией пользователей по JWT-токенам.
-
 ![interaction_of_services_2.png](./img/interaction_of_services_2.png)
 
-##### Схема взаимодействия сервисов на примере авторизации и просмотра профиля пользователя
+##### Схема взаимодействия сервисов на примере создания заказа
 
 ![interaction_of_services.png](./img/interaction_of_services.png)
+
+#### Swagger (OpenAPI)
+
+Методы сервисов описаны в документации - http://arch.homework/api/documentation/
+
+![interaction_of_services_2.png](./img/swagger_openapi_1.png)
 
 #### Тесты Postman
 #### Коллекция Postman
 - postman-collection.json
 - base_url = http://arch.homework
 - id = 0
-- first_user_id = 0
 - email_iterator = 0
-- second_user_id = 0
-
-Для демонстрации через Postman добавлен путь отображения профиля пользовтеля через GET /user/{{id_пользователя}}
 
 ```
 newman run postman_collection.json
@@ -77,54 +79,46 @@ newman run postman_collection.json
 ![newman_1.png](./img/newman_1.png)
 
 Сценарий:
-- регистрация пользователя 1;
+- создание пользователя, также создается биллинг-аккаунт;
 
 ![postman_1.png](./img/postman_1.png)
 
-- получение профиля пользователя 1 недоступно без логина;
+- вход пользователя;
 
 ![postman_2.png](./img/postman_2.png)
 
-- изменение профиля пользователя 1 недоступно без логина;
+- просмотр баланса биллинг-аккаунта;
 
 ![postman_3.png](./img/postman_3.png)
 
-- вход пользователя 1;
+- пополнение баланса биллинг-аккаунта;
 
 ![postman_4.png](./img/postman_4.png)
 
-- получение профиля пользователя 1
+- просмотр баланса биллинг-аккаунта после пополнения;
 
 ![postman_5.png](./img/postman_5.png)
 
-- изменение профиля пользователя 1;
+- создаем заказ, на который хватает средств;
 
 ![postman_6.png](./img/postman_6.png)
 
-- проверка, что профиль пользователя 1 поменялся;
+- просмотр баланса биллинг-аккаунта;
 
 ![postman_7.png](./img/postman_7.png)
 
-- выход пользователя 1;
+- просмотр оповещений;
 
 ![postman_8.png](./img/postman_8.png)
 
-- регистрация пользователя 2;
+- создаем заказ, на который не хватает средств;
 
 ![postman_9.png](./img/postman_9.png)
 
-- вход пользователя 2;
+- просмотр баланса биллинг-аккаунта;
 
 ![postman_10.png](./img/postman_10.png)
 
-- проверка, что пользователь 2 не имеет доступа на чтение профиля пользователя 1;
+- просмотр оповещений;
 
 ![postman_11.png](./img/postman_11.png)
-
-- проверка, что пользователь 2 не имеет доступа на редактирование профиля пользователя 1.
-
-![postman_12.png](./img/postman_12.png)
-
-- выход пользователя 2;
-
-![postman_13.png](./img/postman_13.png)

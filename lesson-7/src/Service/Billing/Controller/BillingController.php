@@ -68,27 +68,21 @@ class BillingController
     {
         try {
 
-            # Если не переданы данные из BillingReceive
+            # Получаем данные
             if (!sizeof($data)) {
 
-                if (isset($headers['Postman-Token'])) {
+                $data = json_decode(file_get_contents('php://input'), true);
 
-                    $data = json_decode(file_get_contents('php://input'), true);
-
-                    if ($data === null) {
-                        throw new \Exception('JSON поврежден');
-                    }
-
-                } else {
-
-                    if (!sizeof($_POST)) {
-                        throw new \Exception('JSON поврежден');
-                    }
+                if ($data === null and sizeof($_POST) > 0) {
 
                     # Данные пользователя
                     $data = $_POST;
                 }
             }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
 
             if ($this->billing->checkBillingExists($data['user_id']) == true) {
                 throw new \Exception('Биллниг-аккаунт пользователя '.$data['user_id'].' уже существует');
@@ -97,8 +91,7 @@ class BillingController
             $billing = $this->billing->create($data);
 
             http_response_code(201);
-            echo json_encode($billing);
-            return;
+            return json_encode($billing);
 
         } catch (\Throwable $e) {
 
@@ -228,16 +221,21 @@ class BillingController
     {
         try {
 
-            # Если не переданы данные из BillingReceive
+            # Получаем данные
             if (!sizeof($data)) {
 
-                if (!sizeof($_POST)) {
-                    throw new \Exception('JSON поврежден');
-                }
+                $data = json_decode(file_get_contents('php://input'), true);
 
-                # Данные пользователя
-                $data = $_POST;
+                if ($data === null and sizeof($_POST) > 0) {
+
+                    # Данные пользователя
+                    $data = $_POST;
+                }
             }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
 
             if (!isset($data['user_id'])) {
 
@@ -261,7 +259,7 @@ class BillingController
             }
 
             if ($data['amount'] <= 0) {
-                throw new \Exception('Сумма должна быть больше нуля');
+                throw new \Exception('Сумма пополнения должна быть больше нуля');
             }
 
             # Изменение суммы биллниг-аккаунта
