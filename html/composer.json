@@ -1,6 +1,7 @@
 {
   "require": {
-    "verot/class.upload.php": "*"
+    "verot/class.upload.php": "*",
+    "php-amqplib/php-amqplib": "^3.2"
   },
   "autoload": {
     "psr-4": {

@@ -61,7 +61,6 @@
             if ($dir_name == '.' or $dir_name == '..') {
                 continue;
             }
-
             # GET
             if (!isset($_GET['family']) and preg_match('/^\d{4}$/', $dir_name) == true) {
                 continue;
@@ -77,7 +76,7 @@
             if (sizeof($image_list) > 0) {
 
                 $gallery_html .= '<div data-dir="'.$dir_image.'" class="gallery-title" style="padding-left: '.$padding_left.'px;'.($dir_name != 'unsorted'?' cursor: pointer;':'').'"'.($dir_name != 'unsorted'?' onclick="showGallery(this);"':'').'>'.($padding_left > 0?'|_ ':'').$dir_name.($dir_name != 'unsorted'?' &Darr;':' &swarhk;').'</div>';
-                $gallery_html .= '<div class="gallery" style="'.($dir_name != 'unsorted'?' display: none;':'').'" data-dir-id="'.$dir_image.'">';
+                $gallery_html .= '<div class="gallery"'.($dir_name != 'unsorted'?' style="display: none;"':'').' data-dir-id="'.$dir_image.'">';
 
                     # Family
                     if (isset($_GET['family'])) {
@@ -204,7 +203,6 @@
                 const file = e.target.files[0];
                 if (!file) {
 
-                    alert(111);
                     return;
                 }
 
@@ -238,11 +236,12 @@
                     // Если нужна авторизация:
                     // headers: { 'Authorization': 'Bearer YOUR_TOKEN' }
                 }).then(response => {
-                    if (!response.ok) {
 
-                        alert('Ошибка загрузки');
-                        //throw new Error('Ошибка загрузки');
-                    }
+//                    if (!response.ok) {
+//
+//                        alert('Ошибка загрузки');
+//                        //throw new Error('Ошибка загрузки');
+//                    }
                     return;
                 })
                 .then(data => {

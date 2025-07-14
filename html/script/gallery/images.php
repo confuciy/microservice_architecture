@@ -13,7 +13,7 @@ if (isset($_POST['dir'])) {
     if (sizeof($image_list_arr) > 0) {
 
         foreach ($image_list_arr as $image) {
-            $image_list .= '<img src="/' . $_POST['dir'] . rawurlencode(basename($image)) . '">';
+            $image_list .= '<img src="/' . $_POST['dir'] . rawurlencode(basename($image)) . '" onclick="$(this).toggleClass(\'full\');">';
         }
     }
 

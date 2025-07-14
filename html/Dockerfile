@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y \
     make \
     libtool \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pdo_mysql mysqli zip gd intl gettext mbstring iconv
+    && docker-php-ext-install pdo pdo_pgsql pdo_mysql mysqli zip gd intl gettext mbstring iconv sockets \
+    && docker-php-ext-enable sockets
     #&& pecl install redis && docker-php-ext-enable redis
 
 # Устанавливаем настройки PHP
