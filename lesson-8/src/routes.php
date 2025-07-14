@@ -3,10 +3,6 @@ use FastRoute\RouteCollector;
 
 $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
 
-//    # RAGGIT-MQ
-//    $r->addRoute('GET', '/rabbitmq-send', [\App\Service\Main\Controller\MainController::class, 'rabbitmqSend']);
-//    $r->addRoute('GET', '/rabbitmq-receive', [\App\Service\Main\Controller\MainController::class, 'rabbitmqReceive']);
-
     # MAIN
     $r->addRoute('GET', '/', [\App\Service\Main\Controller\MainController::class, 'get']);
     $r->addRoute('GET', '/health', [\App\Service\Health\Controller\HealthController::class, 'get']);
@@ -20,23 +16,22 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/billing', [\App\Service\Billing\Controller\BillingController::class, 'create']);
     $r->addRoute('GET', '/billing', [\App\Service\Billing\Controller\BillingController::class, 'get']);
     $r->addRoute('POST', '/billing/amount', [\App\Service\Billing\Controller\BillingController::class, 'amount']);
-    $r->addRoute('POST', '/billing/compensate', [\App\Service\Billing\Controller\BillingController::class, 'compensate']); # COMPENSATE
 
     # Warehouse
     $r->addRoute('POST', '/warehouse', [\App\Service\Warehouse\Controller\WarehouseController::class, 'create']);
     $r->addRoute('GET', '/warehouse', [\App\Service\Warehouse\Controller\WarehouseController::class, 'get']);
     $r->addRoute('POST', '/warehouse/order', [\App\Service\Warehouse\Controller\WarehouseController::class, 'order']);
-    $r->addRoute('POST', '/warehouse/compensate', [\App\Service\Warehouse\Controller\WarehouseController::class, 'compensate']); # COMPENSATE
 
     # Delivery
     $r->addRoute('POST', '/delivery', [\App\Service\Delivery\Controller\DeliveryController::class, 'create']);
     $r->addRoute('GET', '/delivery', [\App\Service\Delivery\Controller\DeliveryController::class, 'get']);
-    $r->addRoute('POST', '/delivery/compensate', [\App\Service\Delivery\Controller\DeliveryController::class, 'compensate']); # COMPENSATE
+    $r->addRoute('POST', '/delivery/order', [\App\Service\Delivery\Controller\DeliveryController::class, 'order']);
+    $r->addRoute('POST', '/delivery/delivered', [\App\Service\Delivery\Controller\DeliveryController::class, 'delivered']);
 
     # Order
     $r->addRoute('POST', '/order', [\App\Service\Order\Controller\OrderController::class, 'create']);
     $r->addRoute('GET', '/order', [\App\Service\Order\Controller\OrderController::class, 'get']);
-    $r->addRoute('GET', '/order/check', [\App\Service\Order\Controller\OrderController::class, 'check']);
+    $r->addRoute('POST', '/order/check', [\App\Service\Order\Controller\OrderController::class, 'check']);
 
     # Auth
     $r->addRoute('POST', '/auth/token', [\App\Service\Auth\Controller\AuthController::class, 'token']);

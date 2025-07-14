@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use App\Helper\Helper;
-use App\Service\Order\Controller\OrderController;
+###use App\Service\Order\Controller\OrderController;
 use App\Service\Order\Model\Order;
 
 # Настройки подключения к RabbitMQ
@@ -33,9 +33,7 @@ try {
 
             $msg_data = json_decode($msg->body, true);
 
-            if (
-                isset($msg_data['action']) and $msg_data['action'] == 'create'
-            ) {
+            if (isset($msg_data['action']) and $msg_data['action'] == 'create') {
 
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
@@ -52,9 +50,9 @@ try {
             }
 
             # [SAGA]
-            if (
-                isset($msg_data['type']) and $msg_data['type'] == 'saga'
-            ) {
+            if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
+
+                $helper->setNotification($msg_data['data']['user_id'], 'saga_order_body', $msg->body);
 
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
@@ -76,7 +74,7 @@ try {
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'billing_status', 1);
 
                             # Обновляем заказ - статус "Оплачен"
-                            $order_model->updateSaga($msg_data['data']['order_id'], 'status', 2);
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'status', 2);
 
                             $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✓] Заказ c ID = '.$msg_data['data']['order_id'].' успешно оплачен');
 
@@ -98,7 +96,7 @@ try {
                                 ];
 
                                 # Отправляем сообщение в RabbitMQ
-                                $this->helper->rabbitmqSend('service-warehouse', json_encode($data_warehouse));
+                                $helper->rabbitmqSend('service-warehouse', json_encode($data_warehouse));
                             /* }}} */
 
                         }
@@ -110,7 +108,10 @@ try {
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'billing_status', 2);
 
                             # Обновляем заказ - статус "Отменен"
-                            $order_model->updateSaga($msg_data['data']['order_id'], 'status', 6);
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'status', 6);
+
+                            # Обновляем заказ - текст ошибки заказа
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'error_text', $msg_data['data']['error_text']);
 
                             $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✗] Заказ c ID = '.$msg_data['data']['order_id'].' отменен');
                         }
@@ -126,7 +127,7 @@ try {
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'billing_status', 2);
 
                             # Обновляем заказ - статус "Отменен"
-                            $order_model->updateSaga($msg_data['data']['order_id'], 'status', 6);
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'status', 6);
 
                             $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✗] Заказ c ID = '.$msg_data['data']['order_id'].' отменен, средства возвращены');
                         }
@@ -146,12 +147,12 @@ try {
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'warehouse_status', 1);
 
                             # Обновляем заказ - статус "Товары зарезервированы"
-                            $order_model->updateSaga($msg_data['data']['order_id'], 'status', 3);
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'status', 3);
 
-                            $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✓] Товар на складе для заказа c ID = '.$msg_data['data']['order_id'].' успешно забронирован');
+                            $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✓] Товар на складе для заказа c ID = '.$msg_data['data']['order_id'].' успешно зарезервирован');
 
                             /* {{{ */
-                                # Бронируем товары на складе
+                                # Бронируем курьера
 
                                 # Данные для отправки
                                 $data_warehouse = [
@@ -168,7 +169,7 @@ try {
                                 ];
 
                                 # Отправляем сообщение в RabbitMQ
-                                $this->helper->rabbitmqSend('service-warehouse', json_encode($data_warehouse));
+                                $helper->rabbitmqSend('service-delivery', json_encode($data_warehouse));
                             /* }}} */
 
                         }
@@ -178,6 +179,9 @@ try {
 
                             # Обновляем SAGA
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'warehouse_status', 2);
+
+                            # Обновляем заказ - текст ошибки заказа
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'error_text', $msg_data['data']['error_text']);
 
                             $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✗] Бронирование товаров на складе для заказа c ID = '.$msg_data['data']['order_id'].' отменено');
 
@@ -201,7 +205,7 @@ try {
                                 ];
 
                                 # Отправляем сообщение в RabbitMQ
-                                $this->helper->rabbitmqSend('service-billing', json_encode($data_warehouse));
+                                $helper->rabbitmqSend('service-billing', json_encode($data_warehouse));
                             /* }}} */
                         }
                     }
@@ -226,7 +230,7 @@ try {
                                 # Удаление резерва товара
 
                                 # Данные для отправки
-                                $data_warehouse = [
+                                $data_billing = [
                                     'type' => 'saga',
                                     'data' => [
                                         'action' => 'plus',
@@ -240,7 +244,7 @@ try {
                                 ];
 
                                 # Отправляем сообщение в RabbitMQ
-                                $this->helper->rabbitmqSend('service-billing', json_encode($data_warehouse));
+                                $helper->rabbitmqSend('service-billing', json_encode($data_billing));
                             /* }}} */
                         }
                     }
@@ -261,7 +265,7 @@ try {
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'status', 1);
 
                             # Обновляем заказ - статус "Ожидает доставку"
-                            $order_model->updateSaga($msg_data['data']['order_id'], 'status', 4);
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'status', 4);
 
                             $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✓] Товары заказа c ID = '.$msg_data['data']['order_id'].' ожидают доставку');
                         }
@@ -271,6 +275,9 @@ try {
 
                             # Обновляем SAGA
                             $order_model->updateSaga($msg_data['data']['order_saga_id'], 'delivery_status', 2);
+
+                            # Обновляем заказ - текст ошибки заказа
+                            $order_model->updateOrder($msg_data['data']['order_id'], 'error_text', $msg_data['data']['error_text']);
 
                             $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✗] Доставка товаров для заказа c ID = '.$msg_data['data']['order_id'].' отменена');
 
@@ -294,17 +301,33 @@ try {
                                 ];
 
                                 # Отправляем сообщение в RabbitMQ
-                                $this->helper->rabbitmqSend('service-warehouse', json_encode($data_warehouse));
+                                $helper->rabbitmqSend('service-warehouse', json_encode($data_warehouse));
                             /* }}} */
                         }
                     }
 
-                    # Товар доставлен
-                    if ($msg_data['data']['status'] == 'delivered') {
+//                    # Товар доставлен
+//                    if ($msg_data['data']['status'] == 'delivered') {
+//
+//                        # Обновляем заказ - статус "Доставлен"
+//                        $order_model->updateSaga($msg_data['data']['order_id'], 'status', 5);
+//                    }
+                }
+            }
 
-                        # Обновляем заказ - статус "Доставлен"
-                        $order_model->updateSaga($msg_data['data']['order_id'], 'status', 5);
-                    }
+            if (isset($msg_data['action']) and $msg_data['action'] == 'delivered') {
+
+                if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
+
+                    # Отправляем запрос в сервис
+                    $order_model = new Order();
+
+                    # Обновляем заказ - статус "Доставлен"
+                    $order_model->updateOrder($msg_data['data']['order_id'], 'status', 5);
+
+                    echo " [✓] Заказ c ID = ".$msg_data['data']['order_id']." успешно доставлен\n";
+
+                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-order-receive', '[✓] Заказ c ID = '.$msg_data['data']['order_id'].' успешно доставлен');
                 }
             }
 

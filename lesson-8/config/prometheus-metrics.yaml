@@ -22,6 +22,26 @@
   metrics_path: /metrics  # Путь к метрикам экспортера
   static_configs:
   - targets: ['metrics-nginx-exporter-service-auth:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-billing'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-billing:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-delivery'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-delivery:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-notification'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-notification:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-order'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-order:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-warehouse'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-warehouse:9113']  # Адрес Nginx Exporter
 
 # api-metrics
 - job_name: 'api-metrics-php-app'

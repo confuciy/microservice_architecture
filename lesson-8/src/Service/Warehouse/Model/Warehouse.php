@@ -33,19 +33,19 @@ class Warehouse
 
                 $warehouse = $this->get($warehouse_item['warehouse_id']);
 
-                $query = 'INSERT INTO warehouse_actions (user_id, order_id) 
-                  VALUES (:user_id, :order_id)';
+                $query = 'INSERT INTO warehouse_actions (warehouse_id, order_id, action, count, amount, status) 
+                  VALUES (:warehouse_id, :order_id, :action, :count, :amount, :status)';
                 $statement = $this->pdo->prepare($query);
                 $statement->execute([
                     ':warehouse_id' => $warehouse_item['warehouse_id'],
                     ':order_id' => $data['order_id'],
                     ':action' => 'minus',
                     ':count' => $warehouse_item['count'],
-                    ':amount' => $warehouse['amount'],
+                    ':amount' => ($warehouse['price'] * $warehouse_item['count']),
                     ':status' => 1
                 ]);
 
-                $warehouse_count[$warehouse_item['warehouse_id']] = $warehouse['count'];
+                $warehouse_count[$warehouse_item['warehouse_id']] = $warehouse_item['count'];
             }
 
             # Изменяем кол-во товара на складе
@@ -97,19 +97,19 @@ class Warehouse
 
                 $warehouse = $this->get($warehouse_item['warehouse_id']);
 
-                $query = 'INSERT INTO warehouse_actions (user_id, order_id) 
-                  VALUES (:user_id, :order_id)';
+                $query = 'INSERT INTO warehouse_actions (warehouse_id, order_id, action, count, amount, status) 
+                  VALUES (:warehouse_id, :order_id, :action, :count, :amount, :status)';
                 $statement = $this->pdo->prepare($query);
                 $statement->execute([
                     ':warehouse_id' => $warehouse_item['warehouse_id'],
                     ':order_id' => $data['order_id'],
                     ':action' => 'plus',
                     ':count' => $warehouse_item['count'],
-                    ':amount' => $warehouse['amount'],
+                    ':amount' => ($warehouse['price'] * $warehouse_item['count']),
                     ':status' => 1
                 ]);
 
-                $warehouse_count[$warehouse_item['warehouse_id']] = $warehouse['count'];
+                $warehouse_count[$warehouse_item['warehouse_id']] = $warehouse_item['count'];
             }
 
             # Изменяем кол-во товара на складе
@@ -155,14 +155,15 @@ class Warehouse
               warehouse.photo, (warehouse.price * warehouse_actions.count) as price_total 
               FROM warehouse_actions 
               JOIN warehouse ON warehouse.warehouse_id = warehouse_actions.warehouse_id
-              WHERE warehouse_actions.order_id = :order_id';
+              WHERE warehouse_actions.order_id = :order_id 
+              AND warehouse_actions.action = \'minus\'';
             $statement = $this->pdo->prepare($query);
             $statement->execute([':order_id' => $order_id]);
             $warehouse = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-            if (!$warehouse) {
-                throw new \Exception("Заказ не найден");
-            }
+//            if (!$warehouse) {
+//                throw new \Exception("Заказ не найден");
+//            }
 
             return $warehouse;
 
@@ -186,11 +187,16 @@ class Warehouse
                 $statement->execute([':warehouse_id' => $warehouse_id]);
                 $warehouse = $statement->fetch(PDO::FETCH_ASSOC);
 
+                $new_count = ($action == 'minus'?($warehouse['count'] - $count):($warehouse['count'] + $count));
+
                 $query = 'UPDATE warehouse 
                   SET count = :count
                   WHERE warehouse_id = :warehouse_id';
                 $statement = $this->pdo->prepare($query);
-                $statement->execute(['count' => ($action == 'minus'?($warehouse['count'] - $count):($warehouse['count'] + $count)), ':warehouse_id' => $warehouse_id]);
+                $statement->execute([
+                    'count' => $new_count,
+                    ':warehouse_id' => $warehouse_id
+                ]);
             }
 
             return;

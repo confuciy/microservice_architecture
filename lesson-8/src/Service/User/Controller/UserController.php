@@ -379,7 +379,18 @@ class UserController
         echo '<div style="padding: 10px;">';
 
             echo '<p><a href="/">Главная</a></p>';
-            echo '<br>';
+            echo '<br><br>';
+
+                # Получаем биллинг-аккаунт
+                $billing = $this->user->getBilling();
+
+                if (sizeof($billing) > 0) {
+
+                    echo '<div style="padding: 5px; background: lightgrey;">
+                            Текущая сумма биллинг-аккаунта: <span style="font-size: 14px; font-weight: bold;" id="billing_amount">'.$billing['amount'].'</span>
+                        </div>';
+                    echo '<br><br>';
+                }
 
                 echo '<form method="post" action="/order">';
                     echo '<input type="hidden" name="reload" value="1">';
@@ -410,6 +421,8 @@ class UserController
                                         echo '<br><br>';
                                         echo '<span id="warehouse-price"><b>'.$warehouse['price'].'</b>₽</span>';
                                         echo '<br><br>';
+                                        echo '<span id="warehouse-count" style="color: #5e626f;">осталось на складе: <b>'.$warehouse['count'].'</b></span>';
+                                        echo '<br><br>';
                                         echo '<span id="warehouse_button_'.$warehouse['warehouse_id'].'" onclick="setBasket(this);" 
                                             style="border: 1px solid gray; border-radius: 3px; padding: 2px 5px;">Добавить в корзину</span>';
                                     echo '</div>';
@@ -424,7 +437,7 @@ class UserController
                                 echo '<div id="warehouse-item-list" style="margin-top: 10px;"></div>';
 
                                 echo '<div style="margin-top: 30px;">';
-                                    echo '<input type="button" value="Создать заказ" onclick="createOrder();">';
+                                    echo '<input type="button" value="Создать заказ" onclick="checkOrder();">';
                                 echo '</div>';
 
                             echo '</div>';
@@ -445,7 +458,7 @@ class UserController
                                 $order_status = [
                                     0 => "новый",
                                     1 => "ожидает оплаты",
-                                    2 => "оплаче",
+                                    2 => "оплачен",
                                     3 => "ожидает доставки",
                                     5 => "доставлен",
                                     6 => "отменен"
@@ -455,21 +468,36 @@ class UserController
 
                                     echo '<div style="border: 1px solid #ddd; padding: 10px;">';
 
-                                        echo '<b>Заказ №'.$order['order_id'].' от '.date('d.m.Y H:i:s', strtotime(substr($order['date_insert'], 0, 19))).'</b><br>';
-                                        echo '<span style="color: #cccccc; font-size: 11px;">'.$order['idempotency'].'</span><br><br>';
+                                        echo '<b>Заказ №' . $order['order_id'] . ' от ' . date('d.m.Y H:i:s', strtotime(substr($order['date_insert'], 0, 19))) . '</b><br>';
+                                        echo '<span style="color: #cccccc; font-size: 11px;">' . $order['idempotency'] . '</span><br><br>';
 
-                                        echo 'Статус: <b>'.$order_status[$order['status']].'</b><br>';
-                                        echo 'Стоимость: <b>'.$order['amount'].'</b>₽<br><br>';
+                                        echo 'Статус: <b>' . $order_status[$order['status']] . '</b><br>';
+                                        echo 'Стоимость: <b>' . $order['amount'] . '</b>₽<br><br>';
 
-                                        echo 'Товары:<br>';
-                                        echo '<div style="display: inline-grid">';
-                                            foreach ($order['warehouse_action_list'] as $warehouse_action) {
-                                                echo '<div style="clear: both;">';
+                                        if ($order['status'] >= 3) {
+
+                                            if ($order['status'] == 6) {
+
+                                                echo '<span style="color: red;">' . $order['error_text'] . '</span>';
+
+                                                echo '<br><br>';
+                                            }
+
+                                            echo 'Товары:<br>';
+                                            echo '<div style="display: inline-grid">';
+                                                foreach ($order['warehouse_action_list'] as $warehouse_action) {
+                                                    echo '<div style="clear: both;">';
                                                     echo '<div style="float: left;"><img src="/img/' . $warehouse_action['photo'] . '" width="40"></div>';
                                                     echo '<div style="float: left; padding: 5px 10px;">' . $warehouse_action['descr'] . ' <small>х</small> ' . $warehouse_action['count'] . ' = <b>' . $warehouse_action['price_total'] . '</b>₽</div>';
-                                                echo '</div>';
-                                            }
-                                        echo '</div>';
+                                                    echo '</div>';
+                                                }
+                                            echo '</div>';
+
+                                        } else {
+
+                                            echo '<span style="color: #5e626f;">Товары появятся, после того, как будут успешно зарезервированы.</span>';
+                                        }
+
                                     echo '</div>';
                                 }
 
@@ -493,33 +521,117 @@ class UserController
             var warehouse_item_list = [];
             
             // Создание заказа
-            function createOrder() {
+            function createOrder(idempotency) {
               
+                // Счетчик
                 var count_total = 0;
+                
+                // Элементы карзины
+                var order_item_list = [];
                 
                 Object.keys(warehouse_item_list).forEach(function(key) {  
                     
-                    count_total += warehouse_item_list[key].count;
+                    if(warehouse_item_list[key].name) { 
+                        order_item_list[count_total] = warehouse_item_list[key];
+                        count_total += 1;
+                    }
                 });
                 
                 if (count_total > 0) {
+               
+                    $.ajax({
+                        url: "/order",
+                        dataType: "json",
+                        type: "POST",
+                        data: ({ "idempotency": idempotency, "warehouse_list": JSON.stringify(order_item_list) }),
+                        async: false,
+                        xhrFields: {
+                            withCredentials: true // Ключевая опция для отправки куки
+                        },
+                        success: function(data) {
+                        
+                            location.reload();                            
+                        },
+                        error: function (xhr) {
+    
+                            try {
+                                 var response = JSON.parse(xhr.responseText);
+                                 if (response.error) {
+                                     alert(response.error);
+                                 } else {
+                                     alert(xhr.responseText);
+                                 }
+                             } catch (e) {
+                                 alert(xhr.responseText);
+                             }
+                        }
+                    });
+                    
+                } else {
                 
+                    alert("Добавьте товар в корзину");
+                }
+            }
+            
+            // Проверка заказа
+            function checkOrder() {
+              
+                // Счетчик
+                var count_total = 0;
+                
+                // Элементы карзины
+                var order_item_list = [];
+                
+                // Ответ проверки заказа
+                var order_check = true;
+                
+                Object.keys(warehouse_item_list).forEach(function(key) {  
+                    
+                    if(warehouse_item_list[key].name) { 
+                        order_item_list[count_total] = warehouse_item_list[key];
+                        count_total += 1;
+                    }
+                });
+                
+                if (count_total > 0) {
+               
                     $.ajax({
                         url: "/order/check",
                         dataType: "json",
                         type: "POST",
-                        data: ({ "warehouse_item_list": JSON.stringify(warehouse_item_list) }),
+                        data: ({ "warehouse_list": JSON.stringify(order_item_list) }),
                         async: false,
                         xhrFields: {
                             withCredentials: true // Ключевая опция для отправки куки
                         },
                         success: function(data) {
     
-                            
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
+                            // Сохраняем ответ проверки заказа
+                            order_check = data.order_check;
     
-                            alert("Ошибка!", xhr.error);
+                            // Проверка заказа не прошла
+                            if (data.order_check == false) {
+                            
+                                alert("Подобный заказ был создан менее 5 минут назад. Пожалуйста, подождите!");
+                            
+                            // Создание заказа
+                            } else {
+                            
+                                createOrder(data.idempotency);
+                            }
+                        },
+                        error: function (xhr) {
+    
+                            try {
+                                 var response = JSON.parse(xhr.responseText);
+                                 if (response.error) {
+                                     alert(response.error);
+                                 } else {
+                                     alert(xhr.responseText);
+                                 }
+                             } catch (e) {
+                                 alert(xhr.responseText);
+                             }
                         }
                     });
                     
@@ -547,6 +659,7 @@ class UserController
                     var basket_element = warehouse_item_list[warehouse_id];
                 }
                 
+                basket_element.warehouse_id = warehouse_id;
                 basket_element.name = warehouse_name;
                 basket_element.price = warehouse_price;
                 if (!basket_element.count) {

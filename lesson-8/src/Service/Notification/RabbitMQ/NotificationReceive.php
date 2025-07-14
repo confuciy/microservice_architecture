@@ -4,7 +4,8 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-use App\Service\Notification\Controller\NotificationController;
+###use App\Service\Notification\Controller\NotificationController;
+use App\Service\Notification\Model\Notification;
 
 # Настройки подключения к RabbitMQ
 $host = getenv('rabbitmq_host');
@@ -35,12 +36,10 @@ try {
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
                     # Отправляем запрос в сервис
-                    $notification_controller = new NotificationController();
-                    $notification = $notification_controller->create($msg_data['data']);
+                    $notification_model = new Notification();
+                    $notification = $notification_model->create($msg_data['data']);
 
-                    $notification_data = json_decode($notification, true);
-
-                    echo " [✓] Оповещение c ID = ".$notification_data['notification_id']."  успешно создано\n";
+                    echo " [✓] Оповещение c ID = ".$notification['notification_id']." успешно создано\n";
                 }
             }
 

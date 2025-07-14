@@ -5,15 +5,15 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use App\Helper\Helper;
-###use App\Service\Warehouse\Controller\WarehouseController;
-use App\Service\Warehouse\Model\Warehouse;
+###use App\Service\Delivery\Controller\DeliveryController;
+use App\Service\Delivery\Model\Delivery;
 
 # Настройки подключения к RabbitMQ
 $host = getenv('rabbitmq_host');
 $port = getenv('rabbitmq_port');
 $user = getenv('rabbitmq_user');
 $password = getenv('rabbitmq_password');
-$queueName = 'service-warehouse';
+$queueName = 'service-delivery';
 
 # Оповещения
 $helper = new Helper();
@@ -33,90 +33,56 @@ try {
 
             $msg_data = json_decode($msg->body, true);
 
-//            if (
-//                isset($msg_data['action']) and $msg_data['action'] == 'create'
-//            ) {
-//
-//                if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
-//
-//                    # Отправляем запрос в сервис
-//                    $warehouse_model = new Warehouse();
-//                    $warehouse = $warehouse_model->create($msg_data['data']);
-//
-//                    $warehouse_data = json_decode($warehouse, true);
-//
-//                    echo " [✓] Бронирование на складе c ID = ".$warehouse_data['warehouse_id']." успешно создано\n";
-//
-//                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-warehouse-receive', '[✓] Бронирование на складе c ID = '.$warehouse_data['warehouse_id'].' успешно создано');
-//                }
-//            }
-
-            # [SAGA]
-            if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
-
-                $helper->setNotification($msg_data['data']['user_id'], 'saga_warehouse_body', $msg->body);
+            # Бронирование курьера
+            if (isset($msg_data['action']) and $msg_data['action'] == 'create') {
 
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
                     # Отправляем запрос в сервис
-                    $warehouse_model = new Warehouse();
+                    $delivery_model = new Delivery();
+                    $delivery = $delivery_model->create($msg_data['data']);
 
-                    # MINUS
-                    if ($msg_data['data']['action'] == 'minus') {
+                    $delivery_data = json_decode($delivery, true);
 
-                        # Проверка достаточного кол-ва товара на складе
-                        if ($warehouse_model->checkWarehouseListCount($msg_data['data']) == 0) {
+                    echo " [✓] Курьер c ID = ".$delivery_data['delivery_id']." успешно забронирован\n";
 
-                            # Резервируем товар
-                            $data = $warehouse_model->create($msg_data['data']);
+                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-delivery-receive', '[✓] Курьер c ID = '.$delivery_data['delivery_id'].' успешно забронирован');
+                }
+            }
 
-                            echo " [✓] Товар на складе успешно зарезервирован\n";
+            # Освобождение курьера
+            if (isset($msg_data['action']) and $msg_data['action'] == 'delete') {
 
+                if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
-                            /* {{{ */
-                                # Возвращаем ответ, что сумма заказа успешно снята
+                    # Отправляем запрос в сервис
+                    $delivery_model = new Delivery();
+                    $delivery = $delivery_model->delete($msg_data['data']['data']);
 
-                                # Данные для отправки
-                                $data_order = [
-                                    'type' => 'saga',
-                                    'data' => [
-                                        'action' => 'warehouse',
-                                        'user_id' => $msg_data['data']['user_id'],
-                                        'order_id' => $msg_data['data']['order_id'],
-                                        'order_saga_id' => $msg_data['data']['order_saga_id'],
-                                        'amount' => $msg_data['data']['amount'],
-                                        'warehouse_list' => $msg_data['data']['warehouse_list'],
-                                        'warehouse_action_list' => $data['warehouse_action_list'],
-                                        'billing_action_id' => $msg_data['data']['billing_action_id'],
-                                        'status' => 'ok'
-                                    ]
-                                ];
+                    $delivery_data = json_decode($delivery, true);
 
-                                # Отправляем сообщение в RabbitMQ
-                                $helper->rabbitmqSend('service-order', json_encode($data_order));
-                            /* }}} */
+                    echo " [✓] Курьер c ID = ".$delivery_data['delivery_id']." успешно освобожден\n";
 
-                            $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-warehouse-receive', '[✓][SAGA] Товар на складе успешно зарезервирован');
+                    $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓] Курьер c ID = '.$delivery_data['delivery_id'].' успешно освобожден');
+                }
+            }
 
-                        } else {
+            # [SAGA]
+            if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
 
-                            # Резервируем товар
-                            $data = $warehouse_model->create($msg_data['data']);
+                $helper->setNotification($msg_data['data']['user_id'], 'saga_delivery_body', $msg->body);
 
-                            # Удаляем резер товара
-                            $data = $warehouse_model->delete($msg_data['data']);
+                if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
-                            throw new \Exception('На складе недостаточно товара');
-                        }
-                    }
+                    # Отправляем запрос в сервис
+                    $delivery_model = new Delivery();
 
-                    # PLUS
-                    if ($msg_data['data']['action'] == 'plus') {
+                    # Бронирование курьера
+                    if ($msg_data['data']['action'] == 'create') {
 
-                        # Удаляем зарезервированный товар
-                        $warehouse_model->delete($msg_data['data']);
+                        $delivery = $delivery_model->create($msg_data['data']);
 
-                        echo " [✓] Резерв товара на складе успешно удален\n";
+                        echo " [✓] Курьер c ID = ".$delivery['delivery_id']." успешно забронирован\n";
 
                         /* {{{ */
                             # Возвращаем ответ, что сумма заказа успешно снята
@@ -125,14 +91,14 @@ try {
                             $data_order = [
                                 'type' => 'saga',
                                 'data' => [
-                                    'action' => 'warehouse_compensation',
+                                    'action' => 'billing',
                                     'user_id' => $msg_data['data']['user_id'],
                                     'order_id' => $msg_data['data']['order_id'],
                                     'order_saga_id' => $msg_data['data']['order_saga_id'],
                                     'amount' => $msg_data['data']['amount'],
                                     'warehouse_list' => $msg_data['data']['warehouse_list'],
-                                    'warehouse_action_list' => $data['warehouse_action_list'],
                                     'billing_action_id' => $msg_data['data']['billing_action_id'],
+                                    'delivery_action_id' => $delivery['delivery_action_id'],
                                     'status' => 'ok'
                                 ]
                             ];
@@ -141,7 +107,7 @@ try {
                             $helper->rabbitmqSend('service-order', json_encode($data_order));
                         /* }}} */
 
-                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-warehouse-receive', '[✓][SAGA] Резерв товара на складе успешно удален');
+                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта успешно уменьшена на '.$msg_data['data']['amount']);
                     }
                 }
             }
@@ -166,13 +132,12 @@ try {
                     $data_order = [
                         'type' => 'saga',
                         'data' => [
-                            'action' => 'warehouse',
+                            'action' => 'delivery',
                             'user_id' => $msg_data['data']['user_id'],
                             'order_id' => $msg_data['data']['order_id'],
                             'order_saga_id' => $msg_data['data']['order_saga_id'],
                             'amount' => $msg_data['data']['amount'],
                             'warehouse_list' => $msg_data['data']['warehouse_list'],
-                            'billing_action_id' => $msg_data['data']['billing_action_id'],
                             'status' => 'error',
                             'error_text' => $e->getMessage()
                         ]

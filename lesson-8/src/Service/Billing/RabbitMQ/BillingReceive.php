@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use App\Helper\Helper;
-use App\Service\Billing\Controller\BillingController;
+###use App\Service\Billing\Controller\BillingController;
 use App\Service\Billing\Model\Billing;
 
 # Настройки подключения к RabbitMQ
@@ -87,13 +87,21 @@ try {
             # [SAGA]
             if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
 
+                $helper->setNotification($msg_data['data']['user_id'], 'saga_billing_body', $msg->body);
+
+                ###$helper->setNotification($msg_data['data']['user_id'], 'order_saga_enter', $msg->body);
+
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
+
+                    ###$helper->setNotification($msg_data['data']['user_id'], 'order_saga_data', $msg->body);
 
                     # Отправляем запрос в сервис
                     $billing_model = new Billing();
 
                     # MINUS
                     if ($msg_data['data']['action'] == 'minus') {
+
+                        ###$helper->setNotification($msg_data['data']['user_id'], 'order_saga_minus', $msg->body);
 
                         $billing = $billing_model->amount($msg_data['data']);
 
@@ -103,7 +111,7 @@ try {
                             # Возвращаем ответ, что сумма заказа успешно снята
 
                             # Данные для отправки
-                            $data_billing = [
+                            $data_order = [
                                 'type' => 'saga',
                                 'data' => [
                                     'action' => 'billing',
@@ -118,7 +126,7 @@ try {
                             ];
 
                             # Отправляем сообщение в RabbitMQ
-                            $this->helper->rabbitmqSend('service-order', json_encode($data_billing));
+                            $helper->rabbitmqSend('service-order', json_encode($data_order));
                         /* }}} */
 
                         $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта успешно уменьшена на '.$msg_data['data']['amount']);
@@ -135,7 +143,7 @@ try {
                             # Возвращаем ответ, что сумма заказа успешно снята
 
                             # Данные для отправки
-                            $data_billing = [
+                            $data_order = [
                                 'type' => 'saga',
                                 'data' => [
                                     'action' => 'billing_compensation',
@@ -150,7 +158,7 @@ try {
                             ];
 
                             # Отправляем сообщение в RabbitMQ
-                            $this->helper->rabbitmqSend('service-order', json_encode($data_billing));
+                            $helper->rabbitmqSend('service-order', json_encode($data_order));
                         /* }}} */
 
                         $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта успешно пополнена на '.$msg_data['data']['amount']);
@@ -175,7 +183,7 @@ try {
                     # Возвращаем ответ, что произошла ошибка
 
                     # Данные для отправки
-                    $data_billing = [
+                    $data_order = [
                         'type' => 'saga',
                         'data' => [
                             'action' => 'billing',
@@ -184,12 +192,13 @@ try {
                             'order_saga_id' => $msg_data['data']['order_saga_id'],
                             'amount' => $msg_data['data']['amount'],
                             'warehouse_list' => $msg_data['data']['warehouse_list'],
-                            'status' => 'error'
+                            'status' => 'error',
+                            'error_text' => $e->getMessage()
                         ]
                     ];
 
                     # Отправляем сообщение в RabbitMQ
-                    $this->helper->rabbitmqSend('service-order', json_encode($data_billing));
+                    $helper->rabbitmqSend('service-order', json_encode($data_order));
                 /* }}} */
             }
         }

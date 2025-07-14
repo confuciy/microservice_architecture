@@ -33,10 +33,9 @@ class OrderController
      *         @OA\MediaType(
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
-     *                 required={"amount", "idempotency", "warehouse_list"},
-     *                 @OA\Property(description="Сумма заказа", property="amount", type="number", format="number"),
+     *                 required={"idempotency", "warehouse_list"},
      *                 @OA\Property(description="Хеш идемпотентности", property="idempotency", type="string", format="string"),
-     *                 @OA\Property(property="warehouse_list", type="array", @OA\Items(ref="#/components/schemas/WarehouseOrderCreateItem"))
+     *                 @OA\Property(property="warehouse_list", type="array", @OA\Items(ref="#/components/schemas/OrderCreateItem"))
      *             )
      *         )
      *     ),
@@ -64,11 +63,11 @@ class OrderController
      *     @OA\Property(description="ID пользователя", property="user_id", type="integer"),
      *     @OA\Property(description="Сумма заказа", property="amount", type="number"),
      *     @OA\Property(description="Хеш идемпотентности", property="idempotency", type="string"),
-     *     @OA\Property(property="warehouse_list", type="array", @OA\Items(ref="#/components/schemas/WarehouseOrderCreateItem"))
+     *     @OA\Property(property="warehouse_list", type="array", @OA\Items(ref="#/components/schemas/OrderCreateItem"))
      * )
      *
      * @OA\Schema(
-     *     schema="WarehouseOrderCreateItem",
+     *     schema="OrderCreateItem",
      *     title="Список товаров",
      *     description="",
      *     @OA\Property(property="warehouse_id", type="integer", example="1"),
@@ -80,6 +79,8 @@ class OrderController
     public function create(array $data = [])
     {
         try {
+
+            $transaction = 0;
 
             # Получаем данные
             if (!sizeof($data)) {
@@ -114,19 +115,33 @@ class OrderController
                 $data['user_id'] = $userId;
             }
 
+            if (!isset($data['warehouse_list']) or $data['warehouse_list'] == '') {
+                throw new \Exception('Список товаров пустой');
+            }
+
+            # Преобразуем JSON с данными по товорам в массив
+            $data['warehouse_list'] = json_decode($data['warehouse_list'], true);
+
             # Получение биллинг-аккаунта
             $billing = $this->order->getBilling();
             if (!sizeof($billing)) {
                 throw new \Exception('Данные биллинг-аккаунта пусты');
             }
 
+            # Расчитываем стоимость заказа
+            $data['amount'] = 0;
+            foreach ($data['warehouse_list'] as $warehouse_item) {
+
+                $data['amount'] += ($warehouse_item['price'] * $warehouse_item['count']);
+            }
+
             # Сумма заказа больше имеющихся средств
             if ($billing['amount'] < $data['amount']) {
 
                 # Добавляем оповещение
-                $this->helper->setNotification($data['user_id'], 'create_order_error', '[✗] Сумма заказа ['.$data['amount'].'] больше имеющихся на биллинг-аккаунте средств ['.$billing['amount'].']');
+                $this->helper->setNotification($data['user_id'], 'create_order_error', '[✗] Сумма заказа ['.$data['amount'].'₽] больше имеющихся на биллинг-аккаунте средств ['.$billing['amount'].'₽]');
 
-                throw new \Exception('Сумма заказа ['.$data['amount'].'] больше имеющихся на биллинг-аккаунте средств ['.$billing['amount'].']');
+                throw new \Exception('Сумма заказа ['.$data['amount'].'₽] больше имеющихся на биллинг-аккаунте средств ['.$billing['amount'].'₽]');
             }
 
 //            # Уменьшаем сумму биллинг-аккаунта
@@ -136,14 +151,23 @@ class OrderController
 //                throw new \Exception('Не удалось снять необходимую сумму');
 //            }
 
-            # Создаем заказ
-            $order = $this->order->create($data);
+            $this->order->pdo->beginTransaction();
 
-            # Создаем saga
-            $order_saga = $this->order->createSaga($data);
+                $transaction = 1;
 
-            # Обновляем заказ - статус "Ожидает оплаты"
-            $this->order->updateSaga($data['data']['order_id'], 'status', 1);
+                # Создаем заказ
+                $order = $this->order->create($data);
+
+                # Создаем saga
+                $order_saga = $this->order->createSaga($order);
+
+                # Обновляем заказ - статус "Ожидает оплаты"
+                $this->order->updateOrder($order['order_id'], 'status', 1);
+
+                # Обновляем saga заказа - статус "Ожидает оплаты"
+                $this->order->updateSaga($order_saga['order_saga_id'], 'status', 1);
+
+            $this->order->pdo->commit();
 
             /* {{{ */
                 # Уменьшаем сумму биллинг аккаунта
@@ -153,11 +177,11 @@ class OrderController
                     'type' => 'saga',
                     'data' => [
                         'action' => 'minus',
-                        'user_id' => $data['user_id'],
-                        'order_id' => $data['order_id'],
-                        'order_saga_id' => $data['order_saga_id'],
-                        'amount' => $data['amount'],
-                        'warehouse_list' => $data['warehouse_list']
+                        'user_id' => $order['user_id'],
+                        'order_id' => $order['order_id'],
+                        'order_saga_id' => $order_saga['order_saga_id'],
+                        'amount' => $order['amount'],
+                        'warehouse_list' => $order['warehouse_list']
                     ]
                 ];
 
@@ -166,26 +190,34 @@ class OrderController
             /* }}} */
 
             # Добавляем оповещение
-            $this->helper->setNotification($data['user_id'], 'create_order_ok', '[✓] Заказ на сумму '.$data['amount'].' c ID '.$order['order_id'].' успешно создан');
+            $this->helper->setNotification($order['user_id'], 'create_order_ok', '[✓] Заказ на сумму '.$order['amount'].' c ID '.$order['order_id'].' успешно создан');
 
-            if (isset($_POST['reload'])) {
-
-                header('Location: /user/order');
-
-            } else {
+//            if (isset($_POST['reload'])) {
+//
+//                header('Location: /user/order');
+//
+//            } else {
 
                 http_response_code(201);
                 echo json_encode($order);
                 return;
-            }
+//            }
 
         } catch (\Throwable $e) {
+
+            if ($transaction == 1) {
+                $this->order->pdo->rollBack();
+            }
 
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
             return;
 
         } catch (\Exception $e) {
+
+            if ($transaction == 1) {
+                $this->order->pdo->rollBack();
+            }
 
             http_response_code(400);
             echo json_encode(['error' => $e->getMessage()]);
@@ -235,11 +267,11 @@ class OrderController
      *     @OA\Property(property="idempotency", type="string", example="qweafasrqwe2sadasd..."),
      *     @OA\Property(property="status", type="integer", example="1"),
      *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807"),
-     *     @OA\Property(property="warehouse_action_list", type="array", @OA\Items(ref="#/components/schemas/WarehouseOrderGetItem"))
+     *     @OA\Property(property="warehouse_action_list", type="array", @OA\Items(ref="#/components/schemas/OrderGetItem"))
      * )
      *
      * @OA\Schema(
-     *     schema="WarehouseOrderGetItem",
+     *     schema="OrderGetItem",
      *     title="Список товаров",
      *     description="",
      *     @OA\Property(property="warehouse_action_id", type="integer", example="1"),
@@ -275,6 +307,117 @@ class OrderController
 
             http_response_code(200);
             echo json_encode(['order_list' => $order_list]);
+            return;
+
+        } catch (\Exception $e) {
+
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
+            return;
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/order/check",
+     *     summary="Проверка заказа перед созданием",
+     *     description="",
+     *     tags={"Order | Сервис заказов"},
+     *     security={{"cookieAuth": {}}},
+     *     operationId="order_check",
+     *     deprecated=false,
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"warehouse_list"},
+     *                 @OA\Property(property="warehouse_list", type="array", @OA\Items(ref="#/components/schemas/OrderCheckItem"))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Success",
+     *          @OA\JsonContent(ref="#/components/schemas/OrderCheckResponse")
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          description="401 Authorization Required"
+     *     ),
+     *     @OA\Response(
+     *          response="400",
+     *          description="Bad Request",
+     *          @OA\JsonContent(ref="#/components/schemas/Error")
+     *     )
+     * )
+     *
+     * @OA\Schema(
+     *     schema="OrderCheckResponse",
+     *     title="Заказ пользователя",
+     *     description="",
+     *     @OA\Property(property="order_check", type="bool", example="true")
+     * )
+     *
+     * @OA\Schema(
+     *     schema="OrderCheckItem",
+     *     title="Список товаров",
+     *     description="",
+     *     @OA\Property(property="warehouse_id", type="integer", example="1"),
+     *     @OA\Property(property="name", type="string", example="Часы"),
+     *     @OA\Property(property="price", type="number", example="2600"),
+     *     @OA\Property(property="count", type="number", example="1")
+     * )
+     *
+     * @throws \Exception
+     */
+    public function check(array $data = [])
+    {
+        try {
+
+            # Получаем данные
+            if (!sizeof($data)) {
+
+                $data = json_decode(file_get_contents('php://input'), true);
+
+                if ($data === null and sizeof($_POST) > 0) {
+
+                    # Данные пользователя
+                    $data = $_POST;
+                }
+            }
+            if ($data === null) {
+                throw new \Exception('JSON поврежден');
+            }
+
+
+            if (!isset($data['user_id'])) {
+
+                $jwt_token_data = $this->helper->getJWTtokenData();
+
+                if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
+                    throw new \Exception('Пользователь не авторизован');
+                }
+
+                $userId = $jwt_token_data['user_id'];
+
+                if (empty($userId)) {
+                    throw new \Exception('Не удалось определить пользователя');
+                }
+
+                $data['user_id'] = $userId;
+            }
+
+            if (!isset($data['warehouse_list']) or $data['warehouse_list'] == '') {
+                throw new \Exception('Список товаров пустой');
+            }
+
+            $idempotency = md5($data['user_id'].'_'.$data['warehouse_list']);
+
+            # Получение заказов пользователя
+            $order_check = $this->order->checkOrder($data['user_id'], $idempotency, 300);
+
+            http_response_code(200);
+            echo json_encode(['order_check' => $order_check, 'idempotency' => $idempotency]);
             return;
 
         } catch (\Exception $e) {

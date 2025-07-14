@@ -6,7 +6,7 @@ use App\Database\Database;
 
 class Order
 {
-    private $pdo;
+    public $pdo;
 
     public function __construct()
     {
@@ -221,7 +221,11 @@ class Order
 
                 foreach ($order_list_tmp as $order) {
 
-                    $order['warehouse_action_list'] = $this->getWarehouseOrderList($order['order_id']);
+                    # Если товар зарезервирован
+                    if ($order['status'] >= 3) {
+
+                        $order['warehouse_action_list'] = $this->getWarehouseOrderList($order['order_id']);
+                    }
 
                     $order_list[] = $order;
                 }
@@ -261,7 +265,10 @@ class Order
                 throw new \Exception("Заказ не найден");
             }
 
-            $order['warehouse_action_list'] = $this->getWarehouseOrderList($order['order_id']);
+            # Если товар зареервирован
+            if ($order['status'] >= 3) {
+                $order['warehouse_action_list'] = $this->getWarehouseOrderList($order['order_id']);
+            }
 
             return $order;
 
@@ -372,6 +379,56 @@ class Order
         $content = curl_exec($ch);
 
         return json_decode($content, true);
+    }
+
+    # Проверка ранее созданного аналогичного заказа за последние $sec секунд.
+    public function checkOrder(int $userId, string $idempotency, int $sec): bool
+    {
+        try {
+
+            if (empty($userId)) {
+                throw new \Exception('ID пользователя пустой');
+            }
+            if ($idempotency == '') {
+                throw new \Exception('Не передан хеш идемпотентности');
+            }
+            if (empty($sec)) {
+                throw new \Exception('Не указано кол-во секунд');
+            }
+
+            $query = "SELECT DATE_TRUNC('second', (now() - date_insert)) as sec 
+              FROM orders 
+              WHERE idempotency = '".$idempotency."' 
+              AND user_id = :user_id";
+            $statement = $this->pdo->prepare($query);
+            $statement->execute([':user_id' => $userId]);
+            $order = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if (!$order) {
+
+                return true;
+
+            } else {
+
+                $query = 'SELECT to_seconds(:sec) as sec';
+                $statement = $this->pdo->prepare($query);
+                $statement->execute([':sec' => $order['sec']]);
+                $time_to_sec = $statement->fetch(PDO::FETCH_ASSOC);
+
+                if ($time_to_sec['sec'] > $sec) {
+
+                    return true;
+
+                } else {
+
+                    return false;
+                }
+            }
+
+        } catch (\Exception $e) {
+
+            throw new \Exception($e->getMessage());
+        }
     }
 
 //    public function delete(int $id): array
