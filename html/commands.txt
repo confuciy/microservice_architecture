@@ -16,7 +16,7 @@ docker build -t confuciy/otus-lesson-3-health .
 docker push confuciy/otus-lesson-3-health:latest
 docker run -p 8000:80 -v /var/www/lesson-3:/var/www/html confuciy/otus-lesson-3-health:latest
 
-Флаг -d позволяет запускать в фоне 
+Флаг -d позволяет запускать в фоне
 
 docker stop 4cc
 
@@ -78,7 +78,7 @@ minikube start
 
 ------------------------------------------------------------------------------------------------------------------
 
-# Для всех из текущей папки 
+# Для всех из текущей папки
 kubectl apply -f k8s-manifests
 
 ------------------------------------------------------------------------------------------------------------------
@@ -295,20 +295,20 @@ kubectl describe pod/user-service-helm-migration-bxs2t
 # Установка PostgreSQL
 sudo apt update
 sudo apt install postgresql postgresql-contrib
-sudo su - postgres 
+sudo su - postgres
 psql
 ALTER USER postgres WITH PASSWORD 'ghjfyz';
 \q
 exit
 
-sudo nano /etc/postgresql/$(pg_lsclusters | awk '${print $1}')/main/pg_hba.conf 
+sudo nano /etc/postgresql/$(pg_lsclusters | awk '${print $1}')/main/pg_hba.conf
 вместо $(pg_lsclusters | awk '${print $1}') можно просто посмотреть папку
 
 sudo systemctl restart postgresql
 
 
 # Создание БД
-sudo su - postgres 
+sudo su - postgres
 psql
 CREATE DATABASE user_service;
 \q
@@ -433,14 +433,14 @@ hostname -I
 -- Подключаемся к PostgreSQL как суперпользователь
             -- создаем схему если её нет
             CREATE SCHEMA IF NOT EXISTS service;
-            
+
             -- Создаем пользователя, если его нет
             -- В реальной системе лучше использовать другого пользователя, а не postgres
             -- CREATE USER newuser WITH PASSWORD 'password';
-            
+
             -- Назначаем пользователю права в схеме
             -- GRANT ALL PRIVILEGES ON SCHEMA service TO newuser;
-            
+
             -- Подключаемся к базе под созданным пользователем
             -- и создаём таблицу users
 
@@ -470,7 +470,7 @@ sudo iptables -A FORWARD -p tcp -d 192.168.49.2 --dport 80 -j ACCEPT
 sudo sysctl net.ipv4.ip_forward=1
 
 # Делаем настройку автоматически после каждого перезапуска WSL
-Открываем 
+Открываем
 nano ~/.bashrc
 
 # Вставляем в самый низ
@@ -485,7 +485,7 @@ source ~/.bashrc
 
 ------------------------------------------------------------------------------------------------------------------
 
-[УРОК 4] 
+[УРОК 4]
 # Создание докер образа lesson-4
 docker build -t confuciy/otus-lesson-4-user-service:latest . --no-cache --network host
 docker push confuciy/otus-lesson-4-user-service:latest
@@ -553,7 +553,7 @@ CMD service nginx start && php-fpm
 
 ------------------------------------------------------------------------------------------------------------------
 
-[УРОК 7] 
+[УРОК 7]
 
 # Установка Redis
 sudo apt install redis-server
@@ -661,7 +661,7 @@ kubectl exec <pod-name> -n user-service-metrics -- tail -f /var/log/nginx/error.
 ------------------------------------------------------------------------------------------------------------------
 
 # Определите поды Ingress-контроллера
-kubectl get pods -n ingress-nginx 
+kubectl get pods -n ingress-nginx
 
 # Просмотрите логи Ingress-контроллера
 kubectl logs -n ingress-nginx <ingress-pod-name>
@@ -724,7 +724,7 @@ helm install prometheus prometheus-community/kube-prometheus-stack --namespace m
 kubectl --namespace monitoring port-forward --address 0.0.0.0 $POD_NAME 3000:3000
 
 # Удаление prometheus-operator
-helm uninstall prometheus-operator -n monitoring 
+helm uninstall prometheus-operator -n monitoring
 
 ------------------------------------------------------------------------------------------------------------------
 
@@ -798,8 +798,8 @@ sudo ufw reload
 helm install ingress-nginx ingress-nginx/ingress-nginx \
   --version 4.8.3 \
   --namespace ingress-nginx \
-  --set controller.service.type=NodePort \ 
-  1--set controller.metrics.enabled=true \ 
+  --set controller.service.type=NodePort \
+  1--set controller.metrics.enabled=true \
   --set controller.metrics.enableMetrics=true
 
 # Обновление
@@ -1084,7 +1084,7 @@ kubectl exec -it rabbitmq-billing-consumer-86748467c9-4zprd -- tail -f /var/log/
 kubectl exec -it service-billing-79796c4545-dqzk7 -- tail -f /var/log/nginx/error.log
 
 
-kubectl cp ./src/Service/Order/Controller/OrderController.php default/service-order-67c8b7d94c-ntm85:./src/Service/Order/Controller/OrderController.php
+kubectl cp ./src/Service/Order/Controller/OrderController.php default/service-order-67c8b7d94c-bjghj:./src/Service/Order/Controller/OrderController.php
 kubectl cp ./src/Service/Order/Model/Order.php default/service-order-7c76f96694-szzkv:./src/Service/Order/Model/Order.php
 
 kubectl cp ./src/Service/Billing/Controller/BillingController.php default/service-billing-7dcdbc69d8-trnfd:./src/Service/Billing/Controller/BillingController.php
@@ -1124,26 +1124,30 @@ truncate table service_notification.notifications;
 truncate table service_order.orders;
 --truncate table service_billing.billing;
 update service_billing.billing set amount = 5000 where billing_id = 1;
+update service_billing.billing set amount = 5000 where billing_id = 2;
 truncate table service_billing.billing_actions;
 --truncate table service_user.users;
 --truncate table service_auth.jwt_tokens;
-update service_warehouse.warehouse set count = 20 where warehouse_id = 1;
-update service_warehouse.warehouse set count = 30 where warehouse_id = 2;
-update service_warehouse.warehouse set count = 40 where warehouse_id = 3;
+update service_warehouse.warehouse set count = 1 where warehouse_id = 1;
+update service_warehouse.warehouse set count = 1 where warehouse_id = 2;
+update service_warehouse.warehouse set count = 1 where warehouse_id = 3;
 truncate table service_warehouse.warehouse_actions;
-truncate table service_delivery.delivery;
+--truncate table service_delivery.delivery;
+update service_delivery.delivery set free = 1 where delivery_id = 1;
+update service_delivery.delivery set free = 1 where delivery_id = 2;
+update service_delivery.delivery set free = 1 where delivery_id = 3;
 truncate table service_delivery.delivery_actions;
 truncate table service_order.orders_saga;
 
 
 ALTER SEQUENCE service_notification.notification_id_seq RESTART 1;
---ALTER SEQUENCE service_order.orders_id_seq RESTART 1;
+ALTER SEQUENCE service_order.orders_id_seq RESTART 1;
 --ALTER SEQUENCE service_billing.billing_id_seq RESTART 1;
 ALTER SEQUENCE service_billing.billing_action_id_seq RESTART 1;
 --ALTER SEQUENCE service_user.users_id_seq RESTART 1;
 --ALTER SEQUENCE service_auth.jwt_token_id_seq RESTART 1;
 ALTER SEQUENCE service_warehouse.warehouses_action_id_seq RESTART 1;
-ALTER SEQUENCE service_delivery.delivery_id_seq RESTART 1;
+--ALTER SEQUENCE service_delivery.delivery_id_seq RESTART 1;
 ALTER SEQUENCE service_delivery.delivery_actions_id_seq RESTART 1;
 ALTER SEQUENCE service_order.orders_saga_id_seq RESTART 1;
 
