@@ -105,6 +105,9 @@ newman run postman_collection.json --delay-request 100
 - интерфейс подтверждения повторного создания заказа;
 ![site_1.png](./img/site_1.png)
 
+- теперь в базе данных два одинаковых заказа, как и хотел пользователь;
+![db_1.png](./img/db_1.png)
+
 - просмотр баланса биллинг-аккаунта;
 ![postman_7.png](./img/postman_7.png)
 
