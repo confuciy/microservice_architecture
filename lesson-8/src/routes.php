@@ -32,6 +32,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/order', [\App\Service\Order\Controller\OrderController::class, 'create']);
     $r->addRoute('GET', '/order', [\App\Service\Order\Controller\OrderController::class, 'get']);
     $r->addRoute('POST', '/order/check', [\App\Service\Order\Controller\OrderController::class, 'check']);
+    $r->addRoute('POST', '/order/order', [\App\Service\Order\Controller\OrderController::class, 'order']);
 
     # Auth
     $r->addRoute('POST', '/auth/token', [\App\Service\Auth\Controller\AuthController::class, 'token']);

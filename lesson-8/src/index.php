@@ -90,7 +90,7 @@ switch ($routeInfo[0]) {
 
         http_response_code(404);
         $metrics->observeRequest($startTime, $httpMethod, 404);
-        echo json_encode(['error' => 'Not found']);
+        echo json_encode(['error' => 'Not found'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
 //        echo '<style>body, div, p {margin: 0}</style>';
 //        echo '<div style="width: 100%; background: lightblue;">
@@ -109,7 +109,7 @@ switch ($routeInfo[0]) {
 
         http_response_code(405);
         $metrics->observeRequest($startTime, $httpMethod, 405);
-        echo json_encode(['error' => 'Method not allowed']);
+        echo json_encode(['error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
 //        echo '<style>body, div, p {margin: 0}</style>';
 //        echo '<div style="width: 100%; background: lightpink;">
@@ -156,7 +156,7 @@ switch ($routeInfo[0]) {
             http_response_code(500);
             $metrics->incError($httpMethod);
             $metrics->observeRequest($startTime, $httpMethod, 500);
-            echo json_encode(['error' => 'Internal Server Error']);
+            echo json_encode(['error' => 'Internal Server Error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
 //            echo '<style>body, div, p {margin: 0}</style>';
 //            echo '<div style="width: 100%; background: lightpink;">

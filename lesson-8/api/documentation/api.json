@@ -180,6 +180,295 @@
                 ]
             }
         },
+        "/delivery": {
+            "get": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Список курьеров",
+                "description": "",
+                "operationId": "delivery_get",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Резервирование курьера",
+                "description": "",
+                "operationId": "delivery_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Освобождение курьера",
+                "description": "",
+                "operationId": "delivery_delete",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "delivery_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "delivery_id": {
+                                        "description": "ID курьера",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryDeleteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/delivery/order": {
+            "post": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Получение зарезервированного курьера заказа",
+                "description": "",
+                "operationId": "delivery_order",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryOrderGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/delivery/delivered": {
+            "post": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Подтверждение доставки заказа курьером",
+                "description": "",
+                "operationId": "delivery_delivered",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "delivery_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "delivery_id": {
+                                        "description": "ID курьера",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryDeliveredResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
         "/notification": {
             "get": {
                 "tags": [
@@ -343,25 +632,13 @@
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "amount",
-                                    "idempotency",
                                     "warehouse_list"
                                 ],
                                 "properties": {
-                                    "amount": {
-                                        "description": "Сумма заказа",
-                                        "type": "number",
-                                        "format": "number"
-                                    },
-                                    "idempotency": {
-                                        "description": "Хеш идемпотентности",
-                                        "type": "string",
-                                        "format": "string"
-                                    },
                                     "warehouse_list": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/WarehouseOrderCreateItem"
+                                            "$ref": "#/components/schemas/OrderCreateItem"
                                         }
                                     }
                                 },
@@ -377,6 +654,67 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/OrderCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/order/check": {
+            "post": {
+                "tags": [
+                    "Order | Сервис заказов"
+                ],
+                "summary": "Проверка заказа перед созданием",
+                "description": "",
+                "operationId": "order_check",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "warehouse_list"
+                                ],
+                                "properties": {
+                                    "warehouse_list": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderCheckItem"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderCheckResponse"
                                 }
                             }
                         }
@@ -695,7 +1033,7 @@
                 "tags": [
                     "Warehouse | Сервис склада"
                 ],
-                "summary": "Получение зарезервированного товара заказа",
+                "summary": "Получение списка зарезервированных товаров заказа",
                 "description": "",
                 "operationId": "warehouse_order",
                 "requestBody": {
@@ -797,6 +1135,186 @@
                 },
                 "type": "object"
             },
+            "DeliveryCreateResponse": {
+                "title": "Зарезервированный курьер",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryGetResponse": {
+                "title": "Список курьеров",
+                "description": "",
+                "properties": {
+                    "delivery_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DeliveryGetItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryGetItem": {
+                "title": "Курьер",
+                "description": "",
+                "properties": {
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "courier": {
+                        "type": "string",
+                        "example": "Курьер #1"
+                    },
+                    "free": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryDeleteResponse": {
+                "title": "Освобожденный курьер",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryOrderGetResponse": {
+                "title": "Зарезервированный курьер",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    },
+                    "courier": {
+                        "type": "string",
+                        "example": "Курьер #1"
+                    },
+                    "free": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryDeliveredResponse": {
+                "title": "Освобожденный курьер, выполненный заказ",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    },
+                    "courier": {
+                        "type": "string",
+                        "example": "Курьер #1"
+                    },
+                    "free": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
             "NotificationCreateResponse": {
                 "title": "Оповещения пользователя",
                 "description": "",
@@ -883,13 +1401,13 @@
                     "warehouse_list": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/WarehouseOrderCreateItem"
+                            "$ref": "#/components/schemas/OrderCreateItem"
                         }
                     }
                 },
                 "type": "object"
             },
-            "WarehouseOrderCreateItem": {
+            "OrderCreateItem": {
                 "title": "Список товаров",
                 "description": "",
                 "properties": {
@@ -948,13 +1466,13 @@
                     "warehouse_action_list": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/WarehouseOrderGetItem"
+                            "$ref": "#/components/schemas/OrderGetItem"
                         }
                     }
                 },
                 "type": "object"
             },
-            "WarehouseOrderGetItem": {
+            "OrderGetItem": {
                 "title": "Список товаров",
                 "description": "",
                 "properties": {
@@ -989,6 +1507,40 @@
                     "date_insert": {
                         "type": "string",
                         "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderCheckResponse": {
+                "title": "Заказ пользователя",
+                "description": "",
+                "properties": {
+                    "order_check": {
+                        "type": "boolean",
+                        "example": "true"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderCheckItem": {
+                "title": "Список товаров",
+                "description": "",
+                "properties": {
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Часы"
+                    },
+                    "price": {
+                        "type": "number",
+                        "example": "2600"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
                     }
                 },
                 "type": "object"
@@ -1253,6 +1805,10 @@
         {
             "name": "Billing | Сервис биллинга",
             "description": "Billing | Сервис биллинга"
+        },
+        {
+            "name": "Delivery | Сервис доставки",
+            "description": "Delivery | Сервис доставки"
         },
         {
             "name": "Notification | Сервис оповещений",

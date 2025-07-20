@@ -54,7 +54,7 @@ try {
             # [SAGA]
             if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
 
-                $helper->setNotification($msg_data['data']['user_id'], 'saga_warehouse_body', $msg->body);
+                ###$helper->setNotification($msg_data['data']['user_id'], 'saga_warehouse_body', $msg->body);
 
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
@@ -70,7 +70,7 @@ try {
                             # Резервируем товар
                             $data = $warehouse_model->create($msg_data['data']);
 
-                            echo " [✓] Товар на складе успешно зарезервирован\n";
+                            echo " [✓][SAGA] Резервируем товар на складе для заказа ID = ".$msg_data['data']['order_id']."\n";
 
 
                             /* {{{ */
@@ -93,10 +93,10 @@ try {
                                 ];
 
                                 # Отправляем сообщение в RabbitMQ
-                                $helper->rabbitmqSend('service-order', json_encode($data_order));
+                                $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                             /* }}} */
 
-                            $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-warehouse-receive', '[✓][SAGA] Товар на складе успешно зарезервирован');
+                            $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-warehouse-receive', '[✓][SAGA] Резервируем товар на складе для заказа ID = '.$msg_data['data']['order_id']);
 
                         } else {
 
@@ -138,7 +138,7 @@ try {
                             ];
 
                             # Отправляем сообщение в RabbitMQ
-                            $helper->rabbitmqSend('service-order', json_encode($data_order));
+                            $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                         /* }}} */
 
                         $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-warehouse-receive', '[✓][SAGA] Резерв товара на складе успешно удален');
@@ -179,7 +179,7 @@ try {
                     ];
 
                     # Отправляем сообщение в RabbitMQ
-                    $helper->rabbitmqSend('service-order', json_encode($data_order));
+                    $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                 /* }}} */
             }
         }

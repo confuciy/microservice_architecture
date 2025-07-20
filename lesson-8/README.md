@@ -2,24 +2,23 @@
 
 ## Окружение
 #### DockerHub
-- https://hub.docker.com/repository/docker/confuciy/otus-lesson-8-dt/general
-- dt - Distributed transactions
+- https://hub.docker.com/repository/docker/confuciy/otus-lesson-8-saga/general
 - Приложение собрано из нескольких сервисов, каждый из своего образа.
 ```
 Образы:
-docker pull confuciy/otus-lesson-8-dt:php-app
-docker pull confuciy/otus-lesson-8-dt:service-user
-docker pull confuciy/otus-lesson-8-dt:service-auth
-docker pull confuciy/otus-lesson-8-dt:service-notification
-docker pull confuciy/otus-lesson-8-dt:service-order
-docker pull confuciy/otus-lesson-8-dt:service-billing
-docker pull confuciy/otus-lesson-8-dt:service-warehouse
-docker pull confuciy/otus-lesson-8-dt:service-delivery
+docker pull confuciy/otus-lesson-8-saga:php-app
+docker pull confuciy/otus-lesson-8-saga:service-user
+docker pull confuciy/otus-lesson-8-saga:service-auth
+docker pull confuciy/otus-lesson-8-saga:service-notification
+docker pull confuciy/otus-lesson-8-saga:service-order
+docker pull confuciy/otus-lesson-8-saga:service-billing
+docker pull confuciy/otus-lesson-8-saga:service-warehouse
+docker pull confuciy/otus-lesson-8-saga:service-delivery
 ```
 Для удобства все образы создаются из одного Dockerfile с разбивкой на target.
 ```
 Например:
-docker build -t confuciy/otus-lesson-8-dt:service-user --target=service-user .
+docker build -t confuciy/otus-lesson-8-saga:service-user --target=service-user .
 ```
 
 ![pods_1.png](./img/pods_1.png)
@@ -55,11 +54,15 @@ helm uninstall php-app
 
 #### Описание архитектурного решения и схема взаимодействия сервисов
 
-![interaction_of_services_2.png](./img/interaction_of_services_2.png)
+![interaction_of_services_2.png](./img/interaction_of_services.png)
 
-##### Схема взаимодействия сервисов на примере создания заказа
+##### Схема взаимодействия сервисов на примере успешного создания заказа
 
-![interaction_of_services.png](./img/interaction_of_services.png)
+![interaction_of_services.png](./img/interaction_of_services_ok.png)
+
+##### Схема взаимодействия сервисов на примере создания заказа c ошибкой на этапе бронирования товара на складе
+
+![interaction_of_services.png](./img/interaction_of_services_error.png)
 
 #### Swagger (OpenAPI)
 
@@ -70,22 +73,20 @@ helm uninstall php-app
 #### Тесты Postman
 #### Коллекция Postman
 - postman-collection.json
-- base_url = http://arch.homework
-- id = 0
-- email_iterator = 0
 
 ```
-newman run postman_collection.json
+newman run postman_collection.json --delay-request 100
 ```
 
 ![newman_1.png](./img/newman_1.png)
 
 Сценарий:
-- создание пользователя, также создается биллинг-аккаунт;
+- вход пользователя;
 
 ![postman_1.png](./img/postman_1.png)
+![postman_8.txt](./img/postman_8.txt)
 
-- вход пользователя;
+- просмотр баланса биллинг-аккаунта;
 
 ![postman_2.png](./img/postman_2.png)
 

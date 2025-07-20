@@ -17,7 +17,7 @@ class Helper
         curl_setopt($ch, CURLOPT_URL, getenv('host').'/auth/data');
         curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([]));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json-patch+json',
             'Cookie: ' . $cookie_string  # Передаем куку в заголовке
@@ -64,7 +64,7 @@ class Helper
 
         # Создаем аккаунт в сервисе биллинга
         # Отправляем сообщение в RabbitMQ
-        $this->rabbitmqSend('service-notification', json_encode($data));
+        $this->rabbitmqSend('service-notification', json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
 
         return;
 

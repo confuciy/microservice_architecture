@@ -30,7 +30,7 @@ class UserController
             if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
 
                 http_response_code(401);
-                echo json_encode(['error' => 'You a not login']);
+                echo json_encode(['error' => 'You a not login'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                 return;
             }
 
@@ -95,7 +95,7 @@ class UserController
         } catch (\Exception $e) {
 
             http_response_code(404);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -110,7 +110,7 @@ class UserController
             if (!isset($jwt_token_data['user_id']) or empty($jwt_token_data['user_id'])) {
 
                 http_response_code(401);
-                echo json_encode(['error' => 'You a not login']);
+                echo json_encode(['error' => 'You a not login'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                 return;
             }
 
@@ -168,7 +168,7 @@ class UserController
         } catch (\Exception $e) {
 
             http_response_code(404);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -543,7 +543,7 @@ class UserController
                         url: "/order",
                         dataType: "json",
                         type: "POST",
-                        data: ({ "idempotency": idempotency, "warehouse_list": JSON.stringify(order_item_list) }),
+                        data: ({ "warehouse_list": JSON.stringify(order_item_list) }),
                         async: false,
                         xhrFields: {
                             withCredentials: true // Ключевая опция для отправки куки
@@ -893,7 +893,7 @@ class UserController
 
             } else {
 
-                echo json_encode($data);
+                echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             }
 
             return;
@@ -901,13 +901,13 @@ class UserController
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -953,7 +953,7 @@ class UserController
 
             if (isset($headers['Postman-Token'])) {
 
-                echo json_encode(['message' => 'Выход произведен успешно']);
+                echo json_encode(['message' => 'Выход произведен успешно'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
             } else {
 
@@ -965,7 +965,7 @@ class UserController
         } catch (\Exception $e) {
 
             http_response_code(404);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -1075,7 +1075,7 @@ class UserController
 
             # Создаем аккаунт в сервисе биллинга
             # Отправляем сообщение в RabbitMQ
-            $this->helper->rabbitmqSend('service-billing', json_encode($data));
+            $this->helper->rabbitmqSend('service-billing', json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
 
             if (isset($_POST['reload'])) {
 
@@ -1084,7 +1084,7 @@ class UserController
             } else {
 
                 http_response_code(201);
-                echo json_encode($user);
+                echo json_encode($user, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             }
 
             return;
@@ -1092,13 +1092,13 @@ class UserController
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -1131,7 +1131,7 @@ class UserController
 
             if (isset($headers['Postman-Token'])) {
 
-                echo json_encode($user);
+                echo json_encode($user, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
             } else {
 
@@ -1172,7 +1172,7 @@ class UserController
         } catch (\Exception $e) {
 
             http_response_code(404);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -1239,7 +1239,7 @@ class UserController
         } catch (\Exception $e) {
 
             http_response_code(404);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -1254,13 +1254,13 @@ class UserController
 
             $user = $this->user->delete($userId);
 
-            echo json_encode($user);
+            echo json_encode($user, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }

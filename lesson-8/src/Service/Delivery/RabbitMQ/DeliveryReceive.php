@@ -5,7 +5,6 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use App\Helper\Helper;
-###use App\Service\Delivery\Controller\DeliveryController;
 use App\Service\Delivery\Model\Delivery;
 
 # Настройки подключения к RabbitMQ
@@ -70,7 +69,7 @@ try {
             # [SAGA]
             if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
 
-                $helper->setNotification($msg_data['data']['user_id'], 'saga_delivery_body', $msg->body);
+                ###$helper->setNotification($msg_data['data']['user_id'], 'saga_delivery_body', $msg->body);
 
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
 
@@ -78,36 +77,47 @@ try {
                     $delivery_model = new Delivery();
 
                     # Бронирование курьера
-                    if ($msg_data['data']['action'] == 'create') {
+                    if ($msg_data['data']['action'] == 'minus') {
 
-                        $delivery = $delivery_model->create($msg_data['data']);
+                        $delivery = $delivery_model->getDeliveryFree();
 
-                        echo " [✓] Курьер c ID = ".$delivery['delivery_id']." успешно забронирован\n";
+                        if (isset($delivery['delivery_id']) and !empty($delivery['delivery_id'])) {
 
-                        /* {{{ */
+                            $msg_data['data']['delivery_id'] = $delivery['delivery_id'];
+
+                            $delivery = $delivery_model->create($msg_data['data']);
+
+                            echo " [✓][SAGA] Курьер c ID = ".$delivery['delivery_id']." для заказа с ID ".$msg_data['data']['order_id']." успешно забронирован\n";
+
+                            /* {{{ */
                             # Возвращаем ответ, что сумма заказа успешно снята
 
-                            # Данные для отправки
-                            $data_order = [
-                                'type' => 'saga',
-                                'data' => [
-                                    'action' => 'billing',
-                                    'user_id' => $msg_data['data']['user_id'],
-                                    'order_id' => $msg_data['data']['order_id'],
-                                    'order_saga_id' => $msg_data['data']['order_saga_id'],
-                                    'amount' => $msg_data['data']['amount'],
-                                    'warehouse_list' => $msg_data['data']['warehouse_list'],
-                                    'billing_action_id' => $msg_data['data']['billing_action_id'],
-                                    'delivery_action_id' => $delivery['delivery_action_id'],
-                                    'status' => 'ok'
-                                ]
-                            ];
+                                # Данные для отправки
+                                $data_order = [
+                                    'type' => 'saga',
+                                    'data' => [
+                                        'action' => 'delivery',
+                                        'user_id' => $msg_data['data']['user_id'],
+                                        'order_id' => $msg_data['data']['order_id'],
+                                        'order_saga_id' => $msg_data['data']['order_saga_id'],
+                                        'amount' => $msg_data['data']['amount'],
+                                        'warehouse_list' => $msg_data['data']['warehouse_list'],
+                                        'billing_action_id' => $msg_data['data']['billing_action_id'],
+                                        'delivery_action_id' => $delivery['delivery_action_id'],
+                                        'status' => 'ok'
+                                    ]
+                                ];
 
-                            # Отправляем сообщение в RabbitMQ
-                            $helper->rabbitmqSend('service-order', json_encode($data_order));
-                        /* }}} */
+                                # Отправляем сообщение в RabbitMQ
+                                $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
+                            /* }}} */
 
-                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта успешно уменьшена на '.$msg_data['data']['amount']);
+                            $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-delivery-receive', '[✓][SAGA] Курьер c ID = '.$delivery['delivery_id'].' для заказа с ID '.$msg_data['data']['order_id'].' успешно забронирован');
+
+                        } else {
+
+                            throw new \Exception('Не удалось получить свободного курьера');
+                        }
                     }
                 }
             }
@@ -144,7 +154,7 @@ try {
                     ];
 
                     # Отправляем сообщение в RabbitMQ
-                    $helper->rabbitmqSend('service-order', json_encode($data_order));
+                    $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                 /* }}} */
             }
         }

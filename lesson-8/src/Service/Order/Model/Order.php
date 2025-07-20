@@ -227,6 +227,12 @@ class Order
                         $order['warehouse_action_list'] = $this->getWarehouseOrderList($order['order_id']);
                     }
 
+                    # Если товар ожидает доставку
+                    if ($order['status'] >= 4) {
+
+                        $order['delivery_action_list'] = $this->getDeliveryOrderList($order['order_id']);
+                    }
+
                     $order_list[] = $order;
                 }
             }
@@ -254,20 +260,25 @@ class Order
             $query = 'SELECT * 
               FROM orders 
               WHERE order_id = :order_id 
-              AND user_id = :user_id 
-              ORDER BY date_insert DESC';
+              AND user_id = :user_id';
             $statement = $this->pdo->prepare($query);
-            $statement->execute([':order_id' => $orderId]);
-            $statement->execute([':user_id' => $userId]);
+            $statement->execute([':order_id' => $orderId, ':user_id' => $userId]);
             $order = $statement->fetch(PDO::FETCH_ASSOC);
 
             if (!$order) {
                 throw new \Exception("Заказ не найден");
             }
 
-            # Если товар зареервирован
+            # Если товар зарезервирован
             if ($order['status'] >= 3) {
+
                 $order['warehouse_action_list'] = $this->getWarehouseOrderList($order['order_id']);
+            }
+
+            # Если товар ожидает доставку
+            if ($order['status'] >= 4) {
+
+                $order['delivery_action_list'] = $this->getDeliveryOrderList($order['order_id']);
             }
 
             return $order;
@@ -381,6 +392,41 @@ class Order
         return json_decode($content, true);
     }
 
+    # Получение зарезервированных товаров заказа пользователя
+    public function getDeliveryOrderList(int $order_id): array
+    {
+        if (empty($order_id)) {
+            throw new \Exception('ID заказа для получения товаров заказа не задан');
+        }
+
+        // Формируем строку с кукой
+        $cookie_string = 'user_jwt=' . urlencode($_COOKIE['user_jwt']);
+
+        $ch = curl_init();
+        $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+        curl_setopt($ch, CURLOPT_URL, getenv('host').'/delivery/order');
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['order_id' => $order_id], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json-patch+json',
+            'Cookie: ' . $cookie_string  // Передаем куку в заголовке
+        ]);
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);  // Альтернативный способ передачи куки
+        curl_setopt($ch, CURLOPT_NOBODY, 0);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+        #curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json-patch+json']);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        $content = curl_exec($ch);
+
+        return json_decode($content, true);
+    }
+
     # Проверка ранее созданного аналогичного заказа за последние $sec секунд.
     public function checkOrder(int $userId, string $idempotency, int $sec): bool
     {
@@ -396,7 +442,15 @@ class Order
                 throw new \Exception('Не указано кол-во секунд');
             }
 
-            $query = "SELECT DATE_TRUNC('second', (now() - date_insert)) as sec 
+//            $query = "SELECT DATE_TRUNC('second', (now() - date_insert)) as sec
+//              FROM orders
+//              WHERE idempotency = '".$idempotency."'
+//              AND user_id = :user_id";
+//            $statement = $this->pdo->prepare($query);
+//            $statement->execute([':user_id' => $userId]);
+//            $order = $statement->fetch(PDO::FETCH_ASSOC);
+
+            $query = "SELECT EXTRACT(EPOCH FROM (now() - date_insert))::integer as sec 
               FROM orders 
               WHERE idempotency = '".$idempotency."' 
               AND user_id = :user_id";
@@ -410,12 +464,12 @@ class Order
 
             } else {
 
-                $query = 'SELECT to_seconds(:sec) as sec';
-                $statement = $this->pdo->prepare($query);
-                $statement->execute([':sec' => $order['sec']]);
-                $time_to_sec = $statement->fetch(PDO::FETCH_ASSOC);
+//                $query = 'SELECT to_seconds(:sec) as sec';
+//                $statement = $this->pdo->prepare($query);
+//                $statement->execute([':sec' => $order['sec']]);
+//                $time_to_sec = $statement->fetch(PDO::FETCH_ASSOC);
 
-                if ($time_to_sec['sec'] > $sec) {
+                if ($order['sec'] > $sec) {
 
                     return true;
 

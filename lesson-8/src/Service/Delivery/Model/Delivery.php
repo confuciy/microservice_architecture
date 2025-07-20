@@ -26,7 +26,7 @@ class Delivery
                 throw new \Exception('ID курьера пустой');
             }
 
-            $query = 'INSERT INTO delivery_actions (delivery_id, order_id, delivery_date) 
+            $query = 'INSERT INTO delivery_actions (delivery_id, order_id, action, delivery_date) 
               VALUES (:delivery_id, :order_id, :action, :delivery_date)';
             $statement = $this->pdo->prepare($query);
             $statement->execute([
@@ -80,7 +80,7 @@ class Delivery
                 throw new \Exception('ID курьера пустой');
             }
 
-            $query = 'INSERT INTO delivery_actions (delivery_id, order_id, delivery_date) 
+            $query = 'INSERT INTO delivery_actions (delivery_id, order_id, action, delivery_date) 
               VALUES (:delivery_id, :order_id, :action, :delivery_date)';
             $statement = $this->pdo->prepare($query);
             $statement->execute([
@@ -123,7 +123,7 @@ class Delivery
         return $delivery;
     }
 
-    # Получение списка товаров на складе
+    # Получение списка курьеров
     public function getDeliveryList(): array
     {
         $query = 'SELECT * 
@@ -155,7 +155,7 @@ class Delivery
               WHERE delivery_actions.order_id = :order_id';
             $statement = $this->pdo->prepare($query);
             $statement->execute([':order_id' => $order_id]);
-            $delivery = $statement->fetch(PDO::FETCH_ASSOC);
+            $delivery = $statement->fetchAll(PDO::FETCH_ASSOC);
 
             if (!$delivery) {
                 throw new \Exception("Заказ не найден");

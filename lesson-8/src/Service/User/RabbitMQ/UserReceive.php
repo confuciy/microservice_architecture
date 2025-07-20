@@ -5,7 +5,6 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use App\Helper\Helper;
-###use App\Service\User\Controller\UserController;
 
 # Настройки подключения к RabbitMQ
 $host = getenv('rabbitmq_host');

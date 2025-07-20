@@ -4,7 +4,6 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-###use App\Service\Notification\Controller\NotificationController;
 use App\Service\Notification\Model\Notification;
 
 # Настройки подключения к RabbitMQ

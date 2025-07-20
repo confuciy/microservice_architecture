@@ -108,6 +108,13 @@ spec:
             name: service-order
             port:
               number: 80
+      - path: /order/order
+        pathType: Exact
+        backend:
+          service:
+            name: service-order
+            port:
+              number: 80
       - path: /billing
         pathType: Exact
         backend:
@@ -155,6 +162,27 @@ spec:
         backend:
           service:
             name: service-warehouse
+            port:
+              number: 80
+      - path: /delivery
+        pathType: Exact
+        backend:
+          service:
+            name: service-delivery
+            port:
+              number: 80
+      - path: /delivery/order
+        pathType: Exact
+        backend:
+          service:
+            name: service-delivery
+            port:
+              number: 80
+      - path: /delivery/delivered
+        pathType: Exact
+        backend:
+          service:
+            name: service-delivery
             port:
               number: 80
 {{- end }}

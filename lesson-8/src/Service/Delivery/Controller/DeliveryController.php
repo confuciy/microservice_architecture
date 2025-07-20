@@ -60,8 +60,8 @@ class DeliveryController
      *     description="",
      *     @OA\Property(property="delivery_action_id", type="integer", example="1"),
      *     @OA\Property(property="delivery_id", type="integer", example="1"),
-     *     @OA\Property(property="order_id", type="integer", example="1")
-     *     @OA\Property(property="delivery _date", type="string", example="2025-05-29"),
+     *     @OA\Property(property="order_id", type="integer", example="1"),
+     *     @OA\Property(property="delivery_date", type="string", example="2025-05-29"),
      *     @OA\Property(property="status", type="integer", example="1"),
      *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807")
      * )
@@ -100,7 +100,7 @@ class DeliveryController
                 $delivery = $this->delivery->create($data);
 
                 http_response_code(201);
-                return json_encode($delivery);
+                return json_encode($delivery, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
             } else {
 
@@ -110,13 +110,13 @@ class DeliveryController
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -180,13 +180,13 @@ class DeliveryController
             $delivery_list = $this->delivery->getDeliveryList();
 
             http_response_code(200);
-            echo json_encode($delivery_list);
+            echo json_encode($delivery_list, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -232,8 +232,8 @@ class DeliveryController
      *     description="",
      *     @OA\Property(property="delivery_action_id", type="integer", example="1"),
      *     @OA\Property(property="delivery_id", type="integer", example="1"),
-     *     @OA\Property(property="order_id", type="integer", example="1")
-     *     @OA\Property(property="delivery _date", type="string", example="2025-05-29"),
+     *     @OA\Property(property="order_id", type="integer", example="1"),
+     *     @OA\Property(property="delivery_date", type="string", example="2025-05-29"),
      *     @OA\Property(property="status", type="integer", example="1"),
      *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807")
      * )
@@ -269,24 +269,24 @@ class DeliveryController
             $delivery = $this->delivery->delete($data);
 
             http_response_code(200);
-            return json_encode($delivery);
+            return json_encode($delivery, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
 
     /**
-     * @OA\Get(
+     * @OA\Post(
      *     path="/delivery/order",
      *     summary="Получение зарезервированного курьера заказа",
      *     description="",
@@ -325,8 +325,8 @@ class DeliveryController
      *     description="",
      *     @OA\Property(property="delivery_action_id", type="integer", example="1"),
      *     @OA\Property(property="delivery_id", type="integer", example="1"),
-     *     @OA\Property(property="order_id", type="integer", example="1")
-     *     @OA\Property(property="delivery _date", type="string", example="2025-05-29"),
+     *     @OA\Property(property="order_id", type="integer", example="1"),
+     *     @OA\Property(property="delivery_date", type="string", example="2025-05-29"),
      *     @OA\Property(property="status", type="integer", example="1"),
      *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807"),
      *     @OA\Property(property="courier", type="string", example="Курьер #1"),
@@ -357,13 +357,13 @@ class DeliveryController
             $delivery = $this->delivery->getDeliveryOrder($data['order_id']);
 
             http_response_code(200);
-            echo json_encode($delivery);
+            echo json_encode($delivery, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -409,8 +409,8 @@ class DeliveryController
      *     description="",
      *     @OA\Property(property="delivery_action_id", type="integer", example="1"),
      *     @OA\Property(property="delivery_id", type="integer", example="1"),
-     *     @OA\Property(property="order_id", type="integer", example="1")
-     *     @OA\Property(property="delivery _date", type="string", example="2025-05-29"),
+     *     @OA\Property(property="order_id", type="integer", example="1"),
+     *     @OA\Property(property="delivery_date", type="string", example="2025-05-29"),
      *     @OA\Property(property="status", type="integer", example="1"),
      *     @OA\Property(property="date_insert", type="string", example="2025-05-29 03:03:17.807"),
      *     @OA\Property(property="courier", type="string", example="Курьер #1"),
@@ -470,22 +470,22 @@ class DeliveryController
                     'action' => 'delivered',
                     'data' => [
                         'user_id' => $data['user_id'],
-                        'order_id' => $delivery['order_id']
+                        'order_id' => $data['order_id']
                     ]
                 ];
 
                 # Отправляем сообщение в RabbitMQ
-                $this->helper->rabbitmqSend('service-order', json_encode($data_order));
+                $this->helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
             /* }}} */
 
             http_response_code(200);
-            echo json_encode($delivery);
+            echo json_encode($delivery, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }

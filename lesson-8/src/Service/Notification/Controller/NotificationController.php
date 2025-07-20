@@ -91,19 +91,19 @@ class NotificationController
             $notification = $this->notification->create($data);
 
             http_response_code(201);
-            echo json_encode($notification);
+            echo json_encode($notification, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -167,13 +167,13 @@ class NotificationController
             $notification_list = $this->notification->get($jwt_token_data['user_id']);
 
             http_response_code(200);
-            echo json_encode(['notification_list' => $notification_list]);
+            echo json_encode(['notification_list' => $notification_list], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }

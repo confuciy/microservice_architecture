@@ -30,7 +30,7 @@ class AuthController
         if ($data === null or !isset($data['user_id']) or empty($data['user_id'])) {
 
             http_response_code(400);
-            echo json_encode(['error' => 'Invalid JSON data']);
+            echo json_encode(['error' => 'Invalid JSON data'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
 
@@ -61,19 +61,19 @@ class AuthController
             ];
 
             http_response_code(201);
-            echo json_encode($jwt_token);
+            echo json_encode($jwt_token, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -89,7 +89,7 @@ class AuthController
                 if ($jwt_token == '') {
 
                     http_response_code(401);
-                    echo json_encode(['error' => 'Invalid Token']);
+                    echo json_encode(['error' => 'Invalid Token'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                     exit;
                 }
 
@@ -116,27 +116,27 @@ class AuthController
                 } else {
 
                     http_response_code(401);
-                    echo json_encode(['error' => 'Invalid Token']);
+                    echo json_encode(['error' => 'Invalid Token'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                     exit;
                 }
 
             } catch (ValidationException $e) {
 
                 http_response_code(401);
-                echo json_encode(['error' => 'Invalid Token']);
+                echo json_encode(['error' => 'Invalid Token'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                 exit;
             }
 
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -153,7 +153,7 @@ class AuthController
                 if ($jwt_token == '') {
 
                     http_response_code(400);
-                    echo json_encode(['error' => 'Invalid JSON data']);
+                    echo json_encode(['error' => 'Invalid JSON data'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                     return;
                 }
 
@@ -177,32 +177,32 @@ class AuthController
                     if ($jwt_token_data['user_id'] != $claims['user_id']) {
 
                         http_response_code(401);
-                        echo json_encode(['error' => 'Invalid Token']);
+                        echo json_encode(['error' => 'Invalid Token'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                         return;
                     }
 
                     http_response_code(200);
-                    echo json_encode($jwt_token_data);
+                    echo json_encode($jwt_token_data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                     return;
 
                 } else {
 
                     http_response_code(401);
-                    echo json_encode(['error' => 'Invalid Token']);
+                    echo json_encode(['error' => 'Invalid Token'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                     return;
                 }
 
             } catch (ValidationException $e) {
 
                 http_response_code(401);
-                echo json_encode(['error' => 'Invalid Token']);
+                echo json_encode(['error' => 'Invalid Token'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                 return;
             }
 
         } catch (\Exception $e) {
 
             http_response_code(404);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -217,7 +217,7 @@ class AuthController
             if ($jwt_token == '') {
 
                 http_response_code(400);
-                echo json_encode(['error' => 'Invalid JSON data']);
+                echo json_encode(['error' => 'Invalid JSON data'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
                 return;
             }
 
@@ -240,13 +240,13 @@ class AuthController
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }

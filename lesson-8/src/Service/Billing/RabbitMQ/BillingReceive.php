@@ -87,13 +87,9 @@ try {
             # [SAGA]
             if (isset($msg_data['type']) and $msg_data['type'] == 'saga') {
 
-                $helper->setNotification($msg_data['data']['user_id'], 'saga_billing_body', $msg->body);
-
-                ###$helper->setNotification($msg_data['data']['user_id'], 'order_saga_enter', $msg->body);
+                ###$helper->setNotification($msg_data['data']['user_id'], 'saga_billing_body', $msg->body);
 
                 if (isset($msg_data['data']) and sizeof($msg_data['data']) > 0) {
-
-                    ###$helper->setNotification($msg_data['data']['user_id'], 'order_saga_data', $msg->body);
 
                     # Отправляем запрос в сервис
                     $billing_model = new Billing();
@@ -105,7 +101,7 @@ try {
 
                         $billing = $billing_model->amount($msg_data['data']);
 
-                        echo " [✓] Сумма биллингового аккаунта успешно уменьшена на ".$msg_data['data']['amount']."\n";
+                        echo " [✓][SAGA] Сумма биллингового аккаунта пользователя с ID = ".$msg_data['data']['user_id']." успешно уменьшена на ".$msg_data['data']['amount']."\n";
 
                         /* {{{ */
                             # Возвращаем ответ, что сумма заказа успешно снята
@@ -126,10 +122,10 @@ try {
                             ];
 
                             # Отправляем сообщение в RabbitMQ
-                            $helper->rabbitmqSend('service-order', json_encode($data_order));
+                            $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                         /* }}} */
 
-                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта успешно уменьшена на '.$msg_data['data']['amount']);
+                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта пользователя с ID = '.$msg_data['data']['user_id'].' успешно уменьшена на '.$msg_data['data']['amount']);
                     }
 
                     # PLUS
@@ -137,7 +133,7 @@ try {
 
                         $billing = $billing_model->amount($msg_data['data']);
 
-                        echo " [✓] Сумма биллингового аккаунта успешно пополнена на ".$msg_data['data']['amount']."\n";
+                        echo " [✓][SAGA] Сумма биллингового аккаунта пользователя с ID = ".$msg_data['data']['user_id']." успешно пополнена на ".$msg_data['data']['amount']."\n";
 
                         /* {{{ */
                             # Возвращаем ответ, что сумма заказа успешно снята
@@ -158,10 +154,10 @@ try {
                             ];
 
                             # Отправляем сообщение в RabbitMQ
-                            $helper->rabbitmqSend('service-order', json_encode($data_order));
+                            $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                         /* }}} */
 
-                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта успешно пополнена на '.$msg_data['data']['amount']);
+                        $helper->setNotification($msg_data['data']['user_id'], 'rabbitmq-billing-receive', '[✓][SAGA] Сумма биллингового аккаунта пользователя с ID = '.$msg_data['data']['user_id'].' успешно пополнена на '.$msg_data['data']['amount']);
                     }
                 }
             }
@@ -198,7 +194,7 @@ try {
                     ];
 
                     # Отправляем сообщение в RabbitMQ
-                    $helper->rabbitmqSend('service-order', json_encode($data_order));
+                    $helper->rabbitmqSend('service-order', json_encode($data_order, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
                 /* }}} */
             }
         }

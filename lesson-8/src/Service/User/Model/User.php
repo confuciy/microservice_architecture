@@ -97,7 +97,7 @@ class User
         curl_setopt($ch, CURLOPT_URL, getenv('host').'/auth/exit');
         curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([]));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json-patch+json',
             'Cookie: ' . $cookie_string  // Передаем куку в заголовке

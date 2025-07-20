@@ -117,7 +117,7 @@ class WarehouseController
                 $warehouse = $this->warehouse->create($data);
 
                 http_response_code(201);
-                return json_encode($warehouse);
+                return json_encode($warehouse, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
 
             } else {
 
@@ -127,13 +127,13 @@ class WarehouseController
         } catch (\Throwable $e) {
 
             http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
@@ -198,19 +198,19 @@ class WarehouseController
             $warehouse_list = $this->warehouse->getWarehouseList();
 
             http_response_code(200);
-            echo json_encode($warehouse_list);
+            echo json_encode($warehouse_list, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
 
     /**
-     * @OA\Get(
+     * @OA\Post(
      *     path="/warehouse/order",
      *     summary="Получение списка зарезервированных товаров заказа",
      *     description="",
@@ -292,13 +292,13 @@ class WarehouseController
             $order_list = $this->warehouse->getWarehouseOrderList($data['order_id']);
 
             http_response_code(200);
-            echo json_encode($order_list);
+            echo json_encode($order_list, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
 
         } catch (\Exception $e) {
 
             http_response_code(400);
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error' => $e->getMessage()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
             return;
         }
     }
