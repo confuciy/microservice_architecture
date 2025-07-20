@@ -82,6 +82,9 @@ newman run postman_collection.json --delay-request 100
 
 ### Сценарий:
 
+- конечное состояние в интерфейсе пользователя;
+![site_1.png](./img/site_1.png)
+
 - вход пользователя;
 ![postman_1.png](./img/postman_1.png)
 
