@@ -1,0 +1,30 @@
+[
+    {
+        "warehouse_action_id": 1,
+        "warehouse_id": 1,
+        "order_id": 1,
+        "action": "minus",
+        "count": 1,
+        "amount": 2200,
+        "status": 1,
+        "date_insert": "2025-07-20 22:59:12.947786",
+        "price": 2200,
+        "descr": "Лампа",
+        "photo": "lamp.jpg",
+        "price_total": 2200
+    },
+    {
+        "warehouse_action_id": 2,
+        "warehouse_id": 2,
+        "order_id": 1,
+        "action": "minus",
+        "count": 1,
+        "amount": 2600,
+        "status": 1,
+        "date_insert": "2025-07-20 22:59:12.949802",
+        "price": 2600,
+        "descr": "Часы",
+        "photo": "clock.jpg",
+        "price_total": 2600
+    }
+]

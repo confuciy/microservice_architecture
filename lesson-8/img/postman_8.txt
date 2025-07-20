@@ -5,49 +5,49 @@
             "user_id": 3,
             "action": "rabbitmq-order-receive",
             "message": "[✓][SAGA] Товары заказа c ID = 1 ожидают доставку",
-            "date_insert": "2025-07-20 21:30:23.178899"
+            "date_insert": "2025-07-20 22:59:13.0657"
         },
         {
             "notification_id": 6,
             "user_id": 3,
             "action": "rabbitmq-delivery-receive",
             "message": "[✓][SAGA] Курьер c ID = 1 для заказа с ID 1 успешно забронирован",
-            "date_insert": "2025-07-20 21:30:23.158304"
+            "date_insert": "2025-07-20 22:59:13.043951"
         },
         {
             "notification_id": 5,
             "user_id": 3,
             "action": "rabbitmq-order-receive",
             "message": "[✓][SAGA] Товар на складе для заказа c ID = 1 успешно зарезервирован",
-            "date_insert": "2025-07-20 21:30:23.122918"
+            "date_insert": "2025-07-20 22:59:13.002107"
         },
         {
             "notification_id": 4,
             "user_id": 3,
             "action": "rabbitmq-warehouse-receive",
             "message": "[✓][SAGA] Резервируем товар на складе для заказа ID = 1",
-            "date_insert": "2025-07-20 21:30:23.102362"
+            "date_insert": "2025-07-20 22:59:12.980688"
         },
         {
             "notification_id": 3,
             "user_id": 3,
             "action": "rabbitmq-order-receive",
             "message": "[✓][SAGA] Заказ c ID = 1 успешно оплачен",
-            "date_insert": "2025-07-20 21:30:23.05557"
+            "date_insert": "2025-07-20 22:59:12.936821"
         },
         {
             "notification_id": 2,
             "user_id": 3,
             "action": "rabbitmq-billing-receive",
             "message": "[✓][SAGA] Сумма биллингового аккаунта пользователя с ID = 3 успешно уменьшена на 4800",
-            "date_insert": "2025-07-20 21:30:23.033766"
+            "date_insert": "2025-07-20 22:59:12.914831"
         },
         {
             "notification_id": 1,
             "user_id": 3,
             "action": "create_order_ok",
             "message": "[✓] Заказ на сумму 4800 c ID 1 успешно создан",
-            "date_insert": "2025-07-20 21:30:23.006972"
+            "date_insert": "2025-07-20 22:59:12.884983"
         }
     ]
 }

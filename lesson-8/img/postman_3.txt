@@ -1,0 +1,20 @@
+{
+    "warehouse_list": [
+        {
+            "warehouse_id": 1,
+            "name": "Лампа",
+            "price": 2200,
+            "count": 1
+        },
+        {
+            "warehouse_id": 2,
+            "name": "Часы",
+            "price": 2600,
+            "count": 1
+        }
+    ],
+    "user_id": 3,
+    "idempotency": "faa68c10e6110f3a485853fa4f90dcb3",
+    "amount": 4800,
+    "order_id": 1
+}
