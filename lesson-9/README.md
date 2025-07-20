@@ -59,7 +59,7 @@ helm uninstall php-app
 
 #### Описание архитектурного решения и схема взаимодействия сервисов
 
-![interaction_of_services_2.png](./img/interaction_of_services.png)
+![interaction_of_services.png](./img/interaction_of_services.png)
 
 ### Swagger (OpenAPI)
 
