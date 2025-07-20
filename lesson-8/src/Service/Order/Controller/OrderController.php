@@ -117,6 +117,11 @@ class OrderController
                 throw new \Exception('Список товаров пустой');
             }
 
+            # Для запросов через сайт/Postman
+            if (is_string($data['warehouse_list'])) {
+                $data['warehouse_list'] = json_decode($data['warehouse_list'], true);
+            }
+
             $idempotency = md5($data['user_id'].'_'.json_encode($data['warehouse_list'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
 
             $data['idempotency'] = $idempotency;
