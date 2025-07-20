@@ -1,0 +1,1830 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "arch.homework API",
+        "description": "",
+        "contact": {
+            "name": "gorbachev@raexpert.ru"
+        },
+        "version": "v1"
+    },
+    "servers": [
+        {
+            "url": "http://arch.homework",
+            "description": ""
+        }
+    ],
+    "paths": {
+        "/billing": {
+            "get": {
+                "tags": [
+                    "Billing | Сервис биллинга"
+                ],
+                "summary": "Получение биллинг-аккаунта",
+                "description": "",
+                "operationId": "billing_get",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BillingGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Billing | Сервис биллинга"
+                ],
+                "summary": "Создание биллинг-аккаунта",
+                "description": "",
+                "operationId": "billing_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID пользователя",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "amount": {
+                                        "description": "Сумма",
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BillingCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/billing/amount": {
+            "post": {
+                "tags": [
+                    "Billing | Сервис биллинга"
+                ],
+                "summary": "Изменение суммы биллинг-аккаунта",
+                "description": "",
+                "operationId": "billing_amount",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "description": "Сумма",
+                                        "type": "number",
+                                        "format": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BillingItem"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/delivery": {
+            "get": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Список курьеров",
+                "description": "",
+                "operationId": "delivery_get",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Резервирование курьера",
+                "description": "",
+                "operationId": "delivery_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Освобождение курьера",
+                "description": "",
+                "operationId": "delivery_delete",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "delivery_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "delivery_id": {
+                                        "description": "ID курьера",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryDeleteResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/delivery/order": {
+            "post": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Получение зарезервированного курьера заказа",
+                "description": "",
+                "operationId": "delivery_order",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryOrderGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/delivery/delivered": {
+            "post": {
+                "tags": [
+                    "Delivery | Сервис доставки"
+                ],
+                "summary": "Подтверждение доставки заказа курьером",
+                "description": "",
+                "operationId": "delivery_delivered",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "delivery_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "delivery_id": {
+                                        "description": "ID курьера",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeliveryDeliveredResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/notification": {
+            "get": {
+                "tags": [
+                    "Notification | Сервис оповещений"
+                ],
+                "summary": "Список оповещений",
+                "description": "",
+                "operationId": "notification_get",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotificationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Notification | Сервис оповещений"
+                ],
+                "summary": "Добавление оповещения",
+                "description": "",
+                "operationId": "notification_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "action",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "ID пользователя",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "action": {
+                                        "description": "Действие",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "message": {
+                                        "description": "Сообщение",
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotificationCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/order": {
+            "get": {
+                "tags": [
+                    "Order | Сервис заказов"
+                ],
+                "summary": "Список заказов",
+                "description": "",
+                "operationId": "order_get",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Order | Сервис заказов"
+                ],
+                "summary": "Добавление заказа",
+                "description": "",
+                "operationId": "order_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "warehouse_list"
+                                ],
+                                "properties": {
+                                    "warehouse_list": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderCreateItem"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/order/check": {
+            "post": {
+                "tags": [
+                    "Order | Сервис заказов"
+                ],
+                "summary": "Проверка заказа перед созданием",
+                "description": "",
+                "operationId": "order_check",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "warehouse_list"
+                                ],
+                                "properties": {
+                                    "warehouse_list": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/OrderCheckItem"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrderCheckResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/auth": {
+            "post": {
+                "tags": [
+                    "User | Сервис пользователей"
+                ],
+                "summary": "Авторизация пользователя",
+                "description": "",
+                "operationId": "user_auth",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Email пользователя",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "password": {
+                                        "description": "Пароль",
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserAuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/user/exit": {
+            "get": {
+                "tags": [
+                    "User | Сервис пользователей"
+                ],
+                "summary": "Выход пользователя",
+                "description": "",
+                "operationId": "user_exit",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/create": {
+            "post": {
+                "tags": [
+                    "User | Сервис пользователей"
+                ],
+                "summary": "Регистрация пользователя",
+                "description": "",
+                "operationId": "user_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Email пользователя",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "password": {
+                                        "description": "Пароль",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "first_name": {
+                                        "description": "Имя",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "Фамилия",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "phone": {
+                                        "description": "Телефон",
+                                        "type": "string",
+                                        "format": "string"
+                                    },
+                                    "address": {
+                                        "description": "Адрес",
+                                        "type": "string",
+                                        "format": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/warehouse": {
+            "get": {
+                "tags": [
+                    "Warehouse | Сервис склада"
+                ],
+                "summary": "Список товаров на складе",
+                "description": "",
+                "operationId": "warehouse_get",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WarehouseGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Warehouse | Сервис склада"
+                ],
+                "summary": "Резервироние товара",
+                "description": "",
+                "operationId": "warehouse_create",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id",
+                                    "warehouse_list"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    },
+                                    "warehouse_list": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/WarehouseCreateItem"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WarehouseCreateResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        },
+        "/warehouse/order": {
+            "get": {
+                "tags": [
+                    "Warehouse | Сервис склада"
+                ],
+                "summary": "Получение списка зарезервированных товаров заказа",
+                "description": "",
+                "operationId": "warehouse_order",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "order_id"
+                                ],
+                                "properties": {
+                                    "order_id": {
+                                        "description": "ID заказа",
+                                        "type": "integer",
+                                        "format": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WarehouseOrderGetResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "401 Authorization Required"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false,
+                "security": [
+                    {
+                        "cookieAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BillingCreateResponse": {
+                "title": "Биллинг-аккаунта пользователя",
+                "description": "",
+                "properties": {
+                    "billing_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "BillingGetResponse": {
+                "title": "Биллинг-аккаунт пользователя",
+                "description": "",
+                "properties": {
+                    "billing": {
+                        "$ref": "#/components/schemas/BillingItem"
+                    }
+                },
+                "type": "object"
+            },
+            "BillingItem": {
+                "title": "Биллинг-аккаунт пользователя",
+                "description": "",
+                "properties": {
+                    "billing_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryCreateResponse": {
+                "title": "Зарезервированный курьер",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryGetResponse": {
+                "title": "Список курьеров",
+                "description": "",
+                "properties": {
+                    "delivery_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DeliveryGetItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryGetItem": {
+                "title": "Курьер",
+                "description": "",
+                "properties": {
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "courier": {
+                        "type": "string",
+                        "example": "Курьер #1"
+                    },
+                    "free": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryDeleteResponse": {
+                "title": "Освобожденный курьер",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryOrderGetResponse": {
+                "title": "Зарезервированный курьер",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    },
+                    "courier": {
+                        "type": "string",
+                        "example": "Курьер #1"
+                    },
+                    "free": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "DeliveryDeliveredResponse": {
+                "title": "Освобожденный курьер, выполненный заказ",
+                "description": "",
+                "properties": {
+                    "delivery_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "delivery_date": {
+                        "type": "string",
+                        "example": "2025-05-29"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    },
+                    "courier": {
+                        "type": "string",
+                        "example": "Курьер #1"
+                    },
+                    "free": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "NotificationCreateResponse": {
+                "title": "Оповещения пользователя",
+                "description": "",
+                "properties": {
+                    "notification_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user_id": {
+                        "description": "ID пользователя",
+                        "type": "integer"
+                    },
+                    "action": {
+                        "description": "Действие",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Сообщение",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "NotificationResponse": {
+                "title": "Список оповещений пользователя",
+                "description": "",
+                "properties": {
+                    "notification_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NotificationItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "NotificationItem": {
+                "title": "Оповещение пользователя",
+                "description": "",
+                "properties": {
+                    "notification_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "action": {
+                        "type": "string",
+                        "example": "create_user_ok"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Пользователь с почтой email1@email.com создан с id 1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderCreateResponse": {
+                "title": "Заказ пользователя",
+                "description": "",
+                "properties": {
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user_id": {
+                        "description": "ID пользователя",
+                        "type": "integer"
+                    },
+                    "amount": {
+                        "description": "Сумма заказа",
+                        "type": "number"
+                    },
+                    "idempotency": {
+                        "description": "Хеш идемпотентности",
+                        "type": "string"
+                    },
+                    "warehouse_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderCreateItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "OrderCreateItem": {
+                "title": "Список товаров",
+                "description": "",
+                "properties": {
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderGetResponse": {
+                "title": "Список заказов пользователя",
+                "description": "",
+                "properties": {
+                    "order_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "OrderItem": {
+                "title": "Заказ пользователя",
+                "description": "",
+                "properties": {
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "idempotency": {
+                        "type": "string",
+                        "example": "qweafasrqwe2sadasd..."
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    },
+                    "warehouse_action_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderGetItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "OrderGetItem": {
+                "title": "Список товаров",
+                "description": "",
+                "properties": {
+                    "warehouse_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "action": {
+                        "type": "string",
+                        "example": "plus"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderCheckResponse": {
+                "title": "Заказ пользователя",
+                "description": "",
+                "properties": {
+                    "order_check": {
+                        "type": "boolean",
+                        "example": "true"
+                    }
+                },
+                "type": "object"
+            },
+            "OrderCheckItem": {
+                "title": "Список товаров",
+                "description": "",
+                "properties": {
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Часы"
+                    },
+                    "price": {
+                        "type": "number",
+                        "example": "2600"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "UserAuthResponse": {
+                "title": "Авторизация пользователя",
+                "description": "",
+                "properties": {
+                    "jwt_token_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "jwt": {
+                        "type": "string",
+                        "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2V..."
+                    },
+                    "exp": {
+                        "type": "integer",
+                        "example": "1746674949"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "UserCreateResponse": {
+                "title": "Пользователь",
+                "description": "",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "gorbachev"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": "Aleksey"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": "Gorbachev"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "email@email.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "12345"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+71112223344"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "Moscow, Red Square, 1"
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseCreateResponse": {
+                "title": "Резервироние товара",
+                "description": "",
+                "properties": {
+                    "warehouse_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WarehouseCreateItem"
+                        }
+                    },
+                    "warehouse_action_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WarehouseActionCreateItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseCreateItem": {
+                "title": "Список товаров",
+                "description": "",
+                "properties": {
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseActionCreateItem": {
+                "title": "Зарезервированный товар заказа",
+                "description": "",
+                "properties": {
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "action": {
+                        "type": "string",
+                        "example": "plus"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseGetResponse": {
+                "title": "Список товаров на складе",
+                "description": "",
+                "properties": {
+                    "warehouse_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WarehouseGetItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseGetItem": {
+                "title": "Зарезервированный товар заказа",
+                "description": "",
+                "properties": {
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "price": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "descr": {
+                        "type": "string",
+                        "example": "Лампа"
+                    },
+                    "photo": {
+                        "type": "string",
+                        "example": "lamp.jpg"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseOrderGetResponse": {
+                "title": "Зарезервированный товар заказа",
+                "description": "",
+                "properties": {
+                    "warehouse_action_list": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WarehouseActionGetItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "WarehouseActionGetItem": {
+                "title": "Зарезервированный товар заказа",
+                "description": "",
+                "properties": {
+                    "warehouse_action_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "warehouse_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "order_id": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "action": {
+                        "type": "string",
+                        "example": "plus"
+                    },
+                    "count": {
+                        "type": "number",
+                        "example": "1"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": "1"
+                    },
+                    "date_insert": {
+                        "type": "string",
+                        "example": "2025-05-29 03:03:17.807"
+                    },
+                    "price": {
+                        "type": "number",
+                        "example": "100.25"
+                    },
+                    "descr": {
+                        "type": "string",
+                        "example": "Лампа"
+                    },
+                    "photo": {
+                        "type": "string",
+                        "example": "lamp.jpg"
+                    },
+                    "price_total": {
+                        "type": "number",
+                        "example": "100.25"
+                    }
+                },
+                "type": "object"
+            },
+            "Error": {
+                "title": "Ошибка",
+                "description": "",
+                "properties": {
+                    "error": {
+                        "type": "string",
+                        "example": "текст ошибки"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "description": "Авторизуйтесь с помощью логина и пароля для получения JWT-токена",
+                "name": "user_jwt",
+                "scheme": "cookie"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Billing | Сервис биллинга",
+            "description": "Billing | Сервис биллинга"
+        },
+        {
+            "name": "Delivery | Сервис доставки",
+            "description": "Delivery | Сервис доставки"
+        },
+        {
+            "name": "Notification | Сервис оповещений",
+            "description": "Notification | Сервис оповещений"
+        },
+        {
+            "name": "Order | Сервис заказов",
+            "description": "Order | Сервис заказов"
+        },
+        {
+            "name": "User | Сервис пользователей",
+            "description": "User | Сервис пользователей"
+        },
+        {
+            "name": "Warehouse | Сервис склада",
+            "description": "Warehouse | Сервис склада"
+        }
+    ]
+}

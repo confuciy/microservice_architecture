@@ -1,0 +1,59 @@
+# ingress-nginx
+- job_name: 'ingress-nginx-metrics'
+  metrics_path: /metrics
+  static_configs:
+  - targets: ['ingress-nginx-controller-metrics.ingress-nginx.svc.cluster.local:10254']
+
+# postgres
+- job_name: 'postgres-exporter'
+  static_configs:
+    - targets: ['192.168.0.129:9187']  # IP хоста Ubuntu и порт экспортера
+
+# nginx
+- job_name: 'metrics-nginx-exporter-php-app'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-php-app:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-user'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-user:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-auth'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-auth:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-billing'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-billing:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-delivery'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-delivery:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-notification'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-notification:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-order'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-order:9113']  # Адрес Nginx Exporter
+- job_name: 'metrics-nginx-exporter-service-warehouse'
+  metrics_path: /metrics  # Путь к метрикам экспортера
+  static_configs:
+  - targets: ['metrics-nginx-exporter-service-warehouse:9113']  # Адрес Nginx Exporter
+
+# api-metrics
+- job_name: 'api-metrics-php-app'
+  metrics_path: /api_metrics  # Путь к метрикам
+  static_configs:
+  - targets: ['metrics-api-php-app:80']
+
+#- job_name: 'api-metrics-service-user'
+#  metrics_path: /api_metrics  # Путь к метрикам
+#  static_configs:
+#  - targets: ['api-metrics-service-user:80']
+#- job_name: 'api-metrics-service-auth'
+#  metrics_path: /api_metrics  # Путь к метрикам
+#  static_configs:
+#  - targets: ['api-metrics-service-auth:80']

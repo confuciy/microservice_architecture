@@ -1,0 +1,28 @@
+{{- if .Values.rabbitmqConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-warehouse-consumer
+spec:
+  replicas: {{ .Values.rabbitmqConsumer.replicas }}
+  selector:
+    matchLabels:
+      app: rabbitmq-warehouse-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-warehouse-consumer
+    spec:
+      containers:
+      - name: consumer
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_warehouse }}"
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-secrets
+        command: ["php", "-r"] # используем sh для выполнения нескольких команд
+        args:
+          - "require './src/Service/Warehouse/RabbitMQ/WarehouseReceive.php';"
+        resources:
+          {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}
+{{- end }}

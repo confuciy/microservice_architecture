@@ -1,0 +1,184 @@
+<?php
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+
+//# Устанавливаем заголовок контента на application/json
+//header('Content-Type: application/json');
+//
+//# Получаем текущий путь
+//$requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+//$requestPath = rtrim($requestPath, '/');
+//
+//# Проверяем, соответствует ли путь /health/
+//if ($requestPath === '/health') {
+//
+//    header('Content-Type: application/json');
+//    echo json_encode(['status' => 'OK']);
+//
+//} else {
+//
+//    header('Content-Type: application/json');
+//    echo json_encode(['status' => 'AR.OV: '.time()]);
+//}
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$dispatcher = require __DIR__ . '/routes.php';
+
+// Обработка CORS
+//header('Access-Control-Allow-Origin: *');
+//header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
+//header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type');
+
+/**
+ * @OA\Info(
+ *     version="v1",
+ *     title="arch.homework API",
+ *     description="",
+ *     @OA\Contact(name="gorbachev@raexpert.ru"),
+ * )
+ * @OA\Server(
+ *     url="http://arch.homework",
+ *     description=""
+ * )
+ * @OA\SecurityScheme(
+ *     securityScheme="cookieAuth",
+ *     description="Авторизуйтесь с помощью логина и пароля для получения JWT-токена",
+ *     type="apiKey",
+ *     scheme="cookie",
+ *     name="user_jwt",
+ * )
+ * @OA\Tags(
+ *     name="v1",
+ *     description="",
+ * )
+ *
+ * @OA\Schema(
+ *     schema="Error",
+ *     title="Ошибка",
+ *     description="",
+ *     @OA\Property(property="error", type="string", example="текст ошибки")
+ * )
+ */
+
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri = $_SERVER['REQUEST_URI'];
+
+if (false !== $pos = strpos($uri, '?')) {
+
+    $uri = substr($uri, 0, $pos);
+}
+$uri = rawurldecode($uri);
+
+# Metrics
+$metrics = App\Service\Metric\Controller\PrometheusMetric::getInstance();
+$startTime = $metrics->startTimer($httpMethod);
+
+$routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+
+//echo '<pre>'; print_r($uri); echo '</pre>';
+//echo '<pre>'; print_r($routeInfo); echo '</pre>';
+//echo '<pre>'; print_r(apache_request_headers()); echo '</pre>';
+//die;
+
+switch ($routeInfo[0]) {
+
+    case FastRoute\Dispatcher::NOT_FOUND:
+
+        http_response_code(404);
+        $metrics->observeRequest($startTime, $httpMethod, 404);
+        echo json_encode(['error' => 'Not found'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+
+//        echo '<style>body, div, p {margin: 0}</style>';
+//        echo '<div style="width: 100%; background: lightblue;">
+//            <div style="padding: 10px;">
+//                <h1>arch.homework | <span style="color: #777;">404</span></h1>
+//            </div>
+//        </div>';
+//
+//        echo '<div style="padding: 10px;">';
+//            echo 'Не найдено';
+//        echo '</div>';
+
+        break;
+
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+
+        http_response_code(405);
+        $metrics->observeRequest($startTime, $httpMethod, 405);
+        echo json_encode(['error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+
+//        echo '<style>body, div, p {margin: 0}</style>';
+//        echo '<div style="width: 100%; background: lightpink;">
+//            <div style="padding: 10px;">
+//                <h1>arch.homework | <span style="color: #777;">405</span></h1>
+//            </div>
+//        </div>';
+//
+//        echo '<div style="padding: 10px;">';
+//            echo 'Метод не поддерживается';
+//        echo '</div>';
+
+        break;
+
+    case FastRoute\Dispatcher::FOUND:
+
+        $handler = $routeInfo[1];
+        $vars = $routeInfo[2];
+
+        [$class, $method] = $handler;
+
+        $controller = new $class();
+
+        try {
+
+//            # Эмулируем 500-е
+//            if (
+//                $httpMethod == 'GET'
+//                and preg_match('/\/user\/(\d+)/', $uri)
+//                and in_array(rand(1, 100), [15, 25, 35, 45, 55, 65, 75, 85, 95])
+//            ) {
+//
+//                http_response_code(500);
+//                $metrics->incError($httpMethod);
+//                $metrics->observeRequest($startTime, $httpMethod, 500);
+//                echo json_encode(['error' => 'Internal Server Error']);
+//                return;
+//            }
+
+            $response = call_user_func_array([$controller, $method], $vars);
+
+        } catch (Throwable $e) {
+
+            http_response_code(500);
+            $metrics->incError($httpMethod);
+            $metrics->observeRequest($startTime, $httpMethod, 500);
+            echo json_encode(['error' => 'Internal Server Error'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+
+//            echo '<style>body, div, p {margin: 0}</style>';
+//            echo '<div style="width: 100%; background: lightpink;">
+//                <div style="padding: 10px;">
+//                    <h1>arch.homework | <span style="color: #777;">500</span></h1>
+//                </div>
+//            </div>';
+//
+//            echo '<div style="padding: 10px;">';
+//                echo $e->getMessage();
+//            echo '</div>';
+
+            return;
+        }
+
+        $code = http_response_code();
+
+        if ($code >= 500){
+
+            $metrics->incError($httpMethod);
+        }
+
+        $metrics->observeRequest($startTime, $httpMethod, $code);
+        break;
+}

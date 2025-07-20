@@ -1,0 +1,19 @@
+service:
+  type: NodePort
+
+adminPassword: "grafana-admin"  # Пароль для admin
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server  # Имя сервиса Prometheus
+      access: proxy
+      isDefault: true
+
+persistence:
+  enabled: true
+  storageClassName: "standard"
+  size: 1Gi

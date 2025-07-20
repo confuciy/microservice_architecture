@@ -1,0 +1,111 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: public-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/upstream-max-fails: "5"
+    nginx.ingress.kubernetes.io/upstream-fail-timeout: "30s"
+    nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout http_502 http_503 http_504"
+    nginx.ingress.kubernetes.io/proxy-next-upstream-tries: "3"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "5s"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "40s"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: arch.homework
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: php-app
+            port:
+              number: 80
+      - path: /api/documentation
+        pathType: Prefix
+        backend:
+          service:
+            name: php-app
+            port:
+              number: 80
+      - path: /api_metrics
+        pathType: Exact
+        backend:
+          service:
+            name: php-app
+            port:
+              number: 80
+      - path: /auth/token
+        pathType: Exact
+        backend:
+          service:
+            name: service-auth
+            port:
+              number: 80
+      - path: /user/register
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /user/create
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /user/login
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /user/auth
+        pathType: Exact
+        backend:
+          service:
+            name: service-user
+            port:
+              number: 80
+      - path: /auth/exit
+        pathType: Exact
+        backend:
+          service:
+            name: service-auth
+            port:
+              number: 80
+#      - path: /notification
+#        pathType: Exact
+#        backend:
+#          service:
+#            name: service-notification
+#            port:
+#              number: 80
+#      - path: /rabbitmq-send
+#        pathType: Exact
+#        backend:
+#          service:
+#            name: php-app
+#            port:
+#              number: 80
+#      - path: /rabbitmq-receive
+#        pathType: Exact
+#        backend:
+#          service:
+#            name: php-app
+#            port:
+#              number: 80
+#      - path: /user/rabbitmq-test
+#        pathType: Exact
+#        backend:
+#          service:
+#            name: service-user
+#            port:
+#              number: 80
+{{- end }}

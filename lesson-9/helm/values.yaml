@@ -1,0 +1,75 @@
+replicaCount: 1
+
+image:
+  repository: confuciy/otus-lesson-9-idempotency
+  tags:
+    php_app: php-app
+    service_user: service-user
+    service_consumer: service-consumer
+    service_auth: service-auth
+    service_order: service-order
+    service_billing: service-billing
+    service_warehouse: service-warehouse
+    service_delivery: service-delivery
+    service_notification: service-notification
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  host: arch.homework
+  annotations:
+    kubernetes.io/ingress.class: nginx
+
+job:
+  ttlSecondsAfterFinished: 30
+  migration:
+    enabled: false
+
+rabbitmqConsumer:
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+serviceHost:
+  service_auth: http://service_auth.default.svc.cluster.local:80
+  service_user: http://service-user.default.svc.cluster.local:80
+  service_order: http://service_order.default.svc.cluster.local:80
+  service_billing: http://service_billing.default.svc.cluster.local:80
+  service_warehouse: http://service-warehouse.default.svc.cluster.local:80
+  service_delivery: http://service-delivery.default.svc.cluster.local:80
+  service_notification: http://service_notification.default.svc.cluster.local:80
+
+secrets:
+  hash_default_salt: Q$DDFWE%$#WEFSFDGE^#sdBcGER^$%
+  main:
+    domain: arch.homework
+    host: http://192.168.0.129
+    jwt_secret: 123qds#$#$%HvnvbnYY&&&5F!#@$esfR
+  postgres:
+      postgres_host: 192.168.0.129
+      postgres_port: 5432
+      postgres_db: service
+      postgres_user: postgres
+      postgres_password: Z2hqZnl6
+  db_config:
+    POSTGRE_HOST: 192.168.0.129
+    POSTGRE_PORT: 5432
+    POSTGRES_DB: service
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: Z2hqZnl6
+  redis:
+    redis_host: redis-service
+    redis_port: 6379
+    redis_password: dfgDFgEE!@#$rdc
+    redis_timeout: 0.1
+    redis_read_timeout: 10
+    redis_persistent_connections: false
+  rabbitmq:
+    rabbitmq_host: rabbitmq
+    rabbitmq_port: 5672
+    rabbitmq_user: nauths
+    rabbitmq_password: WQEAsdaewa
+    rabbitmq_host: rabbitmq
