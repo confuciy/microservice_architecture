@@ -176,8 +176,28 @@ class OrderController
                 # Обновляем заказ - статус "Ожидает оплаты"
                 $this->order->updateOrder($order['order_id'], 'status', 1);
 
-                # Обновляем saga заказа - статус "Ожидает оплаты"
-                $this->order->updateSaga($order_saga['order_saga_id'], 'status', 1);
+//                # Обновляем saga заказа - статус "Ожидает оплаты"
+//                $this->order->updateSaga($order_saga['order_saga_id'], 'status', 1);
+
+
+                # Уменьшаем сумму биллинг аккаунта
+
+                # Данные для отправки
+                $data_billing = [
+                    'type' => 'saga',
+                    'data' => [
+                        'action' => 'minus',
+                        'user_id' => $order['user_id'],
+                        'order_id' => $order['order_id'],
+                        'order_saga_id' => $order_saga['order_saga_id'],
+                        'amount' => $order['amount'],
+                        'warehouse_list' => $order['warehouse_list']
+                    ]
+                ];
+
+                $order_sage_message = json_encode($data_billing, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK);
+
+                $this->order->updateSaga($order_saga['order_saga_id'], 'message', $order_sage_message);
 
             $this->order->pdo->commit();
 
@@ -200,9 +220,9 @@ class OrderController
 //                # Отправляем сообщение в RabbitMQ
 //                $this->helper->rabbitmqSend('service-billing', json_encode($data_billing, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK));
 //            /* }}} */
-//
-//            # Добавляем оповещение
-//            $this->helper->setNotification($order['user_id'], 'create_order_ok', '[✓] Заказ на сумму '.$order['amount'].' c ID = '.$order['order_id'].' успешно создан');
+
+            # Добавляем оповещение
+            $this->helper->setNotification($order['user_id'], 'create_order_ok', '[✓] Заказ на сумму '.$order['amount'].' c ID = '.$order['order_id'].' успешно создан');
 
 //            if (isset($_POST['reload'])) {
 //

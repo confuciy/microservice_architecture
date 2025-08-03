@@ -500,7 +500,7 @@ class UserController
                                         echo '<b>Заказ №' . $order['order_id'] . ' от ' . date('d.m.Y H:i:s', strtotime(substr($order['date_insert'], 0, 19))) . '</b><br>';
                                         echo '<span style="color: #cccccc; font-size: 11px;">' . $order['idempotency'] . '</span><br><br>';
 
-                                        echo 'Статус: <b>' . $order_status[$order['status']] . '</b><br>';
+                                        echo 'Статус: <b>' . $order_status[$order['status']] . ($order['status'] == 4?' <a href="javascript:void(0);" onclick="deliveryOrder('.$order['order_id'].', '.$order['delivery_action_list']['delivery_id'].')">[доставить]</a>':'') . '</b><br>';
                                         echo 'Стоимость: <b>' . $order['amount'] . '</b>₽<br><br>';
 
                                         if ($order['status'] >= 3) {
@@ -548,6 +548,37 @@ class UserController
             
             // Элементы карзины
             var warehouse_item_list = [];
+            
+            function deliveryOrder(order_id, delivery_id) {
+            
+                $.ajax({
+                    url: "/delivery/delivered",
+                    dataType: "json",
+                    type: "POST",
+                    data: ({ "order_id": order_id, "delivery_id": delivery_id }),
+                    async: false,
+                    xhrFields: {
+                        withCredentials: true // Ключевая опция для отправки куки
+                    },
+                    success: function(data) {
+
+                        location.reload(); 
+                    },
+                    error: function (xhr) {
+
+                        try {
+                             var response = JSON.parse(xhr.responseText);
+                             if (response.error) {
+                                 alert(response.error);
+                             } else {
+                                 alert(xhr.responseText);
+                             }
+                         } catch (e) {
+                             alert(xhr.responseText);
+                         }
+                    }
+                });
+            }
             
             // Создание заказа
             function createOrder(idempotency, reorder) {

@@ -147,25 +147,20 @@ class Order
         }
     }
 
-    # Обновление поля SAGA
+    # Получение SAGA для начала обработки
     public function getSagaForStartList(): array
     {
         try {
 
-            if (empty($orderId)) {
-                throw new \Exception('ID заказа пустой');
-            }
-            if (empty($userId)) {
-                throw new \Exception('ID пользователя пустой');
-            }
-
-            $query = 'SELECT * 
+            $query = 'SELECT orders.user_id, orders_saga.* 
               FROM orders_saga 
-              WHERE status = 0';
+              JOIN orders ON orders.order_id = orders_saga.order_id
+              WHERE orders_saga.status = 0';
             $statement = $this->pdo->prepare($query);
+            $statement->execute();
             $order_saga_list = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-            return (!is_array($order_saga_list)?[]:$order_saga_list);
+            return (is_array($order_saga_list)?$order_saga_list:[]);
 
         } catch (\Exception $e) {
 

@@ -15,12 +15,13 @@ class PrometheusMetric
     private Summary $httpRequestLatency;
     private Counter $httpRequestTotal;
     private Counter $httpErrorTotal;
+    private Summary $otusHttpRdsLatency;
     private static ?PrometheusMetric $instance = null;
 
     private const HTTP_REQUEST_DURATION_SECONDS = 'http_request_duration_seconds';
     private const HTTP_REQUEST_TOTAL = 'http_request_total';
     private const HTTP_ERROR_TOTAL = 'http_error_total';
-    private const OTUS_HTTP_RDS = 'otus_http_rds'; // Новая константа
+    private const OTUS_HTTP_RDS = 'otus_http_rds';
     private const DEFAULT_LABELS =  ['method', 'code'];
 
 
