@@ -1,0 +1,5 @@
+apiVersion: v2
+name: php-app
+description: PHP 8.2 with Nginx
+version: 0.1.0
+appVersion: "1.0"

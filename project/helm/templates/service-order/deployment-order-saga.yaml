@@ -1,0 +1,28 @@
+{{- if .Values.rabbitmqConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-saga-starter
+spec:
+  replicas: {{ .Values.rabbitmqConsumer.replicas }}
+  selector:
+    matchLabels:
+      app: order-saga-starter
+  template:
+    metadata:
+      labels:
+        app: order-saga-starter
+    spec:
+      containers:
+      - name: consumer
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_order }}"
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-secrets
+        command: ["php", "-r"] # используем sh для выполнения нескольких команд
+        args:
+          - "require './src/Service/Order/RabbitMQ/OrderSagaStarter.php';"
+        resources:
+          {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}
+{{- end }}

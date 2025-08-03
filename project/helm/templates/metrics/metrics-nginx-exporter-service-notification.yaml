@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-nginx-exporter-service-notification
+  labels:
+    app: metrics-nginx-exporter-service-notification
+spec:
+  selector:
+    app: service-notification  # Должен совпадать с лейблами пода
+  ports:
+    - protocol: TCP
+      port: 9113  # Порт сервиса
+      targetPort: 9113  # Порт пода, где слушает экспортер

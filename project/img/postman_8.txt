@@ -1,0 +1,102 @@
+{
+    "notification_list": [
+        {
+            "notification_id": 14,
+            "user_id": 3,
+            "action": "rabbitmq-order-receive",
+            "message": "[✓][SAGA] Товары заказа c ID = 2 ожидают доставку",
+            "date_insert": "2025-07-21 01:37:29.41617"
+        },
+        {
+            "notification_id": 13,
+            "user_id": 3,
+            "action": "rabbitmq-delivery-receive",
+            "message": "[✓][SAGA] Курьер c ID = 2 для заказа с ID 2 успешно забронирован",
+            "date_insert": "2025-07-21 01:37:29.396364"
+        },
+        {
+            "notification_id": 12,
+            "user_id": 3,
+            "action": "rabbitmq-order-receive",
+            "message": "[✓][SAGA] Товар на складе для заказа c ID = 2 успешно зарезервирован",
+            "date_insert": "2025-07-21 01:37:29.359911"
+        },
+        {
+            "notification_id": 11,
+            "user_id": 3,
+            "action": "rabbitmq-warehouse-receive",
+            "message": "[✓][SAGA] Резервируем товар на складе для заказа ID = 2",
+            "date_insert": "2025-07-21 01:37:29.340988"
+        },
+        {
+            "notification_id": 10,
+            "user_id": 3,
+            "action": "rabbitmq-order-receive",
+            "message": "[✓][SAGA] Заказ c ID = 2 успешно оплачен",
+            "date_insert": "2025-07-21 01:37:29.298656"
+        },
+        {
+            "notification_id": 9,
+            "user_id": 3,
+            "action": "rabbitmq-billing-receive",
+            "message": "[✓][SAGA] Сумма биллингового аккаунта пользователя с ID = 3 успешно уменьшена на 4800",
+            "date_insert": "2025-07-21 01:37:29.278655"
+        },
+        {
+            "notification_id": 8,
+            "user_id": 3,
+            "action": "create_order_ok",
+            "message": "[✓] Заказ на сумму 4800 c ID = 2 успешно создан",
+            "date_insert": "2025-07-21 01:37:29.249981"
+        },
+        {
+            "notification_id": 7,
+            "user_id": 3,
+            "action": "rabbitmq-order-receive",
+            "message": "[✓][SAGA] Товары заказа c ID = 1 ожидают доставку",
+            "date_insert": "2025-07-21 01:34:36.719885"
+        },
+        {
+            "notification_id": 6,
+            "user_id": 3,
+            "action": "rabbitmq-delivery-receive",
+            "message": "[✓][SAGA] Курьер c ID = 1 для заказа с ID 1 успешно забронирован",
+            "date_insert": "2025-07-21 01:34:36.698455"
+        },
+        {
+            "notification_id": 5,
+            "user_id": 3,
+            "action": "rabbitmq-order-receive",
+            "message": "[✓][SAGA] Товар на складе для заказа c ID = 1 успешно зарезервирован",
+            "date_insert": "2025-07-21 01:34:36.659866"
+        },
+        {
+            "notification_id": 4,
+            "user_id": 3,
+            "action": "rabbitmq-warehouse-receive",
+            "message": "[✓][SAGA] Резервируем товар на складе для заказа ID = 1",
+            "date_insert": "2025-07-21 01:34:36.639421"
+        },
+        {
+            "notification_id": 3,
+            "user_id": 3,
+            "action": "rabbitmq-order-receive",
+            "message": "[✓][SAGA] Заказ c ID = 1 успешно оплачен",
+            "date_insert": "2025-07-21 01:34:36.597723"
+        },
+        {
+            "notification_id": 2,
+            "user_id": 3,
+            "action": "rabbitmq-billing-receive",
+            "message": "[✓][SAGA] Сумма биллингового аккаунта пользователя с ID = 3 успешно уменьшена на 4800",
+            "date_insert": "2025-07-21 01:34:36.575085"
+        },
+        {
+            "notification_id": 1,
+            "user_id": 3,
+            "action": "create_order_ok",
+            "message": "[✓] Заказ на сумму 4800 c ID = 1 успешно создан",
+            "date_insert": "2025-07-21 01:34:36.548405"
+        }
+    ]
+}

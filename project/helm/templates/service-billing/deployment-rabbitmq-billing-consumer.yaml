@@ -1,0 +1,28 @@
+{{- if .Values.rabbitmqConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-billing-consumer
+spec:
+  replicas: {{ .Values.rabbitmqConsumer.replicas }}
+  selector:
+    matchLabels:
+      app: rabbitmq-billing-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-billing-consumer
+    spec:
+      containers:
+      - name: consumer
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tags.service_billing }}"
+        imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: {{ .Release.Name }}-secrets
+        command: ["php", "-r"] # используем sh для выполнения нескольких команд
+        args:
+          - "require './src/Service/Billing/RabbitMQ/BillingReceive.php';"
+        resources:
+          {{- toYaml .Values.rabbitmqConsumer.resources | nindent 10 }}
+{{- end }}
