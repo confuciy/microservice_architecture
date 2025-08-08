@@ -265,6 +265,15 @@ class BillingController
             # Изменение суммы биллниг-аккаунта
             $billing = $this->billing->amount($data);
 
+            if ($data['action'] == 'plus') {
+
+                $this->helper->setNotification($data['user_id'], 'billing-amount', '[✓] Сумма биллингового аккаунта успешно пополнена на '.$data['amount']);
+
+            } else {
+
+                $this->helper->setNotification($data['user_id'], 'billing-amount', '[✓] Сумма биллингового аккаунта успешно уменьшена на '.$data['amount']);
+            }
+
             if (isset($_POST['reload'])) {
 
                 header('Location: /user/billing');
