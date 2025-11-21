@@ -1,7 +1,10 @@
 {
   "require": {
     "verot/class.upload.php": "*",
-    "php-amqplib/php-amqplib": "^3.2"
+    "php-amqplib/php-amqplib": "^3.2",
+    "zircote/swagger-php": "^4.10",
+    "swagger-api/swagger-ui": "^5.17",
+    "doctrine/annotations": "^2.0"
   },
   "autoload": {
     "psr-4": {

@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libicu-dev \
     libonig-dev \
+    libexif-dev \
     gettext \
     zip \
     unzip \
@@ -19,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     make \
     libtool \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pdo_mysql mysqli zip gd intl gettext mbstring iconv sockets \
+    && docker-php-ext-install pdo pdo_pgsql pdo_mysql mysqli zip gd intl gettext mbstring iconv sockets exif \
     && docker-php-ext-enable sockets
     #&& pecl install redis && docker-php-ext-enable redis
 
